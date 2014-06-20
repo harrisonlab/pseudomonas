@@ -9,4 +9,5 @@ This requires making a text file of your input data where paired end reads are o
 separated. 
 
 quake.py -f quake.aq -k 16 -p 4
+
 ~/git_stuff/seq_tools/assemblers/SPAdes_assemble_part1.sh AQUILEGIA_S3_L001_R1_001.cor.fastq AQUILEGIA_S3_L001_R2_001.cor.fastq /home/harrir/projects/SPAdes_test/
