@@ -1,0 +1,44 @@
+### Randomised balanced complete design for tree placement in field ###
+
+# install klaR, combinat, spdep, deldir, coda, LearnBayes, sp, AlgDesign 
+
+
+library(agricolae)
+# 24 treatments and 10 blocks
+trt<-c("napoleon scar " , "napoleon wound "  ,"roundel scar " ,"roundel wound " , "mglory scar " , "mglory wound " , "van scar " , "van wound" , "marjories scar " ,"marjories wound " , "victoria scar" , "victoria wound " )
+outdesign <-design.rcbd(trt,10,serie=2,986,"Wichmann-Hill") # seed = 986
+print(outdesign$sketch)
+
+
+### Balanced incomplete design for positioning of strains on two trees using R script designed by X Xu ###
+
+for (i in 1:120) ## Loop through for 120 tree units
+{
+
+### first tree
+
+strain <- 1:8 				# strains 1-8 
+firstt <- sample(strain, 4) # sample 4 of these strains for the first tree
+xc <- sample (1:5,1)		# Position for control on first tree
+finalfirstp <- c(firstt[1:xc-1],9,firstt[xc:4]) #insert control this position randomly into firstt - 9 means control
+
+#### for the second tree
+ 
+secondt <- strain[-firstt]		# Remaining strain numbers for second tree positioned randomly
+xc <- sample (1:5,1)			# Position for control on second tree
+finalsecondp <- c(secondt[1:xc-1],10,secondt[xc:4]) #insert this position into secondt - 10 means control
+
+print(finalfirstp)
+print(finalsecondp)
+}
+
+### Randomised balanced complete design for twig W test Dec 2015 ###
+
+# install klaR, combinat, spdep, deldir, coda, LearnBayes, sp, AlgDesign 
+
+
+library(agricolae)
+# 36 treatments and 8 blocks
+trt<-c("5244-van" ,	"5244-vict" ,	"5300-van" ,	"5300-vict"	, "leaf-van" ,	"leaf-vict"	, "9097-van" ,	"9097-vict"	, "9293-van"	, "9293-vict"	, "5244-hrpA-van"	, "5244-hrpA-vict" ,	"5244-pbbr-van"	, "5244-pbbr-vict"	, "5244-pbbr-hopC-van"	, "5244-pbbr-hopC-vict" ,	"5244-pbbr-hopAW-van"	, "5244-pbbr-hopAW-vict" ,	"5244-pbbr-avrRps4-van"	, "5244-pbbr-avrRps4-vict"	, "leaf-pbbr-van"	, "leaf-pbbr-vict"	, "leaf-pbbr-hopC-van"	, "leaf-pbbr-hopC-vict"	, "leaf-pbbr-hopAW-van"	, "leaf-pbbr-hopAW-vict"	, "leaf-pbbr-avrRps4-van"	, "leaf-pbbr-avrRps4-vict"	, "control-van"	, "control-vict" ,	"pph-van"	, "pph-vict"	, "psaq-van"	, "psaq-vict"	, "psav-van"	, "psav-vict")
+outdesign <-design.rcbd(trt, 8, serie=2,986,"Wichmann-Hill") # seed = 986
+print(outdesign$sketch)
