@@ -1,0 +1,8 @@
+
+library(gplots)
+virulence<-read.table("/Users/hulinm/Documents/effectors_final_outgroups.txt", col.names=,1, row.names=1, check.names=FALSE)
+virulence_matrix<-data.matrix(virulence)
+scale <- colorRampPalette(c("white", "yellow", "forestgreen"), space = "rgb")(100)
+pdf(file = "/Users/hulinm/Documents/heatmap.pdf",width=7,height=7)
+virulence_heatmap <- heatmap.2(virulence_matrix, margins = c(10, 18), Rowv=NA, cexCol=0.8, cexRow=0.6 ,lmat=rbind( c(0, 3), c(2,1), c(0,4) ), lhei=c(0.25, 4, 0.25 ), trace="none", hline=NULL, vline=NULL, tracecol="White", col=scale)
+dev.off()
