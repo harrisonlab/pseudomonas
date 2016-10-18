@@ -1,4 +1,5 @@
 # Running of bayestraitsV2 Discrete ML on all effectors for a phylogeny vs ability to cause disease on cherry 
+# Based on analysis by Press et al. 2013 on association of Hsp900 gene with other genes
 # Effector table is strain, followed by effector presence and then pathogenicity: 
 
 5244  0 1
