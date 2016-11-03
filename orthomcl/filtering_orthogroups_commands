@@ -1,0 +1,130 @@
+## Filtering bad orthogroups (protein fragments from orthoMCL analysis ##
+
+
+### Get fasta file for each orthogroup using these scripts:
+/home/hulinm/git_repos/tools/pathogen/orthology/orthoMCL/orthoMCLgroups2tab.py
+/home/hulinm/git_repos/tools/pathogen/orthology/orthoMCL/orthoMCLgroups2fasta.py
+
+### Generate alignment of each orthogroup fasta file using fast MUSCLE and use EMBOSS cons package to extract consensus sequence:
+
+for FILE in /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/july16/analysis/orthology/orthomcl/july16/fasta/*.fa ; do
+	FILE_BN=$(basename $FILE)
+	FILE_SHORT=$(echo $FILE_BN | sed s/.fa//g)
+	echo $FILE_SHORT
+#/home/hulinm/local/src/muscle3.8.31_i86linux64 -in $FILE -out /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/july16/analysis/orthology/orthomcl/july16/fasta/"$FILE_SHORT".aln   -maxiters 1 -diags -sv -distance1 kbit20_3
+/home/armita/prog/emboss/EMBOSS-4.0.0/bin/cons -sequence "$FILE_SHORT".aln -name $FILE_SHORT -outseq ./consensus/"$FILE_SHORT"_consensus
+
+# Then concatenate all consensus orthogroups into one big fasta file
+
+cat ./consensus/*_consensus > ./consensus/orthogroups_consensus.fasta
+
+
+# Get list of orthogroups with n genes
+for n in $(seq 2 20); do
+#mkdir -p /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/july16/analysis/orthology/orthomcl/july16/fasta/analysis/"$n"_gene/consensus/blast
+
+
+for FILE in /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/july16/analysis/orthology/orthomcl/july16/fasta/*.fa ; do
+	FILE_BN=$(basename $FILE)
+	FILE_SHORT=$(echo $FILE_BN | sed s/.fa//g)
+	echo $FILE_SHORT
+	GENOME_NO=$(grep -e ">" $FILE | wc -l)
+	if [ "$GENOME_NO" = "$n" ]
+	then
+    	printf $FILE_BN >> ./analysis/"$n"_gene_orthogroups
+    	printf "\n" >> ./analysis/"$n"_gene_orthogroups
+        echo $FILE_BN
+        cp $FILE ./analysis/"$n"_gene/
+    fi
+done
+done
+
+# Generate alignment and consensus sequence for each nth-some orthogroup
+for n in $(seq 2 20); do
+for FILE in /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/july16/analysis/orthology/orthomcl/july16/fasta/analysis/"$n"_gene/*.fa ; do
+	FILE_BN=$(basename $FILE)
+	FILE_SHORT=$(echo $FILE_BN | sed s/.fa//g)
+	echo $FILE_SHORT
+/home/hulinm/local/src/muscle3.8.31_i86linux64 -in $FILE -out  /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/july16/analysis/orthology/orthomcl/july16/fasta/analysis/"$n"_gene/"$FILE_SHORT".aln   -maxiters 1 -diags -sv -distance1 kbit20_3
+/home/armita/prog/emboss/EMBOSS-4.0.0/bin/cons -sequence /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/july16/analysis/orthology/orthomcl/july16/fasta/analysis/"$n"_gene/"$FILE_SHORT".aln -name $FILE_SHORT -outseq /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/july16/analysis/orthology/orthomcl/july16/fasta/analysis/"$n"_gene/consensus/"$FILE_SHORT"_consensus
+
+# Blast nth-some orthogroups against BLAST Database of all OGs
+for n in $(seq 2 20); do
+for FILE in /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/july16/analysis/orthology/orthomcl/july16/fasta/analysis/"$n"_gene/consensus/*_consensus ; do
+	FILE_SHORT=$(basename $FILE)
+	echo $FILE_SHORT
+/home/hulinm/git_repos/tools/pathogen/blast/blast2csve5.pl $FILE blastp /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/july16/analysis/orthology/orthomcl/july16/fasta/consensus/orthogroups_consensus.fasta  2  >  /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/july16/analysis/orthology/orthomcl/july16/fasta/analysis/"$n"_gene/consensus/blast/"$FILE_SHORT".csv
+
+
+for n in $(seq 2 20); do
+#cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/july16/analysis/orthology/orthomcl/july16/fasta/analysis/"$n"_gene/consensus/blast/*.csv > /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/july16/analysis/orthology/orthomcl/july16/fasta/analysis/"$n"_gene/consensus/blast/"$n"-member_blast
+# Then use python to find two-somes that hit other orthogroup >80% QL and >80% ID. These can be removed from further analysis
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_blast_hits.py /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/july16/analysis/orthology/orthomcl/july16/fasta/analysis/"$n"_gene/consensus/blast/"$n"-member_blast > /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/july16/analysis/orthology/orthomcl/july16/fasta/analysis/"$n"-member_blast_hits
+
+cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/july16/analysis/orthology/orthomcl/july16/fasta/analysis/"$n"-member_blast_hits > /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/july16/analysis/orthology/orthomcl/july16/fasta/analysis/OGs_to_remove
+
+
+
+
+
+
+
+
+
+
+........................................................................................................................
+
+
+
+
+
+
+
+
+#### Removal of orthogroups homologous to IS-related proteins. IS proteins from Pseudomonas syringae were obtained from www-is.biotoul.fr
+#### Analysis done in pseudomonas_data/pseudomonas/analysis/is_orthology
+
+
+
+# Splitting multi-fasta (had to replace all pipes in goodproteins.fasta as this was messing up commands, so use goodproteins2.fasta):
+while read line
+do
+    if [[ ${line:0:1} == '>' ]]
+    then
+        outfile=${line#>}.fa
+        echo $line > $outfile
+    else
+        echo $line >> $outfile
+    fi
+done </home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/july16/goodProteins/goodProteins2.fasta
+
+# Perform BLAST:
+
+for FILE in /home/hulinm/pseudomonas_data/pseudomonas/analysis/is_orthology/fasta/*/*.fa ; do
+	FILE_BN=$(basename $FILE)
+	FILE_SHORT=$(echo $FILE_BN | sed s/.fa//g)
+	echo $FILE_SHORT
+/home/hulinm/git_repos/tools/pathogen/blast/blast2csve5.pl $FILE blastp psyIS 1  > ./blast/"$FILE_SHORT".csv
+
+# concatenate all blast results into 1 file
+cat *.csv > all_blast
+
+# Use python script to extract list of genes with over 70% identity to an IS protein. The OG with these genes will then be removed
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_IS.py all_blast > IS_blast_hits
+sed s/peg/"|"peg/g IS_blast_hits > list_of_IS_genes #Add pipe back into gene name to allow identification in orthogroups.txt
+
+#Get list of OGs homologous to IS proteins
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/get_orthogroups.py /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/july16/analysis/orthology/orthomcl/july16/july16_orthogroups.txt list_of_IS_genes > IS_OGs
+grep -wFf list_of_IS_genes /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/july16/analysis/orthology/orthomcl/july16/july16_orthogroups | cut -f1 -d " " | sed s/":"//g > IS_OGs
+
+
+........................................................................................................................
+
+
+ for FILE in /home/hulinm/pseudomonas_data/pseudomonas/analysis/is_orthology/fasta/2341/2341peg.9.fa ; do
+	FILE_BN=$(basename $FILE)
+	FILE_SHORT=$(echo $FILE_BN | sed s/.fa//g)
+	echo $FILE_SHORT
+
+/home/hulinm/git_repos/tools/analysis/python_effector_scripts/submit_blast.sh $FILE psyIS /home/hulinm/pseudomonas_data/pseudomonas/analysis/is_orthology/blast2/"$FILE_SHORT".csv
+
