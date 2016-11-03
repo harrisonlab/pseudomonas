@@ -1,0 +1,166 @@
+# Running of bayestraitsV2 Discrete ML on all effectors for a phylogeny vs ability to cause disease on cherry 
+# Based on analysis by Press et al. 2013 on association of Hsp900 gene with other genes
+# Effector table is strain, followed by effector presence and then pathogenicity: 
+
+5244  0 1
+5255  0 1
+pph 1 0
+
+Move effector table onto cluster and remove mac newline characters
+
+ tr '\r' '\n' < mac.file > unix.file
+
+
+# First cut the effector table into 1 file per effector
+cut -f1,2,66 effectors.txt > avrA.txt
+cut -f1,3,66  effectors.txt > avrB.txt
+cut -f1,4,66  effectors.txt > avrD1.txt
+cut -f1,5,66  effectors.txt > avrE1.txt
+cut -f1,6,66  effectors.txt > avrPto.txt
+cut -f1,7,66  effectors.txt > avrRpm.txt
+cut -f1,8,66  effectors.txt > avrRps4.txt
+cut -f1,9,66  effectors.txt > avrRpt2.txt
+cut -f1,10,66  effectors.txt > hopA1.txt
+cut -f1,11,66  effectors.txt > hopAA.txt
+cut -f1,12,66  effectors.txt > hopAB.txt
+cut -f1,13,66  effectors.txt > hopAD.txt
+cut -f1,14,66  effectors.txt > hopAE.txt
+cut -f1,15,66  effectors.txt > hopAF.txt
+cut -f1,16,66  effectors.txt > hopAG.txt
+cut -f1,17,66  effectors.txt > hopAH.txt
+cut -f1,18,66  effectors.txt > hopAI.txt
+cut -f1,19,66  effectors.txt > hopAL.txt
+cut -f1,20,66  effectors.txt > hopAM.txt
+cut -f1,21,66  effectors.txt > hopAO.txt
+cut -f1,22,66  effectors.txt > hopAQ.txt
+cut -f1,23,66  effectors.txt > hopAR.txt
+cut -f1,24,66  effectors.txt > hopAS.txt
+cut -f1,25,66  effectors.txt > hopAT.txt
+cut -f1,26,66  effectors.txt > hopAU.txt
+cut -f1,27,66  effectors.txt > hopAV.txt
+cut -f1,28,66  effectors.txt > hopAW.txt
+cut -f1,29,66  effectors.txt > hopAX.txt
+cut -f1,30,66  effectors.txt > hopAY.txt
+cut -f1,31,66  effectors.txt > hopAZ.txt
+cut -f1,32,66  effectors.txt > hopB.txt
+cut -f1,33,66  effectors.txt > hopBA.txt
+cut -f1,34,66  effectors.txt > hopBB.txt
+cut -f1,35,66  effectors.txt > hopBC.txt
+cut -f1,36,66  effectors.txt > hopBD.txt
+cut -f1,37,66  effectors.txt > hopBE.txt
+cut -f1,38,66  effectors.txt > hopBF.txt
+cut -f1,39,66  effectors.txt > hopBG.txt
+cut -f1,40,66  effectors.txt > hopBH.txt
+cut -f1,41,66  effectors.txt > hopBI.txt
+cut -f1,42,66  effectors.txt > hopBJ.txt
+cut -f1,43,66  effectors.txt > hopBK.txt
+cut -f1,44,66  effectors.txt > hopBL.txt
+cut -f1,45,66  effectors.txt > hopC.txt
+cut -f1,46,66  effectors.txt > hopD.txt
+cut -f1,47,66  effectors.txt > hopE.txt
+cut -f1,48,66  effectors.txt > hopF.txt
+cut -f1,49,66  effectors.txt > hopG.txt
+cut -f1,50,66  effectors.txt > hopH.txt
+cut -f1,51,66  effectors.txt > hopI.txt
+cut -f1,52,66  effectors.txt > hopK.txt
+cut -f1,53,66  effectors.txt > hopM.txt
+cut -f1,54,66  effectors.txt > hopN.txt
+cut -f1,55,66  effectors.txt > hopO.txt
+cut -f1,56,66  effectors.txt > hopQ.txt
+cut -f1,57,66  effectors.txt > hopR.txt
+cut -f1,58,66  effectors.txt > hopS.txt
+cut -f1,59,66  effectors.txt > hopT.txt
+cut -f1,60,66  effectors.txt > hopU.txt
+cut -f1,61,66  effectors.txt > hopV.txt
+cut -f1,62,66  effectors.txt > hopW.txt
+cut -f1,63,66  effectors.txt > hopX.txt
+cut -f1,64,66  effectors.txt > hopY.txt
+cut -f1,65,66  effectors.txt > hopZ.txt
+
+
+
+for i in `seq 1 100`; do              # Run analysis 100 times
+
+
+# Running of bayestraits with phylogenetic tree and effector file for discrete independant analysis
+
+for EFFECTOR in /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/txt_files/*.txt2 ; do
+EFFECTOR_FILE=$(basename $EFFECTOR)
+EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.txt2//g)
+echo $EFFECTOR_SHORT
+#cat $EFFECTOR | sed 1d > $EFFECTOR_SHORT # removing header line
+#mv $EFFECTOR_SHORT $EFFECTOR # removing header line
+
+TREE=/home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/MLST.nex.con.tre
+COMMANDS=/home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/independant_commands.txt
+
+BayesTraitsV2 $TREE $EFFECTOR <$COMMANDS
+mv /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/txt_files/"$EFFECTOR_SHORT".txt2.log.txt  /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/MLoutput/"$i"/"$EFFECTOR_SHORT"_independant
+
+# Running of bayestraits with phylogenetic tree and effector file for discrete dependant analysis
+
+COMMANDS=/home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/dependant_commands.txt
+
+BayesTraitsV2 $TREE $EFFECTOR <$COMMANDS
+mv /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/txt_files/"$EFFECTOR_SHORT".txt2.log.txt  /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/MLoutput/"$i"/"$EFFECTOR_SHORT"_dependant
+
+done
+
+
+
+# Extract Lh value from two files and get ratio, then cat all into one big file for viewing
+
+for i in `seq 1 100`; do
+
+for EFFECTOR in /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/txt_files/*.txt2 ; do
+EFFECTOR_FILE=$(basename $EFFECTOR)
+EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.txt2//g)
+echo $EFFECTOR_SHORT
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_Lh.py /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/MLoutput/"$i"/"$EFFECTOR_SHORT"_independant /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/MLoutput/"$i"/"$EFFECTOR_SHORT"_dependant > /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/MLoutput/"$i"/"$EFFECTOR_SHORT".tmp
+tr "\n" "\t" < /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/MLoutput/"$i"/"$EFFECTOR_SHORT".tmp > /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/MLoutput/"$i"/"$EFFECTOR_SHORT".tmp2
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/create_LR.py /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/MLoutput/"$i"/"$EFFECTOR_SHORT".tmp2 > /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/MLoutput/"$i"/"$EFFECTOR_SHORT"_LR
+
+# Remove temporary files
+rm *.tmp *.tmp2
+
+# cat all LR into 1 file per run and add the effector names to the first column
+
+for i in `seq 1 100`; do
+
+cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/MLoutput/"$i"/*_LR > /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/MLoutput/"$i"/likelihood_ratios
+
+mkfifo pipe1
+mkfifo pipe2
+cut -f1 /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/effector_list  > pipe1 & # In order to add effector names in first column
+cut -f1,2,3 /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/MLoutput/"$i"/likelihood_ratios > pipe2 &
+paste pipe1 pipe2  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/MLoutput/"$i"/"$i"_likelihood_ratios.txt
+rm pipe1 pipe2
+
+
+
+
+
+
+
+# The cat all likelihood statistic files
+
+for i in `seq 1 100`; do
+cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/MLoutput/"$i"/"$i"_likelihood_ratios.txt /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/likelihood_ratio_100_runs.txt
+
+# Use R to calculate p-value statistic
+
+LRs<-read.table("/home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/likelihood_ratios_100_runs.txt", col.names=,0)
+attach(LRs)
+LRs[,5]=pchisq(V4, 8-4, lower.tail=FALSE)
+write.table(LRs, "LRs.tmp", sep="\t")
+
+sed s/\"//g LRs.tmp > LRs2.tmp # Remove ""s
+sed -i -e "1d" LRs2.tmp # Remove first line
+
+# Get list of genes that had statistically significant p-value over 90% of the time (using python) then sort to get only those that occur 90+ times
+
+
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/sort_by_pvalue.py LRs2.tmp > LRs3.tmp #Get list of genes with p.value <= 0.05
+sort LR3.tmp | uniq -c > LRs4.tmp #Get number of times gene appears
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/get_90_genes.py LRs4.tmp > statistically_sig_genes.txt #pull out only those that appear 90% or more times
+rm *.tmp
