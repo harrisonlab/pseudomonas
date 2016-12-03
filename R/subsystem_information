@@ -1,0 +1,55 @@
+# Extracting metabolic subsystem information from RAST annotation table and building heatmap of susbsystems in cherry pathogens and their closest out-groups
+
+# Using terminal:
+# Edit tsv to remove peg.0-9 
+for genome in ./*.tsv ; do
+GENOME_FILE=$(basename $genome)
+GENOME_SHORT=$(echo $GENOME_FILE | sed s/.tsv//g)
+echo $GENOME_SHORT
+sed "s/"fig\|[0-9]*[.][0-9]*[.]"/"$GENOME_SHORT"|/g" $genome > ./"$GENOME_SHORT"
+
+
+# Get list of subsystems per strain
+for genome in ./*.tsv ; do
+GENOME_FILE=$(basename $genome)
+GENOME_SHORT=$(echo $GENOME_FILE | sed s/.tsv//g)
+echo $GENOME_SHORT
+cut -f10,1 "$GENOME_SHORT" > t
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_subsystems.py t | sed '/^\s*$/d' > t2
+cut -f1 -d ";" t2 | tail -n +2 | sort -u -k2 > "$GENOME_SHORT"_subsystems
+rm t*
+
+#Make final file of all strains subsystems to input into R
+cat *_subsystems > subsystems
+sed s/\|peg\.[0-9]*//g subsystems | sed s/\|rna\.[0-9]*//g | sed s/" "/"_"/g | awk '{print($2,"\t",$1)}' > subsystems2
+echo $'system\tstrain' | cat - subsystems2 > subsystems3
+
+
+
+#### In R ####
+
+subsystems<-read.table("/Users/hulinm/Documents/subsystems3", col.names=,1)
+attach(subsystems)
+T<-table(subsystems)
+write.table(T, file="subsystem_table", sep= "\t")
+
+
+
+# Create heatmap
+library(gplots)
+virulence<-read.table("/Users/hulinm/subsystem_table", col.names=,1, row.names=1, check.names=FALSE)
+virulence[,21]=rowSums(virulence)
+virulence2<-virulence[!(virulence$"V21"==20),] # Remove rows where sum of rows is 8 - so all strains have this subsystem
+virulence2[,21] <-NULL # Remove sum column
+
+virulence_matrix<-data.matrix(virulence2)
+write.table(virulence_matrix, file="matrix", sep= "\t") # Edit names manually to make neater and add "system" column
+
+virulence_heatmap<-read.table("/Users/hulinm/matrix", col.names=,1, row.names=1, sep="\t", check.names=FALSE)
+
+virulence_matrix<-data.matrix(virulence_heatmap)
+scale <- colorRampPalette(c("white", "yellow", "forestgreen"), space = "rgb")(100)
+pdf(file = "/Users/hulinm/Documents/heatmap.pdf",width=7,height=5)
+virulence_heatmap <- heatmap.2(virulence_matrix, margins = c(10, 18), cexCol=0.6, cexRow=0.5 ,lmat=rbind( c(0, 3), c(2,1), c(0,4) ), lhei=c(0.25, 4, 0.25 ), lwid=c(1.5,1.5) , trace="none", hline=NULL, vline=NULL, tracecol="Gray", col=scale)
+dev.off()
+
