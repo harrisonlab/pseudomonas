@@ -1,0 +1,26 @@
+
+
+import sys
+
+#read the input and output filename from the command line
+#make sure you get these the right way round, or the script will
+#DELETE the input file!!
+
+inputfile = sys.argv[1]
+outputfile = sys.argv[2]
+
+
+#open both files
+f = open(inputfile)
+o = open(outputfile, 'wb' )
+
+for line in f:
+    cols = line.strip().split("\t")
+    if  cols[2] == "+" and cols[3] == "+" and cols[4] == "+" and cols[5] == "+" and cols[6] == "+" and cols[7] == "+" :
+        o.write(cols[0]+ "\n")
+exit
+			
+
+
+
+
