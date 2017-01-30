@@ -5,43 +5,57 @@
 ## This will allow me to use the fasta files used for whole genome core orthogroup phylogeny into the recombination analysis program ClonalFrameML
 ## Final multifasta (xmfa) file will consist of each orthogroup alignment separated with "=" 
 
-# Pre-processing of gff file to get locations and strand for each CDS
+# Pre-processing of gff file to edit name to include "|" - this prevents strains like 2339 grep picking up other genome peg.2339
 
-for gff in ./*.gff2 ; do 
-strain=$(basename $gff | sed s/".gff2"//g ) 
-sed s/ID=fig"|"[0-9]*.[0-9]*./"$strain""|"/g $gff | sed s/";"/"\t"/g | tail -n +2  > $strain
+for gff in  /home/hulinm/gff/*.gff2 ; do 
+strain=$(basename $gff | sed s/".gff2"//g) 
+cp $gff "$strain""|".gff3 
+done
 
-mkfifo pipe1
-mkfifo pipe2
-mkfifo pipe3
-mkfifo pipe4
-cut -f9 $strain > pipe1 & 
-cut -f4 $strain > pipe2 &
-cut -f5 $strain > pipe3 &
-cut -f7 $strain > pipe4 &
-paste pipe1  > "$strain"_locations
-awk '{print ">"$1":" }' "$strain"_locations >  "$strain".tmp 
-paste pipe2 pipe3 > locations 
-sed s/"\t"/"-"/g locations > locations.tmp
 
-paste "$strain".tmp locations.tmp pipe4 > "$strain"_locations
+# Process gff to get locations and strand into file called strain locations
+for gff in /home/hulinm/gff/*.gff3 ; do 
+strain=$(basename $gff | sed s/".gff3"//g) 
+strain_short=$(basename $gff | sed s/"|.gff3"//g) 
+sed s/ID=fig"|"[0-9]*.[0-9]*./"$strain"/g $gff | sed s/";"/"\t"/g | tail -n +2  > /home/hulinm/gff/"$strain"
+echo $gff
+
+mkfifo /home/hulinm/gff/pipe1
+mkfifo /home/hulinm/gff/pipe2
+mkfifo /home/hulinm/gff/pipe3
+mkfifo /home/hulinm/gff/pipe4
+cut -f9 /home/hulinm/gff/"$strain" > /home/hulinm/gff/pipe1 & 
+cut -f4 /home/hulinm/gff/"$strain" > /home/hulinm/gff/pipe2 &
+cut -f5 /home/hulinm/gff/"$strain" > /home/hulinm/gff/pipe3 &
+cut -f7 /home/hulinm/gff/"$strain" > /home/hulinm/gff/pipe4 &
+paste /home/hulinm/gff/pipe1  > /home/hulinm/gff/"$strain_short"_locations
+awk '{print ">"$1 }' /home/hulinm/gff/"$strain_short"_locations >  /home/hulinm/gff/"$strain_short".tmp 
+paste /home/hulinm/gff/pipe2 /home/hulinm/gff/pipe3 > /home/hulinm/gff/locations 
+sed s/"\t"/"-"/g /home/hulinm/gff/locations > /home/hulinm/gff/locations.tmp
+
+paste /home/hulinm/gff/"$strain_short".tmp /home/hulinm/gff/locations.tmp /home/hulinm/gff/pipe4 > /home/hulinm/gff/"$strain_short"_locations
  
-rm pipe1 pipe2 pipe3 pipe4 
-rm *.tmp
-rm locations
+rm /home/hulinm/gff/pipe*
+rm /home/hulinm/gff/*.tmp
+rm /home/hulinm/gff/locations
 
-
-
-
-
-
+#  Take core orthogroup fasta files and replace strain ID with strain ID + location of gene 
 for fasta in ./*.fasta ; do
 fastafile=$(basename $fasta | sed s/".fasta"//g) 
 ID=$(grep $strain $fasta) 
 echo $ID
+locations=$(grep -w "$ID" /home/hulinm/gff/"$strain_short"_locations)
+#echo $locations
+
+# Replacement 
+sed -i s/"$ID"/"$locations"/g $fasta 
 
 
 
 
->psaceris|peg.4147 
+
+
+
+
+
 
