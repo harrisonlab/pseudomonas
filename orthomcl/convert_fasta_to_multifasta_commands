@@ -1,0 +1,47 @@
+# Recombination program ClonalFrameML requires xmfa file input with locations of each gene in each genome to infer where recombination has occured
+
+## Commands to convert fasta file of each orthogroup into a multifasta xmfa file 
+## Each protein ID is replaced with >protein: start-end strand 
+## This will allow me to use the fasta files used for whole genome core orthogroup phylogeny into the recombination analysis program ClonalFrameML
+## Final multifasta (xmfa) file will consist of each orthogroup alignment separated with "=" 
+
+# Pre-processing of gff file to get locations and strand for each CDS
+
+for gff in ./*.gff2 ; do 
+strain=$(basename $gff | sed s/".gff2"//g ) 
+sed s/ID=fig"|"[0-9]*.[0-9]*./"$strain""|"/g $gff | sed s/";"/"\t"/g | tail -n +2  > $strain
+
+mkfifo pipe1
+mkfifo pipe2
+mkfifo pipe3
+mkfifo pipe4
+cut -f9 $strain > pipe1 & 
+cut -f4 $strain > pipe2 &
+cut -f5 $strain > pipe3 &
+cut -f7 $strain > pipe4 &
+paste pipe1  > "$strain"_locations
+awk '{print ">"$1":" }' "$strain"_locations >  "$strain".tmp 
+paste pipe2 pipe3 > locations 
+sed s/"\t"/"-"/g locations > locations.tmp
+
+paste "$strain".tmp locations.tmp pipe4 > "$strain"_locations
+ 
+rm pipe1 pipe2 pipe3 pipe4 
+rm *.tmp
+rm locations
+
+
+
+
+
+
+for fasta in ./*.fasta ; do
+fastafile=$(basename $fasta | sed s/".fasta"//g) 
+ID=$(grep $strain $fasta) 
+echo $ID
+
+
+
+
+>psaceris|peg.4147 
+
