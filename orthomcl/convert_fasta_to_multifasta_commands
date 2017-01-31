@@ -34,6 +34,8 @@ paste /home/hulinm/gff/pipe2 /home/hulinm/gff/pipe3 > /home/hulinm/gff/locations
 sed s/"\t"/"-"/g /home/hulinm/gff/locations > /home/hulinm/gff/locations.tmp
 
 paste /home/hulinm/gff/"$strain_short".tmp /home/hulinm/gff/locations.tmp /home/hulinm/gff/pipe4 > /home/hulinm/gff/"$strain_short"_locations
+
+sed -i s/pssavastanoi"|"peg/pssavastanoi"|".peg/g /home/hulinm/gff/"$strain_short"_locations #Need to edit pssavastanoi due to wrongly placed .
  
 rm /home/hulinm/gff/pipe*
 rm /home/hulinm/gff/*.tmp
@@ -49,6 +51,14 @@ locations=$(grep -w "$ID" /home/hulinm/gff/"$strain_short"_locations)
 
 # Replacement 
 sed -i s/"$ID"/"$locations"/g $fasta 
+
+
+
+
+
+# Concatenate all fasta into xmfa file 
+
+awk 'FNR==1 && NR!=1 {print "="}{print}' * > xmfa
 
 
 
