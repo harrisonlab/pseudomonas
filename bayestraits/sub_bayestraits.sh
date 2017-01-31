@@ -9,9 +9,9 @@ Usage='sub_bayestraits.sh <no_replicates>'
 
 i=$1
 
-for EFFECTOR in /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/orthogroups/txt_files/*_"$i".txt2 ; do
+for EFFECTOR in /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/orthology_new/txt_files/*_"$i".txt ; do
 EFFECTOR_FILE=$(basename $EFFECTOR)
-EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.txt2//g)
+EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.txt//g)
 
 echo $i
 
@@ -22,14 +22,14 @@ COMMANDS=/home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/new_anal
 BayesTraitsV2 $TREE $EFFECTOR <$COMMANDS
 
 
-mv /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/orthogroups/txt_files/"$EFFECTOR_SHORT".txt2.log.txt  /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/orthogroups/MLoutput/"$i"/"$EFFECTOR_SHORT"_independant
+mv /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/orthology_new/txt_files/"$EFFECTOR_SHORT".txt.log.txt  /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/orthology_new/MLoutput/"$i"/"$EFFECTOR_SHORT"_independant
 
 # Running of bayestraits with phylogenetic tree and effector file for discrete dependant analysis
 
 COMMANDS=/home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/new_analysis/dependant_commands.txt
 
 BayesTraitsV2 $TREE $EFFECTOR <$COMMANDS
-mv /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/orthogroups/txt_files/"$EFFECTOR_SHORT".txt2.log.txt  /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/orthogroups/MLoutput/"$i"/"$EFFECTOR_SHORT"_dependant
+mv /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/orthology_new/txt_files/"$EFFECTOR_SHORT".txt.log.txt  /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/orthology_new/MLoutput/"$i"/"$EFFECTOR_SHORT"_dependant
 
 done
 done
