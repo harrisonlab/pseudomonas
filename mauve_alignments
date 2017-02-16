@@ -1,19 +1,18 @@
 PIPELINE for Mauve whole genome alignments and subsequent CLONALFRAME analysis of regions of recombination
 
 Take all strains belonging to each clade including cherry strains and others.
-order genomes with contigs with mauve against pacbio genome (complete genomes not needed)
+order genomes with contigs with mauve against pacbio/complete genome 
 align with progressive-mauve
 extract core with stripSubsetLCBs - extract only the LCBs (homologous blocks) that are present in all strains
 Convert to fasta and concatenate the alignment (all LCB alignments concantenated together)
 Convert to phylip format
-Build tree with PhyML (with GTR model, 100 bootstraps)
-Create consensus tree with consense
+Build tree with RaxMLL (with GTR model, 100 bootstraps)
 Use this tree and xmfa alignment output for ClonalFrameML
 
-CORE AND ACCESSORY GENOMES for each STRAIN
-Concatenate contigs in fasta file into 1 contig
-Extract coordinates of core genome LCBs for strain from core.xmfa and store in txt file
-Use coordinates to pull out core genome regions from fasta to either get core genome or remove to get accessory genome
+#CORE AND ACCESSORY GENOMES for each STRAIN
+#Concatenate contigs in fasta file into 1 contig
+#Extract coordinates of core genome LCBs for strain from core.xmfa and store in txt file
+#Use coordinates to pull out core genome regions from fasta to either get core genome or remove to get accessory genome
 
 
 ..........
