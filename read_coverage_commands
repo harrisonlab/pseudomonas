@@ -1,0 +1,78 @@
+# Commands to get SRA files from NCBI and map them to the hopAB1 region of 5300 to see if closely related strains possess this region 
+
+# Download from internet using prefetch and accession number 
+prefetch SRR2175843	
+# Convert to fastq
+fastq-dump --split-files SRR2175843.sra
+
+
+# Download selection of phylogroup 3 strains for analysis 
+
+for file in $(cut -f3 p3_strains ); do
+	echo $file
+	prefetch $file 
+done
+
+mv SRR2175867.sra	./genome/aesculi_2113
+mv SRR2175856.sra	./genome/aesculi_2336
+mv SRR2175855.sra	./genome/aesculi_2329
+mv SRR2175854.sra	./genome/aesculi_2315
+mv SRR2175846.sra	./genome/aesculi_2306
+mv SRR2175835.sra	./genome/aesculi_2279
+mv SRR496771.sra	./genome/aesculi_3681
+mv SRR020201.sra	./genome/aesculi_P6617
+mv SRR020200.sra	./genome/aesculi_P6623
+mv SRR2175861.sra	./genome/cerasicola_6109
+mv SRR2175847.sra	./genome/rhaphiolepidis_4220
+mv SRR2175844.sra	./genome/nerii_5067
+mv SRR2175839.sra	./genome/fraxini_5062
+mv SRR2175837.sra	./genome/dendropanacis_3226
+mv SRR2175838.sra	./genome/eriobotryae_2343
+mv SRR2175836.sra	./genome/daphniphylli_4219
+mv SRR2175842.sra	./genome/morsprunorum_5269
+mv SRR2175840.sra	./genome/morsprunorum_2341
+mv SRR2175853.sra	./genome/ulmi_1407
+
+cd genome
+for file in * ; do 
+	fastq-dump --split-files $file
+done
+
+# Run bowtie alignment 
+
+
+for file in $(cut -f1 /home/hulinm/ncbi/public/sra/genome/p3_strains ); do
+echo $file
+
+qsub /home/hulinm/git_repos/pseudomonas/sub_bowtie.sh 5300_100kb_hopAB_window.fasta "$file"_1.fastq "$file"_2.fastq "$file"
+
+# Additionals
+for file in $(cut -f1 names ); do
+echo $file
+
+qsub /home/hulinm/git_repos/pseudomonas/sub_bowtie.sh 5300_100kb_hopAB_window.fasta "$file"_1.fastq "$file"_2.fastq "$file"
+
+
+# To get depth 
+ls -d */ | cut -f1 -d'/' > directories
+
+for file in $(cut -f1 directories ); do
+echo $file
+samtools depth ./"$file"/5300_100kb_hopAB_window.fasta_aligned_sorted.bam > ./depth/"$file"_depth
+
+
+
+# Combine all and make plot of all facetted by strain name
+
+for i in *; do nawk '{print FILENAME"\t"$0}' $i > $i.k; mv $i.k $i; done
+
+##
+
+all <- read.table("/Users/hulinm/all", header=FALSE, sep="\t", na.strings="NA", dec=".", strip.white=TRUE)
+library(reshape) 
+library(ggplot2)
+all2<-rename(all,c(V1="name", V2="Chr", V3="locus", V4="depth")) # renames the header
+options(scipen=5)
+p<-ggplot(all2, aes(x=all2$locus, y=all2$depth)) + geom_point(shape=1, size=0.2) + scale_x_continuous(breaks=c(0,10000,20000,30000,40000,50000,60000,70000,80000,90000,100000)) + labs(x = "Position", y = "Coverage") + facet_wrap(~ all2$name, ncol=1)
+ggsave("coverage_hopAB1.pdf", plot = p, width = 10, height = 14)
+
