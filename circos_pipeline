@@ -1,0 +1,145 @@
+#Make karyotype txt files for all genomes
+
+ProgDir=/home/armita/git_repos/emr_repos/scripts/fusarium/pathogen/identify_LS_chromosomes/circos
+$ProgDir/fasta2circos.py --genome /home/hulinm/pacbio_genomes/genomes/leaf_corrected.fasta --contig_prefix "" > ./circos/leaf_length_file.txt
+
+
+# Generate effector scatterplot
+
+for genome in /home/hulinm/pacbio_genomes/genomes/5300_corrected.fasta ; do
+strain=$(basename $genome | sed s/".fasta"//g | sed s/"_corrected"//g)
+echo $strain
+/home/hulinm/git_repos/tools/pathogen/blast/blast2csv.pl /home/hulinm/pseudomonas_data/pseudomonas/analysis/pacbio_effectors/"$strain"_effectors.fasta tblastn "$genome" 1 > /home/hulinm/pacbio_genomes/effectors/"$strain"/"$strain"_effector_blast.csv
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/csv2gff.py /home/hulinm/pacbio_genomes/effectors/"$strain"/"$strain"_effector_blast.csv > /home/hulinm/pacbio_genomes/effectors/"$strain"/"$strain"_effectors
+ProgDir=/home/armita/git_repos/emr_repos/scripts/fusarium/pathogen/identify_LS_chromosomes/circos
+$ProgDir/gff2circos_scatterplot.py --gff  /home/hulinm/pacbio_genomes/effectors/"$strain"/"$strain"_effectors --feature match --value '1' > /home/hulinm/pacbio_genomes/circos/scatterplots/"$strain"_effector_scatterplot.txt
+rm DBD* genome_db.n* BLO*
+
+## Toxins
+
+
+for genome in /home/hulinm/pacbio_genomes/genomes/*_corrected.fasta ; do
+strain=$(basename $genome | sed s/".fasta"//g | sed s/"_corrected"//g)
+echo $strain
+#/home/hulinm/git_repos/tools/pathogen/blast/blast2csv.pl /home/hulinm/GI/toxin/protein/toxins.fasta tblastn $genome 100 > /home/hulinm/pacbio_genomes/toxins/"$strain"/"$strain"_toxins_blast.csv
+#python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/csv2gff.py /home/hulinm/pacbio_genomes/toxins/"$strain"/"$strain"_toxins_blast.csv > /home/hulinm/pacbio_genomes/toxins/"$strain"/"$strain"_toxins
+ProgDir=/home/armita/git_repos/emr_repos/scripts/fusarium/pathogen/identify_LS_chromosomes/circos
+$ProgDir/gff2circos_scatterplot.py --gff /home/hulinm/pacbio_genomes/toxins/"$strain"/"$strain"_toxins --feature match --value '1' > /home/hulinm/pacbio_genomes/circos/scatterplots/"$strain"_toxin_scatterplot.txt
+rm DBD* genome_db.n* BLO*
+
+
+
+# plasmid encoding # Need to separate contigs and do blast then cat results afterwards as too many blast hits - not all being identified if contigs in same file
+
+# split fasta into contigs
+for genome in /home/hulinm/pacbio_genomes/genomes/*_corrected.fasta ; do
+strain=$(basename $genome | sed s/".fasta"//g | sed s/"_corrected"//g)
+echo $strain
+#while read line
+#do
+#    if [[ ${line:0:1} == '>' ]]
+#    then
+#        outfile=${line#>}.fa
+#        echo $line > ./"$strain"/$outfile
+#    else
+#        echo $line >> ./"$strain"/$outfile
+#    fi
+#done < $genome
+#mv  /home/hulinm/pseudomonas_data/pseudomonas/analysis/circos/pilon/"$strain"/*.fa /home/hulinm/pseudomonas_data/pseudomonas/analysis/circos/pilon/"$strain"/plasmid
+
+# Then run blast
+
+for contig in /home/hulinm/pacbio_genomes/genomes/"$strain"/* ; do
+contig_no=$(basename $contig | sed s/".fa"//g)
+echo $contig_no
+/home/hulinm/git_repos/tools/pathogen/blast/blast2csv.pl /home/hulinm/GI/plasmid/plasmid_proteins2.fasta tblastn $contig 100 > /home/hulinm/pacbio_genomes/plasmid/"$strain"/"$contig_no"_plasmid_blast.csv
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/csv2gff.py  /home/hulinm/pacbio_genomes/plasmid/"$strain"/"$contig_no"_plasmid_blast.csv >  /home/hulinm/pacbio_genomes/plasmid/"$strain"/"$contig_no"_plasmid.txt
+# Cat all contig results into 1 gff for processing
+cat /home/hulinm/pacbio_genomes/plasmid/"$strain"/*.txt > /home/hulinm/pacbio_genomes/plasmid/"$strain"/"$strain"_plasmid.gff
+
+ProgDir=/home/armita/git_repos/emr_repos/scripts/fusarium/pathogen/identify_LS_chromosomes/circos
+$ProgDir/gff2circos_scatterplot.py --gff /home/hulinm/pacbio_genomes/plasmid/"$strain"/"$strain"_plasmid.gff --feature match --value '1' > /home/hulinm/pacbio_genomes/circos/scatterplots/"$strain"_plasmid_scatterplot.txt
+
+rm BLO* DBD* geno*
+
+
+# Genomic islands predicted by IslandView. Then extracted from genbank as a fasta containing just GIs in geneious
+for genome in /home/hulinm/pacbio_genomes/genomes/*_corrected.fasta ; do
+strain=$(basename $genome | sed s/".fasta"//g | sed s/"_corrected"//g)
+echo $strain
+
+/home/hulinm/git_repos/tools/pathogen/blast/blast2csv.pl /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/GIfiles/"$strain"gi.fasta  blastn $genome 1 > /home/hulinm/pacbio_genomes/GI/"$strain"/"$strain"_GI_blast.csv
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/csv2gff.py /home/hulinm/pacbio_genomes/GI/"$strain"/"$strain"_GI_blast.csv > /home/hulinm/pacbio_genomes/GI/"$strain"/"$strain"_GI
+ProgDir=/home/armita/git_repos/emr_repos/scripts/fusarium/pathogen/identify_LS_chromosomes/circos
+$ProgDir/gff2circos_scatterplot.py --gff /home/hulinm/pacbio_genomes/GI/"$strain"/"$strain"_GI --feature match --value '1' > /home/hulinm/pacbio_genomes/circos/scatterplots/"$strain"_GI_scatterplot.txt
+
+
+
+# Phages and mobile element proteins. Do IS elements as seperate contigs
+
+#Mobile elements use IS finder online to get tabular blast output. Then process into gff
+for genome in /home/hulinm/pacbio_genomes/genomes/*_corrected.fasta ; do
+strain=$(basename $genome | sed s/".fasta"//g | sed s/"_corrected"//g)
+echo $strain
+#Split into contigs:
+#awk '{print > $1".txt"}' "$strain"_IS
+#mv /home/hulinm/pacbio_genomes/IS/*.txt  /home/hulinm/pacbio_genomes/IS/"$strain"/
+
+for contig in /home/hulinm/pacbio_genomes/IS/"$strain"/* ; do
+contig_no=$(basename $contig | sed s/".txt"//g)
+echo $contig_no
+
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/ISygff.py $contig >  /home/hulinm/pacbio_genomes/IS/"$strain"/"$contig_no"_IS
+
+cat /home/hulinm/pacbio_genomes/IS/"$strain"/*_IS > /home/hulinm/pacbio_genomes/IS/"$strain"/"$strain"_IS.gff
+ProgDir=/home/armita/git_repos/emr_repos/scripts/fusarium/pathogen/identify_LS_chromosomes/circos
+$ProgDir/gff2circos_scatterplot.py --gff  /home/hulinm/pacbio_genomes/IS/"$strain"/"$strain"_IS.gff --feature match --value '1' > /home/hulinm/pacbio_genomes/circos/scatterplots/"$strain"_IS_scatterplot.txt
+
+
+#phages added manually to scatterplot
+
+
+# Gained lineage-specific genes identified through orthology analysis
+
+# In gloome gain folder
+cat 5244.out 5244_N84.out 5244_N83.out 5244_N82.out 5244_N81.out > 5244_lineage_specific
+cut -f11 5244_lineage_specific | sort > 5244_lineage_specific_genes
+sed s/"|"//g 5244_lineage_specific_genes | awk '{$0=5244"|"$0}1'  > 5244_lineage_specific_genes2
+
+
+cat 9097.out 9097_N62.out 9097_N61.out 9097_N58.out > 9097_lineage_specific
+cut -f11 9097_lineage_specific | sort > 9097_lineage_specific_genes
+sed s/"|"//g 9097_lineage_specific_genes | awk '{$0=9097"|"$0}1'  > 9097_lineage_specific_genes2
+
+cat leaf.out leaf_N24.out leaf_N23.out leaf_N22.out leaf_N19.out > leaf_lineage_specific
+cut -f11 leaf_lineage_specific | sort > leaf_lineage_specific_genes
+sed s/"|"//g leaf_lineage_specific_genes | awk '{$0="leaf""|"$0}1'  > leaf_lineage_specific_genes2
+
+#Get protein files
+for strain in ./*lineage_specific_genes2 ; do
+name=$(basename $strain | sed s/_lineage_specific_genes2//g )
+perl /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_genes.pl $strain  /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/dec/formatted/"$name".fasta "$name"_lineage_specific.fasta
+
+
+# Circos
+for genome in /home/hulinm/pacbio_genomes/genomes/*_corrected.fasta ; do
+strain=$(basename $genome | sed s/".fasta"//g | sed s/"_corrected"//g)
+echo $strain
+
+/home/hulinm/git_repos/tools/pathogen/blast/blast2csv.pl /home/hulinm/pseudomonas_data/pseudomonas/analysis/gloome_new/orthology/core_genome2/gain/out/"$strain"_lineage_specific.fasta tblastn $genome  5  > /home/hulinm/pacbio_genomes/lineage_specific/"$strain"/"$strain"_lineage_specific_blast.csv
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/csv2gff.py  /home/hulinm/pacbio_genomes/lineage_specific/"$strain"/"$strain"_lineage_specific_blast.csv > /home/hulinm/pacbio_genomes/lineage_specific/"$strain"/"$strain"_lineage_specific.gff
+ProgDir=/home/armita/git_repos/emr_repos/scripts/fusarium/pathogen/identify_LS_chromosomes/circos
+$ProgDir/gff2circos_scatterplot.py --gff /home/hulinm/pacbio_genomes/lineage_specific/"$strain"/"$strain"_lineage_specific.gff --feature match --value '1' > /home/hulinm/pacbio_genomes/circos/scatterplots/"$strain"_lineage_specific_scatterplot.txt
+
+
+# GC content # Identify GC content in 100kb windows
+for genome in /home/hulinm/pacbio_genomes/genomes/9097_corrected.fasta ; do
+strain=$(basename $genome | sed s/".fasta"//g | sed s/"_corrected"//g)
+echo $strain
+/home/hulinm/git_repos/tools/analysis/python_effector_scripts/fasta2gff_windows.py --genome $genome  > /home/hulinm/pacbio_genomes/GC/"$strain"/"$strain"_10kb_window.gff
+/home/armita/git_repos/emr_repos/scripts/fusarium/pathogen/identify_LS_chromosomes/circos/gc_content2circos.py --genome $genome --gff /home/hulinm/pacbio_genomes/GC/"$strain"/"$strain"_10kb_window.gff  > /home/hulinm/pacbio_genomes/circos/scatterplots/"$strain"_GC_scatterplot.txt
+
+# Coverage of illumina reads mapped to pacbio genome
+
+/home/armita/git_repos/emr_repos/scripts/fusarium/pathogen/identify_LS_chromosomes/circos/coverage_bed2circos.py --bed /home/hulinm/pseudomonas_data/pseudomonas/assembly/bowtie/9097_coverage10kb > /home/hulinm/pseudomonas_data/pseudomonas/analysis/circos/pilon/9097/scatterplot/9097_coverage_scatterplot.txt
+
