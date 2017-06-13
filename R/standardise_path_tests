@@ -1,0 +1,70 @@
+shoots<-read.table("/Users/hulinm/Documents/allpathtests_shoots.txt", col.names=,1)
+attach(shoots)
+sdata <- (data - mean(data)) / sd(data)
+shoots[,5]=sdata
+write.table(shoots, "shoots.txt", sep="\t") 
+
+leaf<-read.table("/Users/hulinm/Documents/leaf.txt", col.names=,1)
+attach(leaf)
+sdata <- (data - mean(data)) / sd(data)
+leaf[,5]=sdata
+write.table(leaf, "shoots.txt", sep="\t") 
+
+fruit<-read.table("/Users/hulinm/Documents/fruit.txt", col.names=,1, )
+attach(fruit)
+sdata <- (data - mean(data, na.rm=TRUE)) / sd(data, na.rm=TRUE)
+fruit[,5]=sdata
+write.table(fruit, "fruit.txt", sep="\t") 
+
+scar<-read.table("/Users/hulinm/Documents/scar.txt", col.names=,1, )
+attach(scar)
+sdata <- (data - mean(data, na.rm=TRUE)) / sd(data, na.rm=TRUE)
+scar[,5]=sdata
+write.table(scar, "scar.txt", sep="\t") 
+
+wound<-read.table("/Users/hulinm/Documents/wound.txt", col.names=,1, )
+attach(wound)
+sdata <- (data - mean(data, na.rm=TRUE)) / sd(data, na.rm=TRUE)
+wound[,5]=sdata
+write.table(wound, "wound.txt", sep="\t") 
+
+
+# Combine data sets
+data=rbind(shoots,fruit, leaf, scar, wound)
+attach(data)
+
+
+
+#Boxplots
+library(ggplot2)
+a <- ggplot(data, aes(x=cv, y=V5)) + geom_point(aes(colour = factor(exp))) + labs(x = "Cherry cultivar", y = "Standardised disease level", title = "Disease on different cherry cultivars with varying inoculation methods") + theme(axis.text.x = element_text(angle=60, hjust=1),panel.grid.major = element_blank(), legend.position="none", panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line.x = element_line(color="black", size = 0.5), axis.line.y = element_line(color="black", size = 0.5))
+a2 <- a + facet_wrap(~ strain , ncol=3)
+
+#points with SE and line connecting exp
+library(plyr)
+mean <- ddply(data, c("cv", "strain", "exp"), summarise,
+                N    = length(V5),
+                mean = mean((V5), na.rm=TRUE),
+                sd   = sd((V5), na.rm=TRUE),
+                se   = sd / sqrt(N))
+pd <- position_dodge(0.1) 
+a<- ggplot(mean, aes(x=cv, y=mean, colour=exp)) + geom_line(aes(group=exp), position=pd)  + geom_point(position=pd) + geom_errorbar(aes(ymin=mean-se, ymax=mean+se), width=0.25, position=pd) 
+a2 <- a + facet_wrap(~ strain , ncol=3) + scale_x_discrete(limits=c("mgl","van","nap","round"))
+
+
+# Write means to table 
+write.table(mean, "means.txt", sep="\t") 
+
+# Edited so that each combination (cv x strain) has several columns with mean output 
+
+means<-read.table("/Users/hulinm/means.txt", col.names=,1)
+attach(means)
+means_data<-means[,3:7]
+pca<-prcomp(means_data)
+plot(pca, type="l") # Shows that the first three PCA explain most of the differences
+
+
+
+write.table(data, "alldata.txt", sep="\t") 
+
+
