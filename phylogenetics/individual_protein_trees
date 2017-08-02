@@ -1,0 +1,83 @@
+# Create a tree for each orthogroup (protein) and then generate consensus species tree based on these trees 
+# Get single copy core orthologues from orthology analysis and then generate alignment for each 
+
+# Generate alignments 
+for fasta in *.fa ;
+do
+    file_short=$(basename $fasta)
+    Jobs=$(qstat | grep 'sub_clustal' | wc -l)
+    while [ $Jobs -gt 100 ]
+    do
+        sleep 10
+        printf "."
+        Jobs=$(qstat | grep 'sub_clustal' | wc -l)
+    done
+qsub /home/hulinm/git_repos/pseudomonas/orthomcl/sub_clustal.sh $fasta
+done
+
+#Use Gblocks to trim alignments
+for file in *_2 ; do
+#Change -t to p or d for protein/dna
+Gblocks $file -t=p -d=y
+echo $file
+done
+
+# Edit names and move to align folder
+for alignment in *.fasta  ; do
+name=$(basename $alignment | sed s/".fasta"//g)
+sed 's/peg\.[0-9]*//g' $alignment > ./align/"$name"
+done
+
+# Convert to phylip   
+for file in *-gb ; do
+file_short=$(basename $file | sed s/"-gb"//g)
+echo $file_short
+perl /home/hulinm/git_repos/tools/analysis/python_effector_scripts/alignment_convert.pl -i "$file_short"-gb -o "$file_short".phy -f phylip -g fasta
+
+# Find files with no sequence after Gblocks (where there is not overlap in sequence for all strains
+# Create folder called empty and move all .phy files into here
+# Remove first line from every file
+for file in *phy ; do 
+sed -i'' -e '1d' -e '$d' $file 
+done
+
+find . -type f -size 0 | echo
+
+# Manually remove .phy files that are empty 
+
+##### For protein trees  #####
+
+# Run ProtTest to get best model to use 
+
+for file in *.phy ;
+do
+    file_short=$(basename $file)
+java -jar /home/hulinm/local/src/prottest-3.4.2/prottest-3.4.2.jar -i $file -o "$file_short"_model
+done
+
+# Get best model name into its own file 
+for file in *_model ;
+do
+    file_short=$(basename $file | sed s/"model_"//g)
+	grep "Best model according to LnL" $file | cut -d " " -f6  >  model_"$file_short"
+done
+
+rm *_model
+
+# Run RAxML with specified model for each gene 
+
+for file in orthogroup1571_2.phy  ;
+do
+
+    file_short=$(basename $file)
+	model=$(less model_"$file_short")
+	echo $model
+    Jobs=$(qstat | grep 'sub_raxml' | wc -l)
+    while [ $Jobs -gt 100 ]
+    do
+        sleep 10
+        printf "."
+        Jobs=$(qstat | grep 'sub_raxml' | wc -l)
+    done
+qsub /home/hulinm/git_repos/pseudomonas/orthomcl/sub_raxml_aa.sh $file $file_short $model
+

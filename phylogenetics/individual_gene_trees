@@ -1,0 +1,46 @@
+# Running raxml on individual genes to create a tree per gene and then generate consensus supertree 
+
+
+for file in ./* ; do
+file_short=$(basename $file)
+echo $file_short
+sed s/Ps_actinidiaeCRAFRU/actCRAFRU/g $file | sed s/Ps_actinidiaeKW41/actKW41/g | sed s/Ps_actinidiaeNCPPB3871/act3871/g | sed s/Ps_aesculi0893_23/aesc0893_2/g | sed s/Ps_amygdali_ICMP3918/amyg3918/g | sed s/Ps_atrofaciens/Ps_atrofac/g | sed s/Ps_avellanaeVe013/avellVe013/g | sed s/Ps_BRIP34876/BRIP34876/g | sed s/Ps_BRIP34881/BRIP34881/g | sed s/Ps_BRIP39023/BRIP39023/g | sed s/Ps_castaneae/Ps_castane/g | sed s/Ps_cerisicola/Ps_cerisic/g | sed s/Ps_ciccaronei/Ps_ciccaro/g | sed s/Ps_CRAFRU12/Ps_CRAFRU1/g | sed s/Ps_cunninghamiae/Ps_cunning/g | sed s/Ps_daphniphylli/Ps_daphnip/g | sed s/Ps_ICMP11293/Ps_ICMP112/g | sed s/Ps_ICMP19498/Ps_ICMP194/g | sed s/Ps_morsprunorumFTRS_U7805/morsU7805/g | sed s/Ps_myricaeICMP7118/Ps_myricae/g | sed s/Ps_photiniae/Ps_photini/g | sed s/Ps_pisiPP1/Ps_pisiPP1/g | sed s/Ps_rhaphiolepidis/Ps_rhaphio/g | sed s/Ps_savastanoiCMP4352/sava4352/g | sed s/Ps_savastanoiPG722/savaPG722/g | sed s/Ps_savastanoiPseNe107/savaPseNe1/g | sed s/Ps_solidagae/Ps_solidag/g | sed s/psaceris/psaceris/g | sed s/psactinidiae/psactinidi/g | sed s/psaesculi3681/aesc3681/g | sed s/psaesculi/aesc2250/g | sed s/psamygdali3205/psamygdali/g | sed s/psaquilegia/psaquilegi/g | sed s/psavellanaebp631/avellBP631/g | sed s/psavellanaeve037/avellVe037/g | sed s/pslachrymans301315/lac301315/g | sed s/pslachrymans302278/lac302278/g | sed s/psmaculicola/psmaculico/g | sed s/pspapulans1754/pspapulans/g | sed s/pspersicae2254/pspersicae/g | sed s/psphaseolicola1448a/psphaseoli/g | sed s/Pss_umaf0158/Pss_umaf01/g | sed s/pssavastanoi/sava3335/g | sed s/pstomatoDC3000/tomDC3000/g | sed s/pstomatoT1/tomT1/g > "$file_short"_2
+
+#Use Gblocks to trim
+for file in *_2 ; do
+#Change -t to p or d for protein/dna
+Gblocks $file -t=p -d=y
+echo $file
+done
+
+# Convert to phylip   
+for file in *-gb ; do
+file_short=$(basename $file | sed s/"-gb"//g)
+echo $file_short
+perl /home/hulinm/git_repos/tools/analysis/python_effector_scripts/alignment_convert.pl -i "$file_short"-gb -o "$file_short".phy -f phylip -g fasta
+
+# Find files with no sequence after Gblocks (where there is not overlap in sequence for all strains
+# Create folder called empty and move all .phy files into here
+# Remove first line from every file
+for file in *phy ; do 
+sed -i'' -e '1d' -e '$d' $file 
+done
+
+find . -type f -size 0 | echo
+
+# Manually remove .phy files that are empty 
+
+# Loop and only submit in increments 
+for file in *.phy 
+do
+    file_short=$(basename $file)
+    Jobs=$(qstat | grep 'sub_raxml' | wc -l)
+    while [ $Jobs -gt 100 ]
+    do
+        sleep 10
+        printf "."
+        Jobs=$(qstat | grep 'sub_raxml' | wc -l)
+    done
+qsub /home/hulinm/git_repos/pseudomonas/orthomcl/sub_raxml.sh $file $file_short
+
+done

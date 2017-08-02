@@ -1,0 +1,113 @@
+
+# Create core genome phylogeny: 
+
+
+# Split goodProteins.fasta generated during OrthMCL into file for each orthogroup
+
+python /home/hulinm/git_repos/tools/pathogen/orthology/orthoMCL/orthoMCLgroups2fasta.py --orthogroups with_warkwick_orthogroups.txt2 --fasta ../../../../goodProteins/goodProteins.fasta --out_dir ./fasta/
+
+
+# Get list of strains used in orthomcl from formatted aa_file folder
+
+ls | sed s/.fasta//g > list
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/make_strain_list.py list > list2
+
+# Process orthogroups.txt output file to remove gene numbers leaving it as just orthogroup: strain| strain| strain|
+sed s/[.]peg.[0-9]*//g with_warkwick_orthogroups.txt2 | sed s/peg.[0-9]*//g  > with_warkwick_orthogroups.tmp
+
+
+# Use python and bash to extract frequencies of each strain's genes per OG, and extract those with multiple copies
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/orthogroup_gene_freq.py with_warkwick_orthogroups.tmp list2 > ortho_gene_freq
+python get_multiple_copy.py ortho_gene_freq | sort -u | awk '{print $0".fa"}' > multiple_copy_OGs
+
+
+#Use this list to mv multiple copy member fastas to new folder, then count no. of ">" in each to find those with all members (core)
+#Move all remaining fasta files into single copy folder
+
+for file in $(cat ../multiple_copy_OGs); do mv "$file" /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/with_warkwick/analysis/orthology/orthomcl/with_warkwick/fasta/multiple_copy/ ; done
+mv *.fa single_copy/ 
+
+for file in /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/with_warkwick/analysis/orthology/orthomcl/with_warkwick/fasta/single_copy/*.fa ; do
+file_bn=$(basename $file)
+file_short=$(echo $file_bn | sed s/.fa//g)
+grep -c ">" $file > "$file_short".tmp
+
+cat *.tmp > no_genes
+
+ls *.fa | sed s/".fa"//g > gene_list # Create list of single_copy genes
+
+# Generate file with each orthogroup and number of strains that have a gene in this OG
+mkfifo pipe1
+mkfifo pipe2
+cut -f1 no_genes > pipe1 & # In order to add effector names in first column
+cut -f1 gene_list > pipe2 &
+paste pipe2 pipe1  > no_genes_per_OG
+rm pipe1 pipe2
+rm *.tmp
+
+# Then extract those genes with 103 single copy members to get basic core genome
+
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/get_core_genes.py no_genes_per_OG > all_member_genes
+
+
+# Use list of all member genes to get names of individual strain's genes to extract nucleotide sequence from fasta file
+for file in $(cat all_member_genes); do cp "$file".fa /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/with_warkwick/analysis/orthology/orthomcl/with_warkwick/fasta/single_copy/core_genes ; done
+
+# Get gene names from fa file
+
+for file in /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/with_warkwick/analysis/orthology/orthomcl/with_warkwick/fasta/single_copy/core_genes/*.fa ; do
+file_short=$(basename $file | sed s/".fa"//g)
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_gene_names.py $file | sed s/">"//g > "$file_short"_genes
+
+
+#Use this list to extract NT sequences of each orthogroup from NT fasta file of all sequences
+
+for orthogroup in /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/with_warkwick/analysis/orthology/orthomcl/with_warkwick/fasta/single_copy/core_genes/*_genes ; do
+og=$(basename $orthogroup | sed s/"_genes"//g)
+echo $og
+perl /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_seq.pl /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/with_warkwick/formatted/NT/all_NT.fa $orthogroup > ./fasta/"$og".fa
+
+
+
+#Then need to align NT sequences of each orthogroup, concatenate all orthogroup alignments on geneious to get core genome alignment and then run phylogenetic analysis on core genome
+
+
+
+# Loop and only submit in increments 
+for fasta in *.fa ;
+do
+    file_short=$(basename $fasta)
+    Jobs=$(qstat | grep 'sub_clustal' | wc -l)
+    while [ $Jobs -gt 100 ]
+    do
+        sleep 10
+        printf "."
+        Jobs=$(qstat | grep 'sub_clustal' | wc -l)
+    done
+qsub /home/hulinm/git_repos/pseudomonas/orthomcl/sub_clustal.sh $fasta
+done
+
+
+# Make name simpler
+
+for alignment in *.fasta  ; do
+name=$(basename $alignment | sed s/".fasta"//g)
+sed 's/peg\.[0-9]*//g' $alignment > ./align/"$name"
+done
+
+### Concatenate using Geneious then feed this alignment into RAxML
+
+#Had to edit fasta as psavellanae was too long, meaning 2 strains ended up being the same in phylip as it cuts to 10 characters
+sed s/psavellanaebp631/psavbp631/g core_genome.fasta | sed s/Ps_amygdali_hibisci/Psamy_hib/g | sed s/pslachrymans301315/pslac1315/g | sed s/pslachrymans302278/pslac2278/g | sed s/Ps_BRIP39023/BRIP39023/g | sed s/Ps_BRIP34881/BRIP34881/g | sed s/Ps_BRIP34876/BRIP34876/g | sed s/Ps_savastanoiPseNe107/savaPseNe107/g | sed s/Ps_savastanoiCMP4352/sava4352/g | sed s/Ps_savastanoiPG722/savaPG722/g | sed s/Ps_actinidiaeCRAFRU/actiCRAFRU/g | sed s/Ps_actinidiaeKW41/actiKW41/g | sed s/Ps_actinidiaeNCPPB3871/act3871/g > core_genome2.fasta
+
+sed s/"Concatenation of 1051 sequences"//g race1_alignment.fasta | sed s/Ps_savastanoiPseNe107/savaPseNe107/g | sed s/Ps_savastanoiCMP4352/sava4352/g | sed s/Ps_savastanoiPG722/savaPG722/g > race1_alignment2.fasta
+sed -i s/"Concatenation of 1051 sequences"//g core_genome_alignment.fasta 
+
+#Use Gblocks to trim
+
+#Convert to phy file
+perl /home/hulinm/git_repos/tools/analysis/python_effector_scripts/alignment_convert.pl -i core_genome_alignment.fasta -o core_genome_alignment.phy -f phylip -g fasta
+
+# Run RaxML
+
+qsub /home/hulinm/git_repos/pseudomonas/orthomcl/sub_raxml.sh core_genome_alignment.phy out
