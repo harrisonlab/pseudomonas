@@ -1,0 +1,36 @@
+# Commands to generate a phylogeny on R and add trait values to this for visualisation 
+
+
+# Get tree in format for R. Change strain names to match data file 
+
+sed s/acer307723/acer302273/g RAxML_bipartitions.combinedB.phy.reduced  |  sed s/act18884"|"/act18884/g |  sed s/act19073"|"/act19073/g |  sed s/act212056"|"/act212056/g |  sed s/actM302091/acti302091/g |  sed s/actNCPPB38/acti3871/g |  sed s/actCRAFRU"|"/actiCRAFRU/g |  sed s/aesc089323/aes089323/g |  sed s/aesc2250"|"/aes2250/g |  sed s/aesc3681"|"/aes3681/g |  sed s/amyg3205"|"/amyg3205/g |  sed s/amyg3918"|"/amyg3918/g |  sed s/avellBP631/avelBP631/g |  sed s/avellVe037/avelVe037/g |  sed s/avii3846"|"/avii3846/g |  sed s/5271"|"/avii5271/g |  sed s/BRIP34876"|"/BRIP34876/g |  sed s/castane/cast4217/g |  sed s/CC1416"|"/CC1416/g |  sed s/CC1544"|"/CC1544/g |  sed s/CC1559"|"/CC1559/g |  sed s/CC94"|"/CC94/g |  sed s/cera17524"|"/cera17524/g |  sed s/cera6109"|"/cera6109/g |  sed s/ciccaro/cicc5710/g |  sed s/cunning/cunn11894/g |  sed s/daphnip/daph9757/g |  sed s/delph529"|"/delphi569/g |  sed s/dendro"|"/dendro3226/g |  sed s/dendropana/dendro9150/g |  sed s/glyR4/glycR4/g |  sed s/ICMP194/ICMP19498/g |  sed s/lach301315/lach301315/g |  sed s/lach302278/lach302278/g |  sed s/ps_lapsa"|"/laps3947/g |  sed s/meliae6289/meliae6289/g |  sed s/morsU7805"|"/morsU7805/g |  sed s/myricaeAZ8/myricaeAZ8448/g |  sed s/nerii"|"/nerii16943/g |  sed s/ps_panici"|"/pani2367/g |  sed s/papulans/papu1754/g |  sed s/persicae/pers2254/g |  sed s/pph1448a/phas1448A/g |  sed s/photini/phot7840/g |  sed s/pisiPP1"|"/pisiPP1/g |  sed s/7928C"|"/Ps7928C/g |  sed s/7969"|"/Ps7969/g |  sed s/9643"|"/Ps9643/g |  sed s/2341"|"/R1-2341/g |  sed s/5244"|"/R1-5244/g |  sed s/5270"|"/R1-5270/g |  sed s/5300"|"/R1-5300/g |  sed s/9646"|"/R1-9646/g |  sed s/9657"|"/R1-9657/g |  sed s/psm302280"|"/R2-302280/g |  sed s/5255"|"/R2-5255/g  | sed s/5260"|"/R2-5260/g |  sed s/5261"|"/R2-5261/g |  sed s/7968A"|"/R2-7968A/g |  sed s/9095"|"/R2-9095/g |  sed s/leaf"|"/R2-leaf/g |  sed s/sc214"|"/R2-sc214/g |  sed s/rhaphio/rhap4220/g |  sed s/RMA1/RMA1/g |  sed s/sava3335"|"/sava3335/g |  sed s/savaICMP43/sava4352/g |  sed s/savaPG722"|"/savaPG722/g |  sed s/savaPseNe1/savaPseNe107/g |  sed s/ps_solidag/soli16925/g |  sed s/psy100"|"/syr100/g |  sed s/1212"|"/syr1212/g |  sed s/2339"|"/syr2339/g |  sed s/2340"|"/syr2340/g |  sed s/2675"|"/syr2675/g |  sed s/2676"|"/syr2676/g |  sed s/2682"|"/syr2682/g |  sed s/3023"|"/syr3023/g |  sed s/pss41a"|"/syr41a/g |  sed s/5264"|"/syr5264/g |  sed s/5275"|"/syr5275/g |  sed s/7872"|"/syr7872/g |  sed s/7924"|"/syr7924/g |  sed s/7928A"|"/syr7928A/g |  sed s/8094A"|"/syr8094A/g |  sed s/9097"|"/syr9097/g |  sed s/9293"|"/syr9293/g |  sed s/9644"|"/syr9644/g |  sed s/9654"|"/syr9654/g |  sed s/9656"|"/syr9656/g |  sed s/9659"|"/syr9659/g |  sed s/pssb301d"|"/syrB301D/g |  sed s/B64"|"/syrB64/g |  sed s/pssb728a"|"/syrB728a/g |  sed s/HS191"|"/syrHS191/g |  sed s/umaf01/syrUMAF0158/g |  sed s/pstheae"|"/thea3923/g |  sed s/tomDC3000"|"/tomaDC3000/g |  sed s/tomT1"|"/tomaT1/g |  sed s/UB303"|"/UB303/g |  sed s/ulmi"|"/ulmi3962/g |  sed s/USA007"|"/USA007/g |  sed s/USA011"|"/USA011/g > renamed_tree
+
+# R phylogenetic tree visualisation
+
+library(ape)
+library(ggplot2)
+library(ggtree)
+library(phangorn)
+
+tree <- read.tree("/Users/hulinm/Documents/new_trees/pruned/partitioned/tree.tre")
+mydata <- read.csv("/Users/hulinm/Documents/new_trees/pruned/partitioned/traits.csv", stringsAsFactors=FALSE)
+rownames(mydata) <- mydata$species
+mydata <- mydata[match(tree$tip.label,rownames(mydata)),]
+
+# Root by midpoint
+rooted_tree<-midpoint(tree, node.labels = "support")
+
+
+q <- ggtree(rooted_tree)
+d <- q$data
+d <- d[!d$isTip,]
+d$label <- as.numeric(d$label)
+d <- d[d$label < 100,]
+
+# Plot the tree and save to pdf 
+q2<- q  + geom_treescale(offset=2) + geom_text2(data=d, aes(label=label), size=1.5, position_nudge(x = +0.0015))
+q3 <- q2 %<+% mydata + geom_tiplab(aes(color=Host), size=1.6, hjust=-0.05) + scale_color_manual(values=c("palevioletred1","black","blue")) + geom_tippoint(aes(shape=Pathogenicity, na.rm=TRUE), alpha=1, color="red") +  scale_shape_manual(values=c(19))       
+pdf(file = "/Users/hulinm/Documents/tree.pdf",width=7.2,height=10)
+q3+theme(legend.position="bottom", legend.title=element_blank()) + guides(colour=FALSE) 
+dev.off()
+
