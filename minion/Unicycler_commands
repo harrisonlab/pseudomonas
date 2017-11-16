@@ -1,0 +1,13 @@
+# Unicycler for hybrid bacterial genome assembly using MinIon and Illumina reads 
+# Installed from https://github.com/rrwick/Unicycler using the build and run without installation commands 
+
+# First added programs to path 
+PATH=/home/armita/prog/python3/Python-3.5.3/bin:$PATH
+PATH=${PATH}:/home/armita/prog/racon/racon/bin
+PATH=${PATH}:/home/armita/miniasm/miniasm
+
+# Trial with Pma genome (JP UWE)
+
+/home/hulinm/local/src/Unicycler/unicycler-runner.py -1 /home/hulinm/pseudomonas_data/pseudomonas/raw_dna/minion/pma5422/illumina_reads/6790_Pma_5422_1_trimmed.fastq  -2 /home/hulinm/pseudomonas_data/pseudomonas/raw_dna/minion/pma5422/illumina_reads/6790_Pma_5422_2_trimmed.fastq -l /home/hulinm/pseudomonas_data/pseudomonas/raw_dna/minion/pma5422/all_reads.fastq  -o . --mode bold  
+
+/home/hulinm/local/src/Unicycler/unicycler-runner.py -1 /home/hulinm/pseudomonas_data/pseudomonas/raw_dna/minion/pma5422/illumina_reads/6790_Pma_5422_1_trimmed.fastq  -2 /home/hulinm/pseudomonas_data/pseudomonas/raw_dna/minion/pma5422/illumina_reads/6790_Pma_5422_2_trimmed.fastq -l /home/hulinm/pseudomonas_data/pseudomonas/raw_dna/minion/pma5422/all_reads.fastq  -o . --mode conservative  
