@@ -1,0 +1,47 @@
+# Minion pipeline 
+
+# Run albacore 2.0.2 on fast5 files on the nanopore node (following google doc instructions)
+# Albacore is run as it is meant to be more accurate than the live base-calling on MinKnow 
+
+~/.local/bin/read_fast5_basecaller.py \
+--flowcell FLO-MIN106 \
+--kit SQK-RAD003 \
+--input /data/seq_data/minion/2017/20171018_gridion_Pma/GA20000 \
+--recursive \
+--worker_threads 12 \
+--save_path /home/nanopore/20171018_gridion_Pma \
+--output_format fastq,fast5 \
+--reads_per_fastq_batch 4000
+
+# Moving of illumina reads onto cluster 
+
+ 
+ scp 6790_Pma_5422_1_trimmed.fastq.gz hulinm@149.155.34.72:/home/hulinm/pseudomonas_data/pseudomonas/raw_dna/minion/pma5422/illumina_reads/.
+ scp 6790_Pma_5422_2_trimmed.fastq.gz  hulinm@149.155.34.72:/home/hulinm/pseudomonas_data/pseudomonas/raw_dna/minion/pma5422/illumina_reads/.
+ scp 6790_Pma_5422_U1_trimmed.fastq.gz hulinm@149.155.34.72:/home/hulinm/pseudomonas_data/pseudomonas/raw_dna/minion/pma5422/illumina_reads/.
+ scp 6790_Pma_5422_U2_trimmed.fastq.gz hulinm@149.155.34.72:/home/hulinm/pseudomonas_data/pseudomonas/raw_dna/minion/pma5422/illumina_reads/.
+
+
+# Work out genome coverage: 68.23
+qsub /home/armita/git_repos/emr_repos/tools/seq_tools/dna_qc/sub_count_nuc.sh 6 fastq_runid_5f807f8022b6f5cbe7d2cb33eb02b2cb4b08311d_pass.fastq .
+
+
+
+# Assemble with canu
+Reads=$(ls all_reads.fastq)
+GenomeSz="6m"
+Strain=$(echo $Reads | rev | cut -f3 -d '/' | rev)
+Organism=$(echo $Reads | rev | cut -f4 -d '/' | rev)
+Prefix="$Strain"_canu
+OutDir="assembly/canu/$Organism/$Strain"
+ProgDir=/home/armita/git_repos/emr_repos/tools/seq_tools/assemblers/canu
+qsub $ProgDir/submit_canu.sh $Reads $GenomeSz pma_canu ./canu
+
+# Circlator 
+
+circlator all pma_canu.contigs.fasta  pma_canu.trimmedReads.fastq pma_circlator_directory2
+
+# Pilon 
+
+qsub /home/hulinm/git_repos/tools/seq_tools/assemblers/sub_pilon.sh /home/hulinm/pseudomonas_data/pseudomonas/raw_dna/minion/pma5422/canu/pma.fasta /home/hulinm/pseudomonas_data/pseudomonas/raw_dna/minion/pma5422/illumina_reads/6790_Pma_5422_1_trimmed.fastq  /home/hulinm/pseudomonas_data/pseudomonas/raw_dna/minion/pma5422/illumina_reads/6790_Pma_5422_2_trimmed.fastq ./pilon/pma_pilon.fasta
+
