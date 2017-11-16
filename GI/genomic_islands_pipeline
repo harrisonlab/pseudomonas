@@ -1,0 +1,191 @@
+New Genomic island pipeline
+
+# Download genbank file from IslandViewer. Manually remove GIs that fall within larger GIs in geneious
+# Extract GIs and give no. in geneious. Then export as fasta file
+
+# Blast against all genomes
+
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/*.fasta ; do
+	GENOME_FILE=$(basename $GENOME)
+	GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
+	echo $GENOME_SHORT
+
+	/home/hulinm/git_repos/tools/pathogen/blast/blast2csv.pl  leafgi.fasta blastn $GENOME  5  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/leaf/blast/"$GENOME_SHORT".csv
+  cut -f1,3,4,5,7,8,9  /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/leaf/blast/"$GENOME_SHORT".csv >  /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/leaf/blast/"$GENOME_SHORT".hits
+
+done
+
+# Do blast differentials on leaf islands
+
+
+	NEWSTRING=$(ls /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/leaf/blast/*.csv)
+	echo $NEWSTRING
+	perl /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/blast/blast_differentials_effector.pl $NEWSTRING
+
+# Blast island fasta file for effectors
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/effector_blast/*_effectors.fasta ; do
+	GENOME_FILE=$(basename $GENOME)
+	GENOME_SHORT=$(echo $GENOME_FILE | sed s/_effectors.fasta//g)
+	echo $GENOME_SHORT
+
+	/home/hulinm/git_repos/tools/pathogen/blast/blast2csv.pl  "$GENOME_SHORT"_effectors.fasta tblastn "$GENOME_SHORT"gi.fasta  5  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/effector_blast/output/"$GENOME_SHORT".csv
+  cut -f1,3,4,5,7,8,9  /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/effector_blast/output/"$GENOME_SHORT".csv >  /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/effector_blast/output/"$GENOME_SHORT".hits
+
+
+# Get differentials for analysis
+
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/9097/blast/*.csv ; do
+    GENOME_FILE=$(basename $GENOME)
+    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.csv//g)
+    python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/edit_blastoutput.py $GENOME > "$GENOME_SHORT"_csv2
+
+		sed -i 's/\.0//g' *_csv2
+
+		for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/9097/blast/*_csv2 ; do
+		    GENOME_FILE=$(basename $GENOME)
+	    	NEWSTRING=$(ls $GENOME_FILE)
+	    	echo $NEWSTRING
+
+	  perl /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/blast/blast_differentials_ql30.sh  $NEWSTRING
+	  done
+
+
+	  for file in /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/9097/blast/*_csv2_presence.csv; do
+	      bn=$(basename $file)
+	      file_short=$(echo $bn | sed s/_csv2_presence.csv//g)
+	      cut -f2 $file > "$file_short"_frequencies
+
+
+	     paste *_frequencies > frequencies # Gives you a file of frequencies with each strain per column, gene per row
+
+
+
+
+
+
+# Find locations in circularised genomes
+/home/hulinm/git_repos/tools/pathogen/blast/blast2csv.pl 9097gi.fasta  blastn /home/hulinm//Richard_Harrison_EMR.RH.ENQ-933.01rev01_S7_S8_S9R1/canu/pilon/circularised/9097.fasta 1  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/9097.csv
+/home/hulinm/git_repos/tools/pathogen/blast/blast2csv.pl 5244gi.fasta  blastn /home/hulinm//Richard_Harrison_EMR.RH.ENQ-933.01rev01_S7_S8_S9R1/canu/pilon/circularised/5244.fasta 1  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/5244.csv
+/home/hulinm/git_repos/tools/pathogen/blast/blast2csv.pl leafgi.fasta  blastn /home/hulinm//Richard_Harrison_EMR.RH.ENQ-933.01rev01_S7_S8_S9R1/canu/pilon/circularised/leaf.fasta 1  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/leaf.csv
+
+
+
+
+## New analysis of blasting against other genomes but splitting each genomic island up into 5000bp chunks to allow identification when the strains shares part of an island/all of an island
+
+# Split original multi-fasta into 1 file per GI
+
+while read line
+do
+    if [[ ${line:0:1} == '>' ]]
+    then
+        outfile=${line#>}.fa
+        echo $line > $outfile
+    else
+        echo $line >> $outfile
+    fi
+done < 9097gi.fasta
+
+
+# Then split each fasta file into 5000bp chunks
+for file in ./*.fa ; do
+	file_name=$(basename $file | sed s/\.fa//g)
+	echo $file_name
+
+grep -v '^>' $file | tr -d '\n' | fold -w 5000 | nl -n rz -s '
+' | sed 's/^/>GI'$file_name'_/;N' > GI"$file_name".fasta
+
+rm 9097gi.fasta
+rm *.fa
+cat *.fasta > 9097gi.fasta
+
+# Can then use this file to do BLAST for all genomic island regions
+
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/*.fasta ; do
+	GENOME_FILE=$(basename $GENOME)
+	GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
+	echo $GENOME_SHORT
+
+/home/hulinm/git_repos/tools/pathogen/blast/blast2csv.pl  9097gi.fasta blastn $GENOME  5  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/new/9097/blast/"$GENOME_SHORT".csv
+
+# Then process output and do blast differentials (70% QL, 40% ID)
+rm *csv2
+rm *absent.csv
+rm *present.csv
+rm *presence.csv
+rm *frequencies
+
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/new/leaf/blast/*.csv ; do
+    GENOME_FILE=$(basename $GENOME)
+    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.csv//g)
+    python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/edit_blastoutput.py $GENOME > "$GENOME_SHORT"_csv2
+
+		sed -i 's/\.0//g' *_csv2
+
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/new/leaf/blast/*_csv2 ; do
+GENOME_FILE=$(basename $GENOME)
+NEWSTRING=$(ls $GENOME_FILE)
+echo $NEWSTRING
+
+perl /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/blast/blast_differentials_ql30.sh  $NEWSTRING
+done
+
+
+
+#Edit presence csv and split into one file per GI !!
+for file in /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/new/leaf/blast/*_csv2_presence.csv; do
+bn=$(basename $file)
+file_short=$(echo $bn | sed s/_csv2_presence.csv//g)
+sed s/_[0-9]*//g $file > "$file_short"_2
+
+
+
+for file in /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/new/leaf/blast/*_2  ; do
+file_short=$(basename $file | sed s/"_2"//g)
+echo $file_short
+awk '{print >> "'"$file_short"'"$1; close($1)}' $file
+
+mv *GI* ./files 
+
+
+# Use R to process each GI and assign 2,1,0 for complete, partial or no hits
+
+for file in /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/new/leaf/blast/files/* ; do
+	file_short=$(basename $file)
+	echo $file_short
+	Rscript /home/hulinm/git_repos/pseudomonas/R/differentials.R $file "$file_short"_out
+
+
+# Process output file to print file name followed by column 2 
+for file in /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/new/leaf/blast/files/*_out ; do
+file_short=$(basename $file)
+number=$(tail -n2 $file | cut -f2 | sed s/'"x"'//g)
+echo $number > "$file_short"_2
+done
+
+for file in /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/new/leaf/blast/files/*_out_2 ; do
+file_short=$(basename $file | sed s/_out_2//g)
+path=/home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/new/leaf/blast/files/
+echo $file_short
+awk '{print "'"$file_short"'""\t" $0}'  $file | sed s/_out_2//g > ./freq/"$file_short"_frequencies
+done
+
+
+# Then cat all for each strain to get frequencies per GI
+
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/*.fasta ; do
+GENOME_FILE=$(basename $GENOME)
+GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
+echo "$GENOME_SHORT"
+
+cat "$GENOME_SHORT"* > "$GENOME_SHORT"_genomic_islands
+done
+
+
+rm *frequencies 
+for file in /home/hulinm/pseudomonas_data/pseudomonas/analysis/islands/new/leaf/blast/files/freq/*_genomic_islands ; do
+file_short=$(basename $file | sed s/_genomic_islands//g)
+cut -f2 $file > "$file_short"_frequencies
+
+
+paste *_frequencies > frequencies # Gives you a file of frequencies with each strain per column, gene per row
