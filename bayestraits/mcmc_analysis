@@ -24,10 +24,7 @@ stones 1000 20000
         
 # Run bayestraits on cluster and then use output file in R 
 # Then make log file compatible with R 
-sed s/" "/"_"//g avrA_1.txt.log.txt | 
-
 python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/edit_mcmc_output.py avrA_1.txt.log.txt > avrA_1.txt.log.txt2
-
 sed s/"Tree No"/Tree_No/g avrA_1.txt.log.txt2 | sed s/"Harmonic Mean"/Harmonic_Mean/g | sed s/"No Off Parmeters"/No_Off_Parmeters/g | sed s/"No Off Zero"/No_Off_Zero/g  | sed s/"Root - "/Root_-_/g | sed s/"RJ Prior Mean"/RJ_Prior_Mean/g | cut -f1,2,3,4,5,6,8,9,10,11,12,13,14,15,16 > avrA_ind # Independant analysis 
 
 library(coda)
