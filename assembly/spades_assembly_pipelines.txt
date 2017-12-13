@@ -1,23 +1,5 @@
 PIPELINE GENOME ASSEMBLIES
 
-PACBIO
-* Assembly with canu on concatenated subreads
-* polish with pilon using script from Andy which involves Bowtie2
-* rename contigs to easier names (contig1, contig2, contig3) using rename.py
-
-
-for genome in /home/hulinm/pseudomonas_data/pseudomonas/assembly/SPADES/genomes/filtered/*.fasta ; do
-strain=$(basename $genome | sed s/".fasta"//g)
-echo $strain
-python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/rename.py -i "$strain".fasta --pre "$strain"_contig -o ./renamed/"$strain".fasta
-
-
-for genome in /home/hulinm/local/src/RealPhy/final/new/*.fa ; do
-strain=$(basename $genome | sed s/".fa"//g)
-echo $strain
-python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/rename.py -i "$strain".fa  -o ./renamed/"$strain".fa
-
-
 ILLUMINA
 ## new fastq-mcf to try and get better error correction of reads for spades assembly ##
 
