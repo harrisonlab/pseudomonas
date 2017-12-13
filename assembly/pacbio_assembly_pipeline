@@ -1,0 +1,36 @@
+
+PACBIO
+* Assembly with canu on concatenated subreads
+* polish with pilon using script from Andy which involves Bowtie2
+* rename contigs to easier names (contig1, contig2, contig3) using rename.py
+
+cp /data/seq_data/minion/2017/20171018_gridion_Pma/GA20000/*.fastq /home/hulinm/pseudomonas_data/pseudomonas/raw_dna/minion/pma5422/ 
+
+# Coverage 89.86
+
+ qsub /home/armita/git_repos/emr_repos/tools/seq_tools/dna_qc/sub_count_nuc.sh 6 all_reads.gz .
+
+# Concatenate subreads
+cat *.subreads.fastq > concatenated_5244.fastq
+
+# Run canu on subreads
+
+  Reads=$(ls concatenated_5300.fastq)
+  GenomeSz="6m"
+  Strain=$(echo $Reads | rev | cut -f3 -d '/' | rev)
+  Organism=$(echo $Reads | rev | cut -f4 -d '/' | rev)
+  Prefix="$Strain"_canu
+  OutDir="assembly/canu/$Organism/$Strain"
+  ProgDir=/home/armita/git_repos/emr_repos/tools/seq_tools/assemblers/canu
+  qsub $ProgDir/submit_canu.sh $Reads $GenomeSz 5300_canu ./canu
+
+# Run circlator on finished contigs to correct circular contigs (remove duplications caused by long read sequencing)
+
+circlator all leaf_canu.contigs.fasta leaf_canu.trimmedReads.fastq leaf_output_directory2
+
+
+# Run pilon on assembled genomes using miseq reads
+
+
+qsub /home/hulinm/git_repos/tools/seq_tools/assemblers/sub_pilon.sh /home/hulinm/Richard_Harrison_EMR.RH.ENQ-933.01rev01_S7_S8_S9R1/canu/circularised/5244.fasta  /home/hulinm/pseudomonas_data/pseudomonas/raw_dna/paired/Pseudomonas_syringae/5244/F/PSMR1_S1_L001_R1_001.cor.fastq /home/hulinm/pseudomonas_data/pseudomonas/raw_dna/paired/Pseudomonas_syringae/5244/R/PSMR1_S1_L001_R2_001.cor.fastq /home/hulinm/Richard_Harrison_EMR.RH.ENQ-933.01rev01_S7_S8_S9R1/canu/pilon/circularised/5244_pilon.fasta
+qsub /home/hulinm/git_repos/tools/seq_tools/assemblers/sub_pilon.sh /home/hulinm/Richard_Harrison_EMR.RH.ENQ-933.01rev01_S7_S8_S9R1/canu/leaf/leaf_canu.contigs.fasta  /home/hulinm/pseudomonas_data/pseudomonas/raw_dna/paired/Pseudomonas_syringae/leaf_isolate/Leaf_S16_L001_R1_001.cor.fastq  /home/hulinm/pseudomonas_data/pseudomonas/raw_dna/paired/Pseudomonas_syringae/leaf_isolate/Leaf_S16_L001_R2_001.cor.fastq  ./leaf
