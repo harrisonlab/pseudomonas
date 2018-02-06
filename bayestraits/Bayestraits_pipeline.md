@@ -1,4 +1,4 @@
-# Running of bayestraitsV2 on all effectors for a phylogeny
+# Running of bayestraitsfinal on all effectors for a phylogeny
 Move effector table onto cluster and remove mac newline characters
 
  tr '\r' '\n' < effectors_bayes_red.txt > effectors.txt
@@ -80,6 +80,7 @@ rename effector files txt2 to avoid confusing program with *.txt
 
 
 # Running of bayestraits with phylogenetic tree and effector file for discrete independant analysis
+
 for i in `seq 1 100`; do              # Run analysis 100 times
 #mkdir $i
 for EFFECTOR in /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/txt_files/*.txt ; do
@@ -100,7 +101,7 @@ echo $EFFECTOR_FILE
 # Submit to cluster in batches using qsub
 
 for i in `seq 1 100`; do
-qsub /home/hulinm/git_repos/pseudomonas/bayestraits/sub_bayestraits_effectorsV2.sh $i /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/multiple_trees /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/multiple_trees/boottree.nex
+qsub /home/hulinm/git_repos/pseudomonas/bayestraits/sub_bayestraits_effectorsfinal.sh $i /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/multiple_trees /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/multiple_trees/boottree.nex
 done
 
 
@@ -110,43 +111,43 @@ done
 
 for i in `seq 1 100`; do
 
-for EFFECTOR in /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/txt_files/*_"$i".txt ; do
+for EFFECTOR in /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/txt_files/*_"$i".txt ; do
 EFFECTOR_FILE=$(basename $EFFECTOR)
 EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.txt//g)
 EFFECTOR_SHORTER=$(echo $EFFECTOR_FILE | sed s/_"$i"//g | sed s/".txt"//g )
 echo $EFFECTOR_SHORT
 
-mv /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/final/"$i"/"$EFFECTOR_SHORT"_dependant /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/final/"$i"/"$EFFECTOR_SHORTER"_dependant
-mv /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/final/"$i"/"$EFFECTOR_SHORT"_independant /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/final/"$i"/"$EFFECTOR_SHORTER"_independant
+mv /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/MLoutput/"$i"/"$EFFECTOR_SHORT"_dependant /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/MLoutput/"$i"/"$EFFECTOR_SHORTER"_dependant
+mv /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/MLoutput/"$i"/"$EFFECTOR_SHORT"_independant /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/MLoutput/"$i"/"$EFFECTOR_SHORTER"_independant
 done
 done
 
 
 # Then extract Lh values
 for i in `seq 1 100`; do
-for EFFECTOR in /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/effector_files/*.txt2 ; do
+for EFFECTOR in /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/effector_files/*.txt2 ; do
 EFFECTOR_FILE=$(basename $EFFECTOR)
 EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.txt2//g)
 echo $EFFECTOR_SHORT
 echo $i
-python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_Lh.py /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/final/"$i"/"$EFFECTOR_SHORT"_independant /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/final/"$i"/"$EFFECTOR_SHORT"_dependant > /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/final/"$i"/"$EFFECTOR_SHORT".tmp
-tr "\n" "\t" < /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/final/"$i"/"$EFFECTOR_SHORT".tmp > /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/final/"$i"/"$EFFECTOR_SHORT".tmp2
-python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/create_LR.py /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/final/"$i"/"$EFFECTOR_SHORT".tmp2 > /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/final/"$i"/"$EFFECTOR_SHORT"_LR
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_Lh.py /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/MLoutput/"$i"/"$EFFECTOR_SHORT"_independant /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/MLoutput/"$i"/"$EFFECTOR_SHORT"_dependant > /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/MLoutput/"$i"/"$EFFECTOR_SHORT".tmp
+tr "\n" "\t" < /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/MLoutput/"$i"/"$EFFECTOR_SHORT".tmp > /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/MLoutput/"$i"/"$EFFECTOR_SHORT".tmp2
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/create_LR.py /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/MLoutput/"$i"/"$EFFECTOR_SHORT".tmp2 > /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/MLoutput/"$i"/"$EFFECTOR_SHORT"_LR
 
 # Remove temporary files
 for i in `seq 1 100`; do
-rm /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/final/"$i"/*.tmp /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/final/"$i"/*.tmp2
+rm /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/MLoutput/"$i"/*.tmp /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/MLoutput/"$i"/*.tmp2
 
 # cat all LR into 1 file per run and add the effector names to the first column
 
 for i in `seq 1 100`; do
-cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/final/"$i"/*_LR > /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/final/"$i"/likelihood_ratios
+cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/MLoutput/"$i"/*_LR > /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/MLoutput/"$i"/likelihood_ratios
 
 mkfifo pipe1
 mkfifo pipe2
-cut -f1 /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/effector_list  > pipe1 & # In order to add effector names in first column
-cut -f1,2,3 /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/final/"$i"/likelihood_ratios > pipe2 &
-paste pipe1 pipe2  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/final/"$i"/"$i"_likelihood_ratios.txt
+cut -f1 /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/effector_list  > pipe1 & # In order to add effector names in first column
+cut -f1,2,3 /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/MLoutput/"$i"/likelihood_ratios > pipe2 &
+paste pipe1 pipe2  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/MLoutput/"$i"/"$i"_likelihood_ratios.txt
 rm pipe1 pipe2
 
 
@@ -157,13 +158,13 @@ rm pipe1 pipe2
 
 # The cat all likelihood statistic files
 
-cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/final/*/*_likelihood_ratios.txt > /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/likelihood_ratio_100_runs.txt
+cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/MLoutput/*/*_likelihood_ratios.txt > /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/likelihood_ratio_100_runs.txt
 
 
 
 # Use R to calculate p-value statistic
 
-LRs<-read.table("/home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/V2/likelihood_ratio_100_runs.txt", col.names=,0)
+LRs<-read.table("/home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/likelihood_ratio_100_runs.txt", col.names=,0)
 attach(LRs)
 LRs[,5]=pchisq(V4, 8-4, lower.tail=FALSE)
 write.table(LRs, "LRs.tmp", sep="\t")
