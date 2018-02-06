@@ -1,4 +1,4 @@
-# Running of bayestraitsfinal on all effectors for a phylogeny
+# Running of bayestraitsV2 on all effectors for a phylogeny
 Move effector table onto cluster and remove mac newline characters
 
  tr '\r' '\n' < effectors_bayes_red.txt > effectors.txt
