@@ -80,8 +80,6 @@ rename effector files txt2 to avoid confusing program with *.txt
 
 for i in `seq 1 100`; do              # Run analysis 100 times
 #mkdir $i
-# Running of bayestraits with phylogenetic tree and effector file for discrete independant analysis
-
 for EFFECTOR in /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/txt_files/*.txt ; do
 EFFECTOR_FILE=$(basename $EFFECTOR)
 EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.txt//g)
@@ -89,7 +87,7 @@ EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.txt//g)
 echo $EFFECTOR_SHORT
 cat $EFFECTOR | sed 1d > $EFFECTOR_SHORT # removing header line
 
-
+# Running of bayestraits with phylogenetic tree and effector file for discrete independant analysis
 for i in `seq 1 100`; do              # Run analysis 100 times
 for EFFECTOR in /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/final/txt_files/*_"$i" ; do
 EFFECTOR_FILE=$(basename $EFFECTOR)
