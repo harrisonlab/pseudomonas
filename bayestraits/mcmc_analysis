@@ -1,0 +1,71 @@
+# Run in ML mode to get rate distribution and set the prior
+
+# Run reversible jump MCMC mode with stepping stones. This needs to be done 3 times independently as run results vary
+
+MCMC # As in nature paper 
+RJHP  0 1000
+schedule
+IT 5500000
+BI 500000
+stones 1000 20000
+
+### Sanity checks ###
+# Check convergence of chain and ESS with tracer plots. You generally want to have at least 200 ESS to believe in your results (the more the better).
+# Need to check for autocorrelation where sampling is too close. Don't want high autocorrelation as it means samples are affecting one another 
+# Check acceptance is 0.2-0.4 in Schedule file to ensure mixing is ok. 
+# Run multiple independant chains (x3)
+# Analyses incorporated the topologies of 100 bootstrapped trees (randomly sampled from) to account for topological and branch length uncertainty. 
+# A good indicator of whether we have a sufficient amount of sampling is that the trace line should not swing wildly between values. The line should hover around a value with small variances on either side (making it look like a hairy caterpillar).
+
+
+# Obtain most frequent models out of the MCMC analysis that account for most of the sample. See which transition rates are mostly used 
+# Use BayesFactors to compare independant and dependant model log marginal likelihoods (from stones file) 
+
+        
+# Run bayestraits on cluster and then use output file in R 
+# Then make log file compatible with R 
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/edit_mcmc_output.py avrA_1.txt.log.txt > avrA_1.txt.log.txt2
+sed s/"Tree No"/Tree_No/g avrA_1.txt.log.txt2 | sed s/"Harmonic Mean"/Harmonic_Mean/g | sed s/"No Off Parmeters"/No_Off_Parmeters/g | sed s/"No Off Zero"/No_Off_Zero/g  | sed s/"Root - "/Root_-_/g | sed s/"RJ Prior Mean"/RJ_Prior_Mean/g | cut -f1,2,3,4,5,6,8,9,10,11,12,13,14,15,16 > avrA_ind # Independant analysis 
+
+library(coda)
+avrA_out<-read.table("/Users/hulinm/avrA_ind", col.names=,1)
+densplot(mcmc(avrA_out)) 
+traceplot(mcmc(avrA_out))  
+autocorr.plot(mcmc(avrA_out))
+res<-mcmc(avrA_out)      
+effectiveSize(mcmc(res))
+gelman.diag(res,autoburnin=FALSE,multivariate=FALSE)
+
+
+
+
+### Trial of bayesTraits on R
+
+# R package coda 
+
+library(coda)
+library(devtools)
+install_github("rgriff23/btw")
+library(btw)
+library(ape)
+
+# Load path
+.BayesTraitsPath <- "/Users/hulinm/BayesTraitsV2/BayesTraitsV2"
+
+# Load in tree file
+boottree<-read.nexus("/Users/hulinm/boottree.nex")
+effector_file<-read.table("/Users/hulinm/txt_files/avrA_1.txt")
+
+
+# Run rjMCMC
+ind <- Discrete(boottree, effector_file, mode="Bayesian", dependent = FALSE, rjhp="exp 0 1000", bi=500000, it=5500000)
+rjout <- rjmodels(multirj)
+
+
+# Checking analysis 
+densplot(mcmc(ind$Lh))
+traceplot(mcmc(ind$Lh))
+autocorr.plot(mcmc(ind$Lh))
+
+res <- mcmc(ind[,c(-1,-4)],start=min(ind$Iteration), end=max(ind$Iteration),thin=100)
+        

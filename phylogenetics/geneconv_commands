@@ -1,0 +1,118 @@
+# Using geneconv to detect recombination of individual core gene alignments to check influence of recombination on phylogenetic analysis 
+# The program finds fragments in the alignments that were likely to be recombined, either inside the alignment (global inner fragments, GIs) or with another sequence (global outer fragments, GOs).
+# ``global list'' of the most significant fragments in the alignment, which begins with GI for ``global inner'' (fragment) in the first two columns
+# ``inner'' fragments, which means that they are evidence of a possible gene conversion event between ancestors of two sequences in the alignment
+#  outer fragments, which are evidence of past gene conversion events that may have originated from outside of the alignment, or else from within the alignment but such that evidence of the source has been destroyed by later mutation or gene conversion
+# Tutorial: http://www.math.wustl.edu/~sawyer/geneconv/gconvdoc.pdf 
+
+for fasta in *.fasta ; do 
+fasta_name=$(basename $fasta | sed s/"_pruned.fasta"//g) 
+echo $fasta_name
+Jobs=$(qstat | grep 'sub_genec' | wc -l)
+    while [ $Jobs -gt 100 ]
+    do
+        sleep 10
+        printf "."
+        Jobs=$(qstat | grep 'sub_genec' | wc -l)
+done
+qsub /home/hulinm/git_repos/pseudomonas/sub_geneconv.sh $fasta ./geneconv/"$fasta_name"_output 
+done
+
+
+# Get significant recombination events 
+
+grep GI * > test
+sed 's/ \+ /\t/g' test > test2
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_sig_recomb.py test2 > recombination_events
+rm test* 
+
+# Get orthogroups affected by recombination
+
+cut -f1 recombination_events | sort | uniq | sed s/"_output.frags:GI"//g > recombinant_genes
+
+# Get transfer information # check double digit transfers have worked 
+# Number of transfers between individuals
+cut -f2 recombination_events | sort | uniq -c > transfers
+sed s/"     "//g transfers | sed s/"\s"/"\t"/g | cut -f2,3 | sort -nk1 > transfers2
+
+# Number of genes recombining for each phylogroup 
+cut -f1,2 recombination_events | sed s/"_output.frags:GI"//g | sed s/";"/"\t"/g | sort -k2 > transfers_per_gene
+# Add phylogroups using R
+
+cut -f1,2 transfers_per_gene > strain1
+cut -f1,3 transfers_per_gene > strain2
+
+nawk '$1=(FNR FS $1)' strain1 | sed s/"\s"/"\t"/g | sort -k3 > 1
+nawk '$1=(FNR FS $1)' strain2 | sed s/"\s"/"\t"/g | sort -k3  > 2
+
+# Manually add no., orthogroup, strain header
+R
+transfers1<-read.table("/home/hulinm/dna_alignments/new/single_genes/C/geneconv/1", col.names=,1)
+transfers2<-read.table("/home/hulinm/dna_alignments/new/single_genes/C/geneconv/2", col.names=,1)
+phylogroups<-read.table("/home/hulinm/dna_alignments/new/single_genes/C/geneconv/phylogroups2", col.names=,1)
+S1<-merge(transfers1, phylogroups, by.x = "strain", by.y="strain")
+S2<-merge(transfers2, phylogroups, by.x = "strain", by.y="strain")
+write.table(S1, "S1", sep="\t")
+write.table(S2, "S2", sep="\t")
+
+# Then combine two tables 
+
+R
+transfers1<-read.table("/home/hulinm/dna_alignments/new/single_genes/C/geneconv/S1", col.names=,1)
+transfers2<-read.table("/home/hulinm/dna_alignments/new/single_genes/C/geneconv/S2", col.names=,1)
+merged<-merge(transfers1, transfers2, by.x = "no", by.y="no")
+write.table(merged, "merged", sep="\t")
+
+# Edit output file
+sed s/'"'//g merged | awk '{ print $4 "\t" $3 "\t" $5 "\t" $6 "\t" $8 }'  | sed '1d' > merged2
+
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_recombinations.py merged2 > merged3
+
+# Get number of genes recombining within each phylogroup
+
+for file in ./merged3 ; do 
+phylogroup3_within=$(awk '$2=="within" && $3=="3"'  $file | cut -f1 | sort | uniq | wc -l) 
+phylogroup2_within=$(awk '$2=="within" && $3=="2"'  $file | cut -f1 | sort | uniq | wc -l) 
+phylogroup1_within=$(awk '$2=="within" && $3=="1"'  $file | cut -f1 | sort | uniq | wc -l) 
+P12_between=$(awk '$2=="between" && $3=="P1-P2" || $3=="P2-P1"'  $file | cut -f1 | sort | uniq | wc -l) 
+P13_between=$(awk '$2=="between" && $3=="P1-P3" || $3=="P3-P1"'  $file | cut -f1 | sort | uniq | wc -l) 
+P23_between=$(awk '$2=="between" && $3=="P2-P3" || $3=="P3-P2"'  $file | cut -f1 | sort | uniq | wc -l) 
+printf "phylogroup3_within""\t"$phylogroup3_within"\n" > no_genes
+printf "phylogroup2_within""\t"$phylogroup2_within"\n"  >> no_genes
+printf "phylogroup1_within""\t"$phylogroup1_within"\n"  >> no_genes
+printf "P1-P2_between""\t"$P12_between"\n"  >> no_genes
+printf "P1-P3_between""\t"$P13_between"\n"  >> no_genes
+printf "P2-P3_between""\t"$P23_between"\n"  >> no_genes
+done
+
+
+# Get total length of recombinant genes in core genome alignment 
+
+for file in  *_pruned.phy; do
+grep 102 $file | cut -f3 -d " " >> total_gene_lengths
+awk '{ SUM += $1} END { print SUM }' total_gene_lengths
+#611888
+
+for file in $(cat recombinant_genes) ; do
+fasta_name=$(basename $file)
+grep 102 "$fasta_name"_pruned.phy | cut -f3 -d " " >> gene_lengths
+
+awk '{ SUM += $1} END { print SUM }' gene_lengths
+#127288
+awk '{ SUM += $1} END { print (SUM/611888)*100 }' gene_lengths
+#20.8025
+
+
+
+# Run RaxML again without recombinant genes in alignment 
+
+# Get list of genes to keep 
+ls *.phy > all
+sed -i s/"_pruned.phy"//g all
+comm -23 all recombinant_genes > non_recombinant_genes
+
+for file in $(cat non_recombinant_genes) ; do 
+echo $file 
+cp "$file"_pruned.fasta  ./non_recomb
+
+
