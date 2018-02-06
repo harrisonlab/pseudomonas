@@ -26,7 +26,7 @@ for i in `seq 1 100`; do
 for EFFECTOR in /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/cooccurence/files/*.txt2 ; do
 EFFECTOR_FILE=$(basename $EFFECTOR)
 EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.txt2//g)
-#cp "$EFFECTOR_SHORT".txt2 "$EFFECTOR_SHORT"_"$i".txt
+cp "$EFFECTOR_SHORT".txt2 "$EFFECTOR_SHORT"_"$i".txt
 
 
 for EFFECTOR in /home/hulinm/pseudomonas_data/pseudomonas/analysis/bayestraits/cooccurence/files/*.txt ; do
