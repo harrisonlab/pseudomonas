@@ -145,7 +145,7 @@ done
 
 
 
-# New script  !!!
+# New script 
 for tree in /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/files/* ; do 
 tree_short=$(basename $tree)
 effector_short=$(echo $tree_short | rev | cut -f2 -d "_" | rev) 
@@ -161,7 +161,7 @@ cd   /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/co
 
 # Processing aggregate output to get list of HGT events that have occurred for each gene 
 
-# Get transfers that occurred in all runs for each gene tree   !!! 
+# Get transfers that occurred in all runs for each gene tree
 
 for tree in /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/files/* ; do 
 tree_short=$(basename $tree)
@@ -200,7 +200,7 @@ number=$(ls /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_t
 echo $number
 
 cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/*/*transfer_events2 > /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfer_events
-sort /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfer_events | | uniq -c  |  sed -e 's/^[ \t]*//'  | sed s/"\s""\t"/"\t"/g | sed s/"\s"/"\t"/g > /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfer_counts2
+sort /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfer_events  | uniq -c  |  sed -e 's/^[ \t]*//'  | sed s/"\s""\t"/"\t"/g | sed s/"\s"/"\t"/g > /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfer_counts2
 # or perl -lane'$,=" ";print sort @F' /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfer_events | sort | uniq -c  |  sed -e 's/^[ \t]*//'  | sed s/"\s""\t"/"\t"/g | sed s/"\s"/"\t"/g > /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfer_counts2
 python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_effector_events80.py /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfer_counts2 $number | sed s/"\t""\t"/"\t"/g | cut -f2,3  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfers2
 
