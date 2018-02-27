@@ -2,6 +2,9 @@
 
 # Reformat trees with R to remove branch lengths
 # R script to go through all gene trees and remove branch lengths will want to keep support values in for OptResolutions (for weakly supported trees)
+# Analysis performed in Genomics Pseudomonas paper 2018. RANGER-DTL takes an input of rooted species tree and unrooted gene tree. As the gene trees contained nodes with low support, OptResolutions was used to generate a series of optimally rooted gene trees, with any nodes with 0% support collapsed. Ranger-DTL was ran on 100 randomly selected, rooted gene trees. The program was run 100 times for three different costs (2,3,1/3,3,1/2,4,1) for duplication, transfer and loss events respectively. AggregateRanger then summarised the results to retain only those events that occurred in all possible cost scenarios. The results for each separately rooted tree of each effector were then combined to determine events that occurred in all possible gene trees. Due to the programs requirement for binary trees, spurious transfer events between almost identical strains were removed based on a phylogenetic distance of <0.01 branch length (nucleotide substitutions per site) using python. The transfer events for each effector gene were visualised on the species tree using the R packages ggtree and APE (Paradis et al., 2004; Yu et al., 2017). 
+
+
 
 
 for genetree in ./RAxML_bipartitions.* ; do 
