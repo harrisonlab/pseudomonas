@@ -1,0 +1,30 @@
+#### combining phylogenetic tree with heatmap (http://www.polarmicrobes.org/merging-a-phylogenetic-tree-with-a-heatmap-in-r/)
+
+
+library(ape)
+rep_tree <- read.tree('/Users/hulinm/Documents/core_wo_trimmed_rooted.tre')
+rep_tree$edge.length[which(rep_tree$edge.length == 0)] <- 0.00001
+rep_tree_um <- chronopl(rep_tree,
+                        lambda = 0.1,
+                        tol = 0)
+rep_tree_d <- as.dendrogram(as.hclust.phylo(rep_tree_um))
+clade_order <- order.dendrogram(rep_tree_d)
+clade_name <- labels(rep_tree_d)
+clade_position <- data.frame(clade_name,
+                        clade_order
+                        )
+clade_position <- clade_position[order(clade_position$clade_order),]
+
+library(gplots)
+virulence<-read.table("/Users/hulinm/Documents/effectors_for_phylogeny_hm.txt", col.names=,1, row.names=1, check.names=FALSE)
+virulence_matrix<-data.matrix(virulence)
+new_order <- match(clade_position$clade_name,
+                   row.names(virulence_matrix)
+                   )
+combined_ordered_matrix <- virulence_matrix[new_order,]
+
+scale <- colorRampPalette(c("white", "yellow", "forestgreen"), space = "rgb")(100)
+pdf(file = "/Users/hulinm/Documents/efheatmap.pdf",width=12,height=7)
+virulence_heatmap <- heatmap.2(combined_ordered_matrix, margins = c(10, 18), Colv=NA, Rowv=rep_tree_d, cexCol=0.3, cexRow=0.3 ,lmat=rbind( c(0, 3), c(2,1), c(0,4) ), lhei=c(0.25, 4, 0.25 ), trace="none", hline=NULL, vline=NULL, tracecol="White", col=scale)
+dev.off()
+
