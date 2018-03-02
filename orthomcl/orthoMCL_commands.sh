@@ -1,5 +1,8 @@
 # Commands to run OrthoMCL on the cluster for 108 genomes used in genomics paper
+# Followed by commands to extract single copy, all member genes 
 
+
+# Setting on SQL database
 mysql> select user from mysql.user;
 ERROR 1142 (42000): SELECT command denied to user 'hulinm_orthomcl'@'149.155.34.72' for table 'user'
 mysql '-p hulinm_orthomcl' -u hulinm_orthomcl -h 149.155.34.104
@@ -93,6 +96,81 @@ BlastDB=$WorkDir/blastall/all.db
   MergeHits=pseudomonas_data/pseudomonas/analysis/new_ortho/final_core/all_blast.tab
   GoodProts=pseudomonas_data/pseudomonas/analysis/new_ortho/final_core/goodProteins/goodProteins.fasta
   qsub $ProgDir/qsub_orthomclMH.sh $MergeHits $GoodProts 1.5
+
+
+
+#### Subsequent processing to obtain single copy all member genes for phylogenetic analysis  #### 
+# This was done in "/home/hulinm/analysis/" as orthomcl saved all the results to /home/hulinm instead of the pseudomonas_data folder 
+
+
+# First split goodProteins.fasta into file for each orthogroup
+python /home/hulinm/git_repos/tools/pathogen/orthology/orthoMCL/orthoMCLgroups2fasta.py --orthogroups final_core_orthogroups.txt2 --fasta ../../../../goodProteins/goodProteins.fasta --out_dir ./fasta/
+
+
+# Get list of strains used in orthomcl from formatted aa_file folder
+
+ls | sed s/.fasta//g > list
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/make_strain_list.py list > list2
+
+# Process orthogroups.txt output file to remove gene numbers leaving it as just orthogroup: strain| strain| strain|
+sed s/[.]peg.[0-9]*//g final_core_orthogroups.txt2 | sed s/peg.[0-9]*//g  > final_core_orthogroups.tmp
+
+
+# Use python and bash to extract frequencies of each strain's genes per OG, and extract those with multiple copies
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/orthogroup_gene_freq.py final_core_orthogroups.tmp list2 > ortho_gene_freq
+python get_multiple_copy.py ortho_gene_freq | sort -u | awk '{print $0".fa"}' > multiple_copy_OGs
+
+
+#Use this list to mv multiple copy member fastas to new folder, then count no. of ">" in each to find those with all members (core)
+
+for file in $(cat ../multiple_copy_OGs); do mv "$file" /home/hulinm/analysis/orthology/orthomcl/final_core/fasta/multiple_copy/ ; done
+mv *.fa single_copy/ # This will move all remaining fasta files into single copy folder
+
+
+for file in /home/hulinm/analysis/orthology/orthomcl/final_core/fasta/single_copy/*.fa ; do
+file_bn=$(basename $file)
+file_short=$(echo $file_bn | sed s/.fa//g)
+grep -c ">" $file > "$file_short".tmp
+
+cat *.tmp > no_genes
+
+ls *.fa | sed s/".fa"//g > gene_list # Create list of single_copy genes
+
+# Generate file with each orthogroup and number of strains that have a gene in this OG by extracting data from the different files and feeding into pipes
+mkfifo pipe1
+mkfifo pipe2
+cut -f1 no_genes > pipe1 &
+cut -f1 gene_list > pipe2 &
+paste pipe2 pipe1  > no_genes_per_OG
+rm pipe1 pipe2
+rm *.tmp
+
+# Then extract those genes with 108 single copy members to get basic core genome
+
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/get_core_genes.py no_genes_per_OG > all_member_genes
+
+
+# Then will need to pull out NT sequence locations and get nucleotide sequence and add to final file
+
+
+# Use list of all member genes to get names of individual strain's genes to extract nucleotide sequence from fasta file
+for file in $(cat all_member_genes); do cp "$file".fa /home/hulinm/analysis/orthology/orthomcl/final_core/fasta/single_copy/core_genes ; done
+
+# Get gene names from fa file
+
+for file in /home/hulinm/analysis/orthology/orthomcl/final_core/fasta/single_copy/core_genes/*.fa ; do
+file_short=$(basename $file | sed s/".fa"//g)
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_gene_names.py $file | sed s/">"//g > "$file_short"_genes
+
+
+#Use this list to extract NT sequences of each orthogroup from NT fasta file of all sequences
+# This will give all NT sequences of core genes ready for phylogenetic analysis 
+
+for orthogroup in /home/hulinm/analysis/orthology/orthomcl/final_core/fasta/single_copy/core_genes/*_genes ; do
+og=$(basename $orthogroup | sed s/"_genes"//g)
+echo $og
+perl /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_seq.pl /home/hulinm/pseudomonas_data/pseudomonas/analysis/new_ortho/final_core/formatted/NT/all_NT.fa $orthogroup > ./fasta/"$og".fa
+
 
 
 
