@@ -1,12 +1,14 @@
-# Commands to pull out nucleotide sequences of effectors from all 111 genomes
-# Align all homologs in each effector family using ClustalW2
-# Produce phylogeny using FastTree
-# Colour cherry pathogen groups ready to open and annotate with Dendroscope
+# Commands to pull out nucleotide sequences of T3E genes from all 108 genomes
+# This is done by using tBLASTn to identify effector genes in the genome sequence. The best hits are extracted (accounting for if there is more than one hit)
+# By obtaining the nucleotide locations the DNA sequence is extracted
+# Gene sequences are then checked to see if they need to be reverse complemented 
+# Filtering is performed to remove duplicate alleles of each effector, e.g. hopAT1 hopAT2 by seeing if they are identical and keeping longest hit. This prevents any "real" duplicates e.g. hopAF1 and hopAF1-2 in Psm R1 5244 from being removed
+# Gene sequences are then aligned for each effector family and RAxML is used to generate a phylogenetic tree 
 
 
 #Rename contigs in fasta files
 
-for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/*.fasta ; do
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/warwick/*.fasta ; do
  GENOME_FILE=$(basename $GENOME)
  GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
  echo $GENOME_SHORT
@@ -16,9 +18,9 @@ for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/*.f
 
 # Run blast for effectors on all genomes
 
- for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/*.fa ; do
+ for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/*.fasta ; do
      GENOME_FILE=$(basename $GENOME)
-     GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fa//g)
+     GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
      echo $GENOME_SHORT
 
 
@@ -26,23 +28,23 @@ for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/*.f
      EFFECTOR_FILE=$(basename $EFFECTOR)
      EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.fasta//g)
      echo $EFFECTOR_SHORT
-  #  mkdir $EFFECTOR_SHORT
+    mkdir ./"$EFFECTOR_SHORT"/new/output/besthit
 
- /home/hulinm/git_repos/tools/pathogen/blast/blast2csv.pl  $EFFECTOR tblastn $GENOME  5  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/"$GENOME_SHORT"_"$EFFECTOR_SHORT"
- sed -i -e "1d" /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/"$GENOME_SHORT"_"$EFFECTOR_SHORT"
+ /home/hulinm/git_repos/tools/pathogen/blast/blast2csv.pl  $EFFECTOR tblastn $GENOME  5  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/warwick/"$EFFECTOR_SHORT"/"$GENOME_SHORT"_"$EFFECTOR_SHORT"
 
 
 # Process output to remove files that did not achieve thresholding values
 #First need to split files to create hit2 file when there is more than 1 hit e.g. 5244 hopAF1
 
-for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/*.fa ; do
-    GENOME_FILE=$(basename $GENOME)
-    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fa//g)
+ for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/papu1754.fasta ; do
+     GENOME_FILE=$(basename $GENOME)
+     GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
+     echo $GENOME_SHORT
 for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/effector_detector/effectorfiles/effectors/fastafiles/files/families/*.fasta; do
     EFFECTOR_FILE=$(basename $EFFECTOR)
     EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.fasta//g)
 
-python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_blast_hit2.py /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/"$GENOME_SHORT"_"$EFFECTOR_SHORT" > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_blast_hit2.py /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/"$GENOME_SHORT"_"$EFFECTOR_SHORT" > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2
 
 # Removal of files that contain no hits
 
@@ -51,100 +53,107 @@ for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathoge
     EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.fasta//g)
     echo $EFFECTOR_SHORT
 
-  	cd 	/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"
+  	cd 	/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new
 	find . -type f -size 0 | xargs rm
   cd
 
 # Filter csv files based on threshold of 40% ID, 60% QL
-for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/*.fa ; do
-    GENOME_FILE=$(basename $GENOME)
-    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fa//g)
+ for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/papu1754.fasta ; do
+     GENOME_FILE=$(basename $GENOME)
+     GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
+     echo $GENOME_SHORT
+for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/effector_detector/effectorfiles/effectors/fastafiles/files/families/*.fasta; do
+    EFFECTOR_FILE=$(basename $EFFECTOR)
+    EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.fasta//g)
+    echo $EFFECTOR_SHORT
+    
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_present_effectors.py /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/"$GENOME_SHORT"_"$EFFECTOR_SHORT"  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/output/"$GENOME_SHORT"_"$EFFECTOR_SHORT"
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_present_effectors.py /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/output/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2
+
+# Removal of files that contain no hits !!!
+
 for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/effector_detector/effectorfiles/effectors/fastafiles/files/families/*.fasta; do
     EFFECTOR_FILE=$(basename $EFFECTOR)
     EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.fasta//g)
     echo $EFFECTOR_SHORT
 
-python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_present_effectors.py /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/"$GENOME_SHORT"_"$EFFECTOR_SHORT"  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/output/"$GENOME_SHORT"_"$EFFECTOR_SHORT"
-python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_present_effectors.py /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/output/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2
-
-# Removal of files that contain no hits
-
-for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/effector_detector/effectorfiles/effectors/fastafiles/files/families/*.fasta; do
-    EFFECTOR_FILE=$(basename $EFFECTOR)
-    EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.fasta//g)
-    echo $EFFECTOR_SHORT
-
-  	cd 	/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/output
+  	cd 	/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/output
 	find . -type f -size 0 | xargs rm
   cd
 
-# Then sort by per_length and extract 'best hit' from file
-for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/*.fa ; do
-    GENOME_FILE=$(basename $GENOME)
-    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fa//g)
+# Then sort by per_length and extract 'best hit' from file  !!!
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/papu1754.fasta ; do
+     GENOME_FILE=$(basename $GENOME)
+     GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
+     echo $GENOME_SHORT
 for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/effector_detector/effectorfiles/effectors/fastafiles/files/families/*.fasta; do
     EFFECTOR_FILE=$(basename $EFFECTOR)
     EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.fasta//g)
-sort -n -r  -k8 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/output/"$GENOME_SHORT"_"$EFFECTOR_SHORT" | sed '/^$/d' | sort --stable -n -r -k9 |  head -n1  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/output/besthit/"$GENOME_SHORT"_"$EFFECTOR_SHORT"
-sort -n -r  -k8 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/output/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2 | sed '/^$/d' | sort --stable -n -r -k9 |  head -n1  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/output/besthit/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2
+sort -n -r  -k8 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/output/"$GENOME_SHORT"_"$EFFECTOR_SHORT" | sed '/^$/d' | sort --stable -n -r -k9 |  head -n1  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/output/besthit/"$GENOME_SHORT"_"$EFFECTOR_SHORT"
+sort -n -r  -k8 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/output/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2 | sed '/^$/d' | sort --stable -n -r -k9 |  head -n1  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/output/besthit/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2
 
-#Remove empty files
+#Remove empty files  
 
 for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/effector_detector/effectorfiles/effectors/fastafiles/files/families/*.fasta; do
     EFFECTOR_FILE=$(basename $EFFECTOR)
     EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.fasta//g)
     echo $EFFECTOR_SHORT
 
-  	cd 	/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/output/besthit
+  	cd 	/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/output/besthit
 	find . -type f -size 0 | xargs rm
   cd
 
 
 
 # Then need to rename files with reverse complement (hit_strand = -1) to allow reverse complementation of DNA sequence before alignments
-for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/*.fa ; do
-    GENOME_FILE=$(basename $GENOME)
-    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fa//g)
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/papu1754.fasta ; do
+     GENOME_FILE=$(basename $GENOME)
+     GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
+     echo $GENOME_SHORT
 for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/effector_detector/effectorfiles/effectors/fastafiles/files/families/*.fasta; do
     EFFECTOR_FILE=$(basename $EFFECTOR)
     EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.fasta//g)
 
-/home/hulinm/git_repos/tools/analysis/python_effector_scripts/find_RC_effectors.sh /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/output/besthit/"$GENOME_SHORT"_"$EFFECTOR_SHORT" | sed s/" "/"\t"/g > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/output/besthit/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_RC
-/home/hulinm/git_repos/tools/analysis/python_effector_scripts/find_RC_effectors.sh /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/output/besthit/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2 | sed s/" "/"\t"/g > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/output/besthit/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2_RC
+/home/hulinm/git_repos/tools/analysis/python_effector_scripts/find_RC_effectors.sh /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/output/besthit/"$GENOME_SHORT"_"$EFFECTOR_SHORT" | sed s/" "/"\t"/g > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/output/besthit/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_RC
+/home/hulinm/git_repos/tools/analysis/python_effector_scripts/find_RC_effectors.sh /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/output/besthit/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2 | sed s/" "/"\t"/g > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/output/besthit/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2_RC
 
-# Remove files with nothing in:
+# Remove files with nothing in:  !!!
 
 for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/effector_detector/effectorfiles/effectors/fastafiles/files/families/*.fasta; do
     EFFECTOR_FILE=$(basename $EFFECTOR)
     EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.fasta//g)
     echo $EFFECTOR_SHORT
 
-  	cd 	/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/output/besthit
+
+  	cd 	/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/output/besthit
 	find . -type f -size 0 | xargs rm
   cd
 
 # Then extract nucleotide locations to use to extract sequence from genome fasta file
 
 
-for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/*.fa ; do
-    GENOME_FILE=$(basename $GENOME)
-    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fa//g)
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/papu1754.fasta ; do
+     GENOME_FILE=$(basename $GENOME)
+     GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
+     echo $GENOME_SHORT
 for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/effector_detector/effectorfiles/effectors/fastafiles/files/families/*.fasta; do
     EFFECTOR_FILE=$(basename $EFFECTOR)
     EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.fasta//g)
-cut -f5,11,12 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/output/besthit/"$GENOME_SHORT"_"$EFFECTOR_SHORT" > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/nucleotide/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_locations
-cut -f5,11,12 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/output/besthit/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2 > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/nucleotide/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2_locations
-cut -f5,11,12 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/output/besthit/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_RC > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/nucleotide/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_locations_RC
-cut -f5,11,12 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/output/besthit/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2_RC > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/nucleotide/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2_locations_RC
+#cut -f5,11,12 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/output/besthit/"$GENOME_SHORT"_"$EFFECTOR_SHORT" > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/nucleotide/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_locations
+#cut -f5,11,12 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/output/besthit/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2 > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/nucleotide/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2_locations
+#cut -f5,11,12 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/output/besthit/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_RC > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/nucleotide/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_locations_RC
+cut -f5,11,12 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/output/besthit/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2_RC > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/nucleotide/"$GENOME_SHORT"_"$EFFECTOR_SHORT"_hit2_locations_RC
+done
+done
 
-# Remove files with nothing in:
+# Remove files with nothing in: 
 
 for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/effector_detector/effectorfiles/effectors/fastafiles/files/families/*.fasta; do
     EFFECTOR_FILE=$(basename $EFFECTOR)
     EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.fasta//g)
     echo $EFFECTOR_SHORT
 
-  	cd 	/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/nucleotide
+  	cd 	/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/nucleotide
 	find . -type f -size 0 | xargs rm
   cd
 
@@ -156,47 +165,47 @@ for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathoge
     EFFECTOR_FILE=$(basename $EFFECTOR)
     EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.fasta//g)
     echo $EFFECTOR_SHORT
-for file in /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/nucleotide/locations/*_locations ; do
+for file in /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/nucleotide/myri* ; do
     f=$(basename $file)
     f_short=$(echo $f | sed s/_locations//g)
     genome=$(echo $f_short | rev | cut -d '_' -f2- | rev )
     echo $genome
-    python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_seqs.py /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/"$genome".fa $file > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/nucleotide/new/"$f_short".fasta
+    python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_seqs.py /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/"$genome".fasta $file > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/nucleotide/new/"$f_short".fasta
 
 #Hit2
 for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/effector_detector/effectorfiles/effectors/fastafiles/files/families/*.fasta; do
         EFFECTOR_FILE=$(basename $EFFECTOR)
         EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.fasta//g)
         echo $EFFECTOR_SHORT
-for file in /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/nucleotide/locations/hit2/*_locations ; do
+for file in /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/nucleotide/*_"$EFFECTOR_SHORT"_hit2_locations ; do
         f=$(basename $file)
         f_short=$(echo $f | sed s/_hit2_locations//g)
         genome=$(echo $f_short | rev | cut -d '_' -f2- | rev )
         echo $genome
-        python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_seqs.py /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/"$genome".fa $file  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/nucleotide/new/"$f_short"_hit2.fasta
+        python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_seqs.py /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/"$genome".fasta $file  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/nucleotide/new/"$f_short"_hit2.fasta
 #RC
 for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/effector_detector/effectorfiles/effectors/fastafiles/files/families/*.fasta; do
         EFFECTOR_FILE=$(basename $EFFECTOR)
         EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.fasta//g)
         echo $EFFECTOR_SHORT
-for file in /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/nucleotide/locations/RC/*_locations_RC ; do
+for file in /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/nucleotide/*_"$EFFECTOR_SHORT"_locations_RC ; do
         f=$(basename $file)
         f_short=$(echo $f | sed s/_locations_RC//g)
         genome=$(echo $f_short | rev | cut -d '_' -f2- | rev )
         echo $genome
-        python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_seqs.py /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/"$genome".fa $file  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/nucleotide/new/"$f_short".fasta_RC
+        python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_seqs.py /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/"$genome".fasta $file  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/nucleotide/new/"$f_short".fasta_RC
 #RC hit2
 for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/effector_detector/effectorfiles/effectors/fastafiles/files/families/*.fasta; do
           EFFECTOR_FILE=$(basename $EFFECTOR)
           EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.fasta//g)
           echo $EFFECTOR_SHORT
-for file in /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/nucleotide/locations/hit2RC/*_hit2_locations_RC ; do
+for file in /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/nucleotide/papu1754_"$EFFECTOR_SHORT"_hit2_locations_RC ; do
           f=$(basename $file)
           echo $f
           f_short=$(echo $f | sed s/_hit2_locations_RC//g)
           genome=$(echo $f_short | rev | cut -d '_' -f2- | rev )
           echo $genome
-          python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_seqs.py /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/"$genome".fa  $file  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/nucleotide/new/"$f_short"_hit2.fasta_RC
+          python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_seqs.py /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/"$genome".fasta  $file  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/nucleotide/new/"$f_short"_hit2.fasta_RC
 
 
 for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/effector_detector/effectorfiles/effectors/fastafiles/files/families/*.fasta; do
@@ -204,38 +213,33 @@ for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathoge
               EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.fasta//g)
               echo $EFFECTOR_SHORT
 
-            	cd 	/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/nucleotide/new
+            	cd 	/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/nucleotide/new
               rm \*_* _hit2.fasta rm \*.fasta
               cd
 
 
 
-
-
-
-
-
-# Then need to reverse complement RC files and overwrite NT.fasta files that contain seq that should have been RC
+# Then need to reverse complement RC files and overwrite NT.fasta files that contain seq that should have been RC 
 for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/effector_detector/effectorfiles/effectors/fastafiles/files/families/*.fasta; do
     EFFECTOR_FILE=$(basename $EFFECTOR)
     EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.fasta//g)
-for RC in /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/nucleotide/new/*.fasta_RC ; do
+for RC in /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/nucleotide/new/*.fasta_RC ; do
     file=$(basename $RC)
     file_short=$(echo $file | sed s/.fasta_RC//g)
     echo $file_short
-python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/reverse_complement.py $RC > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/nucleotide/new/"$file_short".fasta
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/reverse_complement.py $RC > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/nucleotide/new/"$file_short".fasta
 
-# Then remove all _RC files
+# Then remove all _RC files 
 for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/effector_detector/effectorfiles/effectors/fastafiles/files/families/*.fasta; do
     EFFECTOR_FILE=$(basename $EFFECTOR)
     EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.fasta//g)
-for RC in /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/nucleotide/new/*.fasta_RC ; do
+for RC in /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/nucleotide/new/*.fasta_RC ; do
     file=$(basename $RC)
     file_short=$(echo $file | sed s/.fasta_RC//g)
     rm $RC
 
 
-# Move fasta files for each effector into their own family folder in effector families directory
+# Move fasta files for each effector into their own family folder in effector families directory !!!!!
 
 for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/effector_detector/effectorfiles/effectors/fastafiles/files/families/*.fasta; do
     EFFECTOR_FILE=$(basename $EFFECTOR)
@@ -244,28 +248,28 @@ for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathoge
     echo $FAMILIES
 
 
-    cp /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/nucleotide/new/*.fasta  /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$FAMILIES"
+    cp /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/"$EFFECTOR_SHORT"/new/nucleotide/new/papu* /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$FAMILIES"
 
 
 
-    # Need to replace name of sequence within each fasta file with name of strain and effector
+# Need to replace name of sequence within each fasta file with name of strain and effector !!!
 
-    for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/*.fa ; do
+    for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/papu1754.fasta ; do
         GENOME_FILE=$(basename $GENOME)
-        GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fa//g)
+        GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
     for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/effector_detector/effectorfiles/effectors/fastafiles/files/families/*.fasta; do
         EFFECTOR_FILE=$(basename $EFFECTOR)
         EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.fasta//g)
         FAMILIES=$(echo $EFFECTOR_SHORT | cut -d "-" -f1 | rev | cut -c 2- | rev )
         echo $FAMILIES
 
-        sed s/'>'[0-9]*:[0-9]*-[0-9]*/'>'"$GENOME_SHORT"_"$EFFECTOR_SHORT"/g /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$FAMILIES"/"$GENOME_SHORT"_"$EFFECTOR_SHORT".fasta > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$FAMILIES"/"$GENOME_SHORT"_"$EFFECTOR_SHORT".fa
+        sed s/'>'[0-9]*:[0-9]*-[0-9]*/'>'"$GENOME_SHORT"_"$EFFECTOR_SHORT"/g /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$FAMILIES"/"$GENOME_SHORT"_"$EFFECTOR_SHORT".fasta > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$FAMILIES"/"$GENOME_SHORT"_"$EFFECTOR_SHORT".fa
 
-    # Remove blank files
+# Remove blank files
 
     for family in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/families ); do
           echo $family
-          cd 	/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/blast/hits
+          cd 	/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"
           find . -type f -size 0 | xargs rm
           cd
 
@@ -278,123 +282,148 @@ for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathoge
 
 for family in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/families ); do
 
-for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/*.fa ; do
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/papu1754.fasta ; do
     GENOME_FILE=$(basename $GENOME)
-    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fa//g)
+    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
 
 
-for fasta in /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/"$GENOME_SHORT"_"$family"* ; do
+for fasta in /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"/"$GENOME_SHORT"_"$family"* ; do
   echo $fasta
   file=$(basename $fasta)
   fasta_short=$(echo $file | sed s/.fa//g)
   fgenome=$(echo $fasta_short | rev | cut -d '_' -f2- | rev )
 
-  for query in /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/"$GENOME_SHORT"_"$family"* ; do
+  for query in /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"/"$GENOME_SHORT"_"$family"* ; do
     echo $query
     file=$(basename $query)
     query_short=$(echo $file | sed s/.fa//g)
     q_genome=$(echo $query_short | rev | cut -d '_' -f2- | rev )
 
-/home/hulinm/git_repos/tools/pathogen/blast/blast2csv.pl  $fasta blastn $query  1 > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/blast/"$fasta_short"_"$query_short"
+/home/hulinm/git_repos/tools/pathogen/blast/blast2csv.pl  $fasta blastn $query  1 > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"/blast/"$fasta_short"_"$query_short"
 
 done
 done
 done
 done
 
-# Remove blank files
+
+# Remove header from files
 
 for family in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/families ); do
       echo $family
-      cd 	/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/blast/hits
+      for file in 	/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"/blast/papu* ; do
+      echo $file
+      sed -i '1d'  $file
+      
+# Remove blank files 
+for family in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/families ); do
+      echo $family
+      cd 	/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"/blast/
       find . -type f -size 0 | xargs rm
       cd
+
+
+
 
 
 # Processing blast output files to get list of effector files to remove as they are identical
 
 for family in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/families ); do
       echo $family
-for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/*.fa ; do
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/papu1754.fasta ; do
     GENOME_FILE=$(basename $GENOME)
-    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fa//g)
+    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
 
-cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/blast/"$GENOME_SHORT"_"$family"* > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/blast/hits/"$GENOME_SHORT"_blast
-python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_identical_effectors.py /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/blast/hits/"$GENOME_SHORT"_blast /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/blast/hits/"$GENOME_SHORT"_blast2
-
-
+cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"/blast/"$GENOME_SHORT"_"$family"* > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"/blast/hits/"$GENOME_SHORT"_blast
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_identical_effectors.py /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"/blast/hits/"$GENOME_SHORT"_blast /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"/blast/hits/"$GENOME_SHORT"_blast2
 
 
-# Not working for hopF as alleles too closely related
-for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/*.fa ; do
+
+
+# This filtering was not working for hopF as the alleles are too closely related 
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/*.fasta ; do
     GENOME_FILE=$(basename $GENOME)
-    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fa//g)
+    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
 
-cp /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/hopF1/"$GENOME_SHORT"_hopF1 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/hopF/blast_results
-cp /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/hopF2-1/"$GENOME_SHORT"_hopF2-1 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/hopF/blast_results
-cp /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/hopF2-2/"$GENOME_SHORT"_hopF2-2 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/hopF/blast_results
-cp /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/hopF2-3/"$GENOME_SHORT"_hopF2-3  /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/hopF/blast_results
-cp /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/hopF2-4/"$GENOME_SHORT"_hopF2-4 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/hopF/blast_results
-cp /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/hopF3/"$GENOME_SHORT"_hopF3 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/hopF/blast_results
-cp /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/hopF4/"$GENOME_SHORT"_hopF4 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/hopF/blast_results
+cp /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/hopF1/new/"$GENOME_SHORT"_hopF1 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/blast_results
+cp /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/hopF2-1/new/"$GENOME_SHORT"_hopF2-1 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/blast_results
+cp /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/hopF2-2/new/"$GENOME_SHORT"_hopF2-2 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/blast_results
+cp /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/hopF2-3/new/"$GENOME_SHORT"_hopF2-3  /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/blast_results
+cp /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/hopF2-4/new/"$GENOME_SHORT"_hopF2-4 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/blast_results
+cp /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/hopF3/new/"$GENOME_SHORT"_hopF3 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/blast_results
+cp /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/hopF4/new/"$GENOME_SHORT"_hopF4 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/blast_results
 
-for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/*.fa ; do
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/*.fasta ; do
     GENOME_FILE=$(basename $GENOME)
-    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fa//g)
+    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
 
-cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/hopF/blast_results/"$GENOME_SHORT"* > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/hopF/blast_results/results/"$GENOME_SHORT"
+cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/blast_results/"$GENOME_SHORT"* > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/blast_results/results/"$GENOME_SHORT"
 
 # Get names of best hits
-for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/*.fa ; do
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/*.fasta ; do
     GENOME_FILE=$(basename $GENOME)
-    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fa//g)
+    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
 
-python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_hopF_effectors.py /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/hopF/blast_results/results/"$GENOME_SHORT" /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/hopF/blast_results/results/"$GENOME_SHORT"_hits
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_hopF_effectors.py /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/blast_results/results/"$GENOME_SHORT" /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/blast_results/results/"$GENOME_SHORT"_hits
 
-for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/*.fa ; do
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/*.fasta ; do
     GENOME_FILE=$(basename $GENOME)
-    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fa//g)
+    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
 
-sort -n -r -k5 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/hopF/blast_results/results/"$GENOME_SHORT"_hits | sort -n -r -k6 | sed s/HopF4a/hopF4/g | sed s/HopF4b/hopF4/g | sed s/hopF2_Pac_MAFF302273/hopF2-1/g | sed s/hopF2_Pae_089_23/hopF2-2/g | sed s/hopF2_Pae_2250/hopF2-2/g | sed s/hopF2_Pae_NCPPB3681/hopF2-2/g | sed s/hopF2_Pan_MAFF302091/hopF2-2/g | sed s/hopF2_PanPsa-JPT_ICMP9617/hopF2-2/g | sed s/hopF2_PanPsa-V_ICMP18884/hopF2-2/g | sed s/hopF2_Pto_DC3000/hopF2-3/g | sed s/hopF2_Pdp_PDDCC529/hopF2-4/g | sed s/hopF2_Pmp_MAFF302280/hopF2-4/g | sed s/hopF2_Pto_K40/hopF2-4/g | sed s/hopF2_Pto_Max13/hopF2-4/g | sed s/hopF2_Pto_NCPPB1108/hopF2-4/g | sed s/hopF2_Pto_T1/hopF2-4/g   > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/hopF/blast_results/results/"$GENOME_SHORT"_hopF_alleles
+sort -n -r -k5 /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/blast_results/results/"$GENOME_SHORT"_hits | sort -n -r -k6 | sed s/HopF4a/hopF4/g | sed s/HopF4b/hopF4/g | sed s/hopF2_Pac_MAFF302273/hopF2-1/g | sed s/hopF2_Pae_089_23/hopF2-2/g | sed s/hopF2_Pae_2250/hopF2-2/g | sed s/hopF2_Pae_NCPPB3681/hopF2-2/g | sed s/hopF2_Pan_MAFF302091/hopF2-2/g | sed s/hopF2_PanPsa-JPT_ICMP9617/hopF2-2/g | sed s/hopF2_PanPsa-V_ICMP18884/hopF2-2/g | sed s/hopF2_Pto_DC3000/hopF2-3/g | sed s/hopF2_Pdp_PDDCC529/hopF2-4/g | sed s/hopF2_Pmp_MAFF302280/hopF2-4/g | sed s/hopF2_Pto_K40/hopF2-4/g | sed s/hopF2_Pto_Max13/hopF2-4/g | sed s/hopF2_Pto_NCPPB1108/hopF2-4/g | sed s/hopF2_Pto_T1/hopF2-4/g   > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/blast_results/results/"$GENOME_SHORT"_hopF_alleles
 
-for file in /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/hopF/blast_results/results/"$GENOME_SHORT"_hopF_alleles ; do
+for file in /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/blast_results/results/"$GENOME_SHORT"_hopF_alleles ; do
     first_hit=$(head -1 $file )
     hit1=$(echo $first_hit | cut -f2 -d " ")
-    echo $first_hit > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/hopF/blast_results/results/"$GENOME_SHORT"_hopF
+    echo $first_hit > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/blast_results/results/"$GENOME_SHORT"_hopF
 while read line; do
   contig2=$(echo $line | cut -f2 -d " ")
   if [ "$contig2"  != "$hit1" ] ; then
   echo $line
   fi
- done < $file >> /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/hopF/blast_results/results/"$GENOME_SHORT"_hopF
+ done < $file >> /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/blast_results/results/"$GENOME_SHORT"_hopF
 
- sed s/" "/"\t"/g /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/hopF/blast_results/results/"$GENOME_SHORT"_hopF | sort -uk2,2 | sed s/"_"/"\t"/g | cut -f1 > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/hopF/blast_results/results/"$GENOME_SHORT"_hopF_alleles
+ sed s/" "/"\t"/g /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/blast_results/results/"$GENOME_SHORT"_hopF | sort -uk2,2 | sed s/"_"/"\t"/g | cut -f1 > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/blast_results/results/"$GENOME_SHORT"_hopF_alleles
+
+
+
 
 
 # Move to new folder
-for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/*.fa ; do
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/*.fasta ; do
     GENOME_FILE=$(basename $GENOME)
-    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fa//g)
-for hopF in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/hopF/blast_results/results/"$GENOME_SHORT"_hopF_alleles ); do
-    mv /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/hopF/"$GENOME_SHORT"_"$hopF".fa /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/hopF/NT
+    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
+for hopF in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/blast_results/results/"$GENOME_SHORT"_hopF_alleles ); do
+    mv /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/"$GENOME_SHORT"_"$hopF".fasta /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/NT
 
 # Get list of files
 
 for family in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/families ); do
       echo $family
-for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/*.fa ; do
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/papu1754.fasta ; do
     GENOME_FILE=$(basename $GENOME)
-    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fa//g)
+    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
 
-sort -k3 -n -r  /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/blast/hits/"$GENOME_SHORT"_blast2 | cut -f1 > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/blast/hits/"$GENOME_SHORT"_files
-for file in /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/blast/hits/"$GENOME_SHORT"_files ; do
+sort -k3 -n -r  /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"/blast/hits/"$GENOME_SHORT"_blast2 | cut -f1 > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"/blast/hits/"$GENOME_SHORT"_files
+for file in /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"/blast/hits/"$GENOME_SHORT"_files ; do
     to_keep=$(head -1 $file)
 
 while read line; do
   if [ "$line" != "$to_keep" ] ; then
   echo $line
   fi
- done < $file > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/blast/hits/"$GENOME_SHORT"_files_to_delete
+ done < $file > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"/blast/hits/"$GENOME_SHORT"_files_to_delete
+
+
+# Rename 
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/*.fasta ; do
+    GENOME_FILE=$(basename $GENOME)
+    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
+for hopF in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/blast_results/results/"$GENOME_SHORT"_hopF_alleles ); do
+
+#sed s/'>'[0-9]*:[0-9]*-[0-9]*/'>'"$GENOME_SHORT"_"$hopF"/g /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/NT/"$GENOME_SHORT"_"$hopF".fasta > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/NT/"$GENOME_SHORT"_"$hopF".fa
+sed s/'>'"$GENOME_SHORT"_"hopF"/'>'"$GENOME_SHORT"_"$hopF"/g /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/NT/"$GENOME_SHORT"_"$hopF".fa > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/NT/"$GENOME_SHORT"_"$hopF".fasta
+
 
 
 # Then use this list to remove all effectors that are identical to longest sequence in each effector family folder
@@ -402,19 +431,18 @@ while read line; do
 for family in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/families ); do
       echo $family
 
-for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/111_genomes/*.fa ; do
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/papu1754.fasta ; do
     GENOME_FILE=$(basename $GENOME)
-    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fa//g)
+    GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
 
 
-for delete in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/blast/hits/"$GENOME_SHORT"_files_to_delete ); do
-    cd 	/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"
+for delete in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"/blast/hits/"$GENOME_SHORT"_files_to_delete ); do
+    cd 	/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"
     rm "$delete".fa
 
 
 
-
-# Can then align all sequences for each effector and do phylogenetics
+# Can then align all sequences for each effector and do phylogenetic analysis 
 for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathogen/effector_detector/effectorfiles/effectors/fastafiles/files/families/*.fasta; do
     EFFECTOR_FILE=$(basename $EFFECTOR)
     EFFECTOR_SHORT=$(echo $EFFECTOR_FILE | sed s/.fasta//g)
@@ -423,10 +451,16 @@ for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathoge
     for family in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/families ); do
           echo $family
 
+cat  /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"/*.fa > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"/"$family".fasta
+cat  /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/NT/*.fasta > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/hopF.fasta
 
-cat  /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/*.fa > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/"$family".fasta
 
 
+
+
+
+
+# Alignment
 for family in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/families ); do
       echo $family
 
@@ -436,27 +470,71 @@ for family in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2
             echo $family
 
 
-/home/hulinm/local/src/clustalw-2.1-linux-x86_64-libcppstatic/clustalw2 -infile=/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/"$family".fas -OUTPUT=FASTA
+/home/hulinm/local/src/clustalw-2.1-linux-x86_64-libcppstatic/clustalw2 -infile=/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"/"$family".fasta -OUTPUT=FASTA
+/home/hulinm/local/src/clustalw-2.1-linux-x86_64-libcppstatic/clustalw2 -infile=/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/hopF/alignment/hopF.fasta -OUTPUT=FASTA
+/home/hulinm/local/src/clustalw-2.1-linux-x86_64-libcppstatic/clustalw2 -infile=/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/alignments/"$family".fasta -OUTPUT=FASTA
+/home/hulinm/local/src/clustalw-2.1-linux-x86_64-libcppstatic/clustalw2 -infile=/home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/alignments/avrE.fasta -OUTPUT=FASTA
 
 
-
-for family in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/families ); do
-      echo $family
-      mv /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/"$family".fasta /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/alignment/"$family".fasta
-
-# Make phylogenetic trees for each effector alignment
+# Move to alignment folder 
 
 for family in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/families ); do
       echo $family
-FastTree -nt /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/alignment/"$family".fasta > /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/alignment/"$family".tre
+      mv /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"/"$family".fasta /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"/alignment/"$family".fasta
 
 
-# Use ColourTree to colour cherry pathogen names. Then open each tree in dendroscope
+# Convert to phylip format 
 for family in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/families ); do
       echo $family
-  /home/hulinm/local/src/colorTree_linux_x86_64 -i /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/alignment/"$family".tre -c /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/conf -o /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/alignment/"$family"
+perl /home/hulinm/git_repos/tools/analysis/python_effector_scripts/alignment_convert.pl -i  /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"/alignment/"$family".fasta -o /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/"$family"/alignment/"$family".phy -f phylip -g fasta
 
-  for family in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/families ); do
-        echo $family
-        cp /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/alignment/"$family".fasta /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/dendro
-        cp /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/"$family"/alignment/"$family".dendro /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/dendro
+
+# Sub raxml phylogenetic tree builder
+
+for family in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/families ); do
+      echo $family
+    
+    qsub /home/hulinm/git_repos/pseudomonas/orthomcl/sub_raxml.sh /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/alignments/"$family".fasta "$family"
+
+
+# Move to trees folder 
+
+for family in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/families ); do
+      echo $family
+      cp ./RAxML_bipartitions."$family" /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/alignments/trees/"$family".tre
+
+
+# Then need to remove effector names from tree file. 
+
+sed -i s/"_hopAR1-1"//g hopAR.tre
+sed -i s/"_hopAR1-2"//g hopAR.tre
+sed -i s/"_hopR1"//g hopR.tre
+
+for file in ./* ; do  
+sed -i s/"R1-"/"R1_"/g $file 
+sed -i s/"R2-"/"R2_"/g $file 
+done
+
+for effector in $(cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/families ); do
+      echo $effector
+      for tree in /home/hulinm/pseudomonas_data/pseudomonas/analysis/effector2016/new/effector_families/new/alignments/trees/*.tre ; do 
+      echo $tree
+      sed -i "s/$effector[0-9]*//g" $tree 
+      sed -i "s/-[0-9]*//g" $tree 
+      sed -i s/"_"//g $tree
+
+
+for file in ./* ; do  
+sed -i s/"R1"/"R1-"/g $file 
+sed -i s/"R2"/"R2-"/g $file 
+sed -i s/"syr7268A"/"R2-7968A"/g $file
+done
+
+
+for file in ./RAxML_bipartitions.* ; do  
+sed -i s/"syr7268A"/"R2-7968A"/g $file
+done
+
+
+
+ 
