@@ -57,7 +57,7 @@ for EFFECTOR in /home/hulinm/git_repos/tools/analysis/effector_detection/pathoge
 	find . -type f -size 0 | xargs rm
   cd
 
-# Filter csv files based on threshold of 40% ID, 60% QL
+# Filter csv files based on threshold of 40% ID, 70% QL
  for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/final_genomes/papu1754.fasta ; do
      GENOME_FILE=$(basename $GENOME)
      GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fasta//g)
