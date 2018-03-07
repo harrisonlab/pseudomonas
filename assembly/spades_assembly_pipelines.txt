@@ -95,28 +95,6 @@ grep "Overrepresented sequences" summary
 /home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 leaf_S16_L001_R1_001.cor.fastq -2 leaf_S16_L001_R2_001.cor.fastq -o  /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/leaf
 /home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 sc214_S7_L001_R1_001.cor.fastq -2 sc214_S7_L001_R2_001.cor.fastq  -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/sc214
 
-#Run on old corrected reads
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 ./5244/F/PSMR1_S1_L001_R1_001.cor.fastq -2 ./5244/R/PSMR1_S1_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/5244
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 ./5255/5255_S4_L001_R1_001.cor.fastq -2 ./5255/5255_S4_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/5255
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 ./5260/F/PMSR2_S2_L001_R1_001.cor.fastq -2 ./5260/R/PMSR2_S2_L001_R2_001.cor.fastq  -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/5260
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 ./5300/5300_S10_L001_R1_001.cor.fastq -2 ./5300/5300_S10_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/5300
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 ./9097/9097_S8_L001_R1_001.cor.fastq -2 ./9097/9097_S8_L001_R2_001.cor.fastq   -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9097
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 ./9293/9293_S2_L001_R1_001.cor.fastq -2 ./9293/9293_S2_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9293
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 ./9326/9326_S5_L001_R1_001.cor.fastq -2 ./9326/9326_S5_L001_R2_001.cor.fastq -o  /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9326
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 ./9629/9629_S1_L001_R1_001.cor.fastq -2 ./9629/9629_S1_L001_R2_001.cor.fastq -o  /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9629
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 ./9630/9630_S11_L001_R1_001.cor.fastq -2 ./9630/9630_S11_L001_R2_001.cor.fastq -o  /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9630
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 ./9643/9643_S13_L001_R1_001.cor.fastq -2 ./9643/9643_S13_L001_R2_001.cor.fastq  -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9643
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 ./9644/9644_S15_L001_R1_001.cor.fastq -2 ./9644/9644_S15_L001_R2_001.cor.fastq -o  /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9644
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 ./9646/9646_S9_L001_R1_001.cor.fastq -2 ./9646/9646_S9_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9646
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 ./9654/9654_S12_L001_R1_001.cor.fastq -2 ./9654/9654_S12_L001_R2_001.cor.fastq   -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9654
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 ./9656/9656_S14_L001_R1_001.cor.fastq -2 ./9656/9656_S14_L001_R2_001.cor.fastq -o  /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9656
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 ./9657/9657_S3_L001_R1_001.cor.fastq -2 ./9657/9657_S3_L001_R2_001.cor.fastq  -o  /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9657
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 ./9659/9659_S6_L001_R1_001.cor.fastq -2 ./9659/9659_S6_L001_R2_001.cor.fastq -o  /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9659
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 ./Aquilegia/F/AQUILEGIA_S3_L001_R1_001.cor.fastq -2 ./Aquilegia/R/AQUILEGIA_S3_L001_R2_001.cor.fastq  -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/aquilegia
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 ./leaf_isolate/Leaf_S16_L001_R1_001.cor.fastq -2 ./leaf_isolate/Leaf_S16_L001_R2_001.cor.fastq -o  /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/leaf
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 ./sc214/SC214_S7_L001_R1_001.cor.fastq -2 ./sc214/SC214_S7_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/sc214
-
-
 # Warwick strains 
 /home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 5264_S9_L001_R1_001.cor.fastq -2 5264_S9_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/warwick/5264
 /home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 5270_S6_L001_R1_001.cor.fastq -2 5270_S6_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/warwick/5270
@@ -136,23 +114,16 @@ for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/* ; d
 	echo $GENOME_SHORT
 #	mkdir -p ./"$GENOME_SHORT"/initial_submission/
 
-#	mv /home/hulinm/submission_reports/"$GENOME_SHORT"_report.txt ./"$GENOME_SHORT"/initial_submission/
-
-#	python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/filter.py /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/"$GENOME_SHORT"/contigs.fasta /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7_filtered/"$GENOME_SHORT".fasta
+	python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/filter.py /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/"$GENOME_SHORT"/contigs.fasta /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7_filtered/"$GENOME_SHORT".fasta
 
 
-# Submit to genbank for contamination screen. Download report and use script to remove contaminating contigs (phiX/cloning vectors)
+# Submit to genbank for contamination screen. 
+# Download report and use script to remove contaminating contigs (phiX/cloning vectors)
 
-python /home/hulinm/git_repos/tools/seq_tools/assemblers/assembly_qc/remove_contaminants/remove_contaminants.py --inp /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7_filtered/9326_2.fasta --out /home/hulinm/pseudomonas_data/pseudomonas/genome_submission/Pseudomonas_syringae/fasta/"$GENOME_SHORT".fasta --coord_file /home/hulinm/pseudomonas_data/pseudomonas/genome_submission/Pseudomonas_syringae/"$GENOME_SHORT"/initial_submission/"$GENOME_SHORT"_report.txt  > /home/hulinm/pseudomonas_data/pseudomonas/genome_submission/Pseudomonas_syringae/fasta/log.txt
-
-
-python /home/hulinm/git_repos/tools/seq_tools/assemblers/assembly_qc/remove_contaminants/remove_contaminants.py --inp 8094A.fasta --out 8094A_corr.fasta --coord_file 8094A.txt  > log.txt
-python /home/hulinm/git_repos/tools/seq_tools/assemblers/assembly_qc/remove_contaminants/remove_contaminants.py --inp 8094A_corr.fasta --out 8094A_corr2.fasta --coord_file 8094A-2.txt  > log.txt
-
-
-
-# If not all removed first time:
-python /home/hulinm/git_repos/tools/seq_tools/assemblers/assembly_qc/remove_contaminants/remove_contaminants.py --inp /home/hulinm/pseudomonas_data/pseudomonas/genome_submission/Pseudomonas_syringae/fasta/9326.fasta  --out /home/hulinm/pseudomonas_data/pseudomonas/genome_submission/Pseudomonas_syringae/fasta/9326_2.fasta --coord_file /home/hulinm/pseudomonas_data/pseudomonas/genome_submission/Pseudomonas_syringae/9326/initial_submission/9326_report2.txt  > /home/hulinm/pseudomonas_data/pseudomonas/genome_submission/Pseudomonas_syringae/fasta/log.txt
+for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/* ; do
+	GENOME_SHORT=$(basename $GENOME)
+	echo $GENOME_SHORT
+python /home/hulinm/git_repos/tools/seq_tools/assemblers/assembly_qc/remove_contaminants/remove_contaminants.py --inp /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7_filtered/"$GENOME_SHORT".fasta --out /home/hulinm/pseudomonas_data/pseudomonas/genome_submission/Pseudomonas_syringae/fasta/"$GENOME_SHORT".fasta --coord_file /home/hulinm/pseudomonas_data/pseudomonas/genome_submission/Pseudomonas_syringae/"$GENOME_SHORT"/initial_submission/"$GENOME_SHORT"_report.txt  > /home/hulinm/pseudomonas_data/pseudomonas/genome_submission/Pseudomonas_syringae/fasta/log.txt
 
 
 # Resubmit new fasta to genbank
