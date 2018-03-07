@@ -1,106 +1,18 @@
 PIPELINE GENOME ASSEMBLIES
 
 ILLUMINA
-## fastq-mcf ##
-
-fastq-mcf -o ./original_strains/5244_S1_L001_R1_001.cor.fastq -o ./original_strains/5244_S1_L001_R2_001.cor.fastq  /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa ./5244/F/PSMR1_S1_L001_R1_001.fastq ./5244/R/PSMR1_S1_L001_R2_001.fastq   -C 1000000 -u -k 20 -t 0.01 -q 30 -p 5 #Andys parameters
+## fastq-mcf example ##
 
 fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa ./5255/5255_S4_L001_R1_001.fastq ./5255/5255_S4_L001_R2_001.fastq -o ./original_strains/5255_S4_L001_R1_001.cor.fastq -o ./original_strains/5255_S4_L001_R2_001.cor.fastq -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.01
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa ./5260/F/PMSR2_S2_L001_R1_001.fastq ./5260/R/PMSR2_S2_L001_R2_001.fastq -o ./original_strains/5260_S2_L001_R1_001.cor.fastq   -o ./original_strains/5260_S2_L001_R2_001.cor.fastq  -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.01
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa ./5300/5300_S10_L001_R1_001.fastq ./5300/5300_S10_L001_R2_001.fastq -o ./original_strains/5300_S10_L001_R1_001.cor.fastq -o ./original_strains/5300_S10_L001_R2_001.cor.fastq  -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.01
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa ./9097/9097_S8_L001_R1_001.fastq ./9097/9097_S8_L001_R2_001.fastq -o ./original_strains/9097_S8_L001_R1_001.cor.fastq -o ./original_strains/9097_S8_L001_R2_001.cor.fastq   -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.01
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa ./9293/9293_S2_L001_R1_001.fastq ./9293/9293_S2_L001_R2_001.fastq -o ./original_strains/9293_S2_L001_R1_001.cor.fastq  -o ./original_strains/9293_S2_L001_R2_001.cor.fastq  -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.01
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa ./9326/9326_S5_L001_R1_001.fastq ./9326/9326_S5_L001_R2_001.fastq -o ./original_strains/9326_S5_L001_R1_001.cor.fastq -o ./original_strains/9326_S5_L001_R2_001.cor.fastq -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.01
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa ./9629/9629_S1_L001_R1_001.fastq ./9629/9629_S1_L001_R2_001.fastq -o ./original_strains/9629_S1_L001_R1_001.cor.fastq -o ./original_strains/9629_S1_L001_R2_001.cor.fastq  -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.01
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa ./9630/9630_S11_L001_R1_001.fastq ./9630/9630_S11_L001_R2_001.fastq -o ./original_strains/9630_S11_L001_R1_001.cor.fastq -o ./original_strains/9630_S11_L001_R2_001.cor.fastq  -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.01
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa ./9643/9643_S13_L001_R1_001.fastq ./9643/9643_S13_L001_R2_001.fastq  -o ./original_strains/9643_S13_L001_R1_001.cor.fastq -o ./original_strains/9643_S13_L001_R2_001.cor.fastq  -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.01
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa ./9644/9644_S15_L001_R1_001.fastq ./9644/9644_S15_L001_R2_001.fastq -o ./original_strains/9644_S15_L001_R1_001.cor.fastq -o ./original_strains/9644_S15_L001_R2_001.cor.fastq  -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.01
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa ./9646/9646_S9_L001_R1_001.fastq ./9646/9646_S9_L001_R2_001.fastq -o ./original_strains/9646_S9_L001_R1_001.cor.fastq -o ./original_strains/9646_S9_L001_R2_001.cor.fastq  -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.01
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa ./9654/9654_S12_L001_R1_001.fastq ./9654/9654_S12_L001_R2_001.fastq -o ./original_strains/9654_S12_L001_R1_001.cor.fastq -o ./original_strains/9654_S12_L001_R2_001.cor.fastq  -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.01
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa ./9656/9656_S14_L001_R1_001.fastq ./9656/9656_S14_L001_R2_001.fastq -o ./original_strains/9656_S14_L001_R1_001.cor.fastq -o ./original_strains/9656_S14_L001_R2_001.cor.fastq  -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.01
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa ./9657/9657_S3_L001_R1_001.fastq ./9657/9657_S3_L001_R2_001.fastq -o ./original_strains/9657_S3_L001_R1_001.cor.fastq -o ./original_strains/9657_S3_L001_R2_001.cor.fastq  -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.01
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa ./9659/9659_S6_L001_R1_001.fastq ./9659/9659_S6_L001_R2_001.fastq -o ./original_strains/9659_S6_L001_R1_001.cor.fastq -o ./original_strains/9659_S6_L001_R2_001.cor.fastq  -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.01
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa ./Aquilegia/F/AQUILEGIA_S3_L001_R1_001.fastq ./Aquilegia/R/AQUILEGIA_S3_L001_R2_001.fastq -o ./original_strains/aquilegia_S3_L001_R1_001.cor.fastq -o ./original_strains/aquilegia_S3_L001_R2_001.cor.fastq  -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.01
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa ./Leaf_isolate/Leaf_S16_L001_R1_001.fastq ./Leaf_isolate/Leaf_S16_L001_R2_001.fastq -o ./original_strains/leaf_S16_L001_R1_001.cor.fastq -o ./original_strains/leaf_S16_L001_R2_001.cor.fastq  -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.01
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa ./sc214/SC214_S7_L001_R1_001.fastq ./sc214/SC214_S7_L001_R2_001.fastq -o ./original_strains/sc214_S7_L001_R1_001.cor.fastq -o ./original_strains/sc214_S7_L001_R2_001.cor.fastq  -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.01
 
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 2242_S3_L001_R1_001.fastq 2242_S3_L001_R2_001.fastq  -o 2242_S3_L001_R1_001.cor.fastq -o 2242_S3_L001_R2_001.cor.fastq    -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 2673_S4_L001_R1_001.fastq 2673_S4_L001_R2_001.fastq  -o 2673_S4_L001_R1_001.cor.fastq -o 2673_S4_L001_R2_001.cor.fastq   -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 2675_S5_L001_R1_001.fastq 2675_S5_L001_R2_001.fastq  -o 2675_S5_L001_R1_001.cor.fastq -o 2675_S5_L001_R2_001.cor.fastq  -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 2676_S6_L001_R1_001.fastq 2676_S6_L001_R2_001.fastq -o  2676_S6_L001_R1_001.cor.fastq -o 2676_S6_L001_R2_001.cor.fastq      -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 2677_S7_L001_R1_001.fastq 2677_S7_L001_R2_001.fastq  -o 2677_S7_L001_R1_001.cor.fastq -o 2677_S7_L001_R2_001.cor.fastq   -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 2682_S8_L001_R1_001.fastq 2682_S8_L001_R2_001.fastq  -o 2682_S8_L001_R1_001.cor.fastq -o 2682_S8_L001_R2_001.cor.fastq   -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 2692_S9_L001_R1_001.fastq 2692_S9_L001_R2_001.fastq  -o 2692_S9_L001_R1_001.cor.fastq -o 2692_S9_L001_R2_001.cor.fastq  -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 2703_S10_L001_R1_001.fastq 2703_S10_L001_R2_001.fastq  -o 2703_S10_L001_R1_001.cor.fastq -o 2703_S10_L001_R2_001.cor.fastq   -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 9095_S2_L001_R1_001.fastq 9095_S2_L001_R2_001.fastq  -o 9095_S2_L001_R1_001.cor.fastq -o 9095_S2_L001_R2_001.cor.fastq   -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 9326_S1_L001_R1_001.fastq 9326_S1_L001_R2_001.fastq  -o 9326_S1_L001_R1_001.cor.fastq -o 9326_S1_L001_R2_001.cor.fastq   -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa psy100_S12_L001_R1_001.fastq psy100_S12_L001_R2_001.fastq  -o psy100_S12_L001_R1_001.cor.fastq -o psy100_S12_L001_R2_001.cor.fastq   -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
-
-
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 5264_S9_L001_R1_001.fastq  5264_S9_L001_R2_001.fastq   -o 5264_S9_L001_R1_001.cor.fastq  -o 5264_S9_L001_R2_001.cor.fastq   -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 5270_S6_L001_R1_001.fastq  5270_S6_L001_R2_001.fastq   -o 5270_S6_L001_R1_001.cor.fastq  -o 5270_S6_L001_R2_001.cor.fastq   -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 5271_S7_L001_R1_001.fastq  5271_S7_L001_R2_001.fastq   -o 5271_S7_L001_R1_001.cor.fastq  -o 5271_S7_L001_R2_001.cor.fastq   -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 5275_S10_L001_R1_001.fastq  5275_S10_L001_R2_001.fastq   -o 5275_S10_L001_R1_001.cor.fastq  -o 5275_S10_L001_R2_001.cor.fastq   -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 7928A_S11_L001_R1_001.fastq  7928A_S11_L001_R2_001.fastq   -o 7928A_S11_L001_R1_001.cor.fastq  -o 7928A_S11_L001_R2_001.cor.fastq   -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 7928C_S14_L001_R1_001.fastq  7928C_S14_L001_R2_001.fastq   -o 7928C_S14_L001_R1_001.cor.fastq  -o 7928C_S14_L001_R2_001.cor.fastq   -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 7968A_S8_L001_R1_001.fastq  7968A_S8_L001_R2_001.fastq   -o 7968A_S8_L001_R1_001.cor.fastq  -o 7968A_S8_L001_R2_001.cor.fastq   -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 7969_S13_L001_R1_001.fastq  7969_S13_L001_R2_001.fastq   -o 7969_S13_L001_R1_001.cor.fastq  -o 7969_S13_L001_R2_001.cor.fastq   -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
-fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 8094A_S12_L001_R1_001.fastq  8094A_S12_L001_R2_001.fastq   -o 8094A_S12_L001_R1_001.cor.fastq  -o 8094A_S12_L001_R2_001.cor.fastq   -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
-
-
-# Run fastqc to quality check
+## Run fastqc to quality check ##
 
 fastqc *.cor.fastq
 cat */summary.txt > summary
 grep "Overrepresented sequences" summary
 
-#Run spades on all illumina genomes
-
-# Newly sequenced isolates
+## Run spades example ##
 /home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 2677_S7_L001_R1_001.cor.fastq -2 2677_S7_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/2677
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 2242_S3_L001_R1_001.cor.fastq -2 2242_S3_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/2242
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 2673_S4_L001_R1_001.cor.fastq -2 2673_S4_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/2673
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 2675_S5_L001_R1_001.cor.fastq -2 2675_S5_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/2675
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 2676_S6_L001_R1_001.cor.fastq -2 2676_S6_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/2676
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 2682_S8_L001_R1_001.cor.fastq -2 2682_S8_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/2682
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 2692_S9_L001_R1_001.cor.fastq -2 2692_S9_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/2692
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 2703_S10_L001_R1_001.cor.fastq -2 2703_S10_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/2703
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 3023_S11_L001_R1_001.cor.fastq -2 3023_S11_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/3023
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 9095_S2_L001_R1_001.cor.fastq -2 9095_S2_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9095
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 9326_S1_L001_R1_001.fastq -2 9326_S1_L001_R2_001.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9326_2
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 psy100_S12_L001_R1_001.cor.fastq -2 psy100_S12_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/psy100
-
-#Original isolates
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 5244_S1_L001_R1_001.cor.fastq -2 5244_S1_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/5244
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 5255_S4_L001_R1_001.cor.fastq -2 5255_S4_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/5255
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 5260_S2_L001_R1_001.cor.fastq -2 5260_S2_L001_R2_001.cor.fastq  -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/5260
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 5300_S10_L001_R1_001.cor.fastq -2 5300_S10_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/5300
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 9097_S8_L001_R1_001.cor.fastq -2 9097_S8_L001_R2_001.cor.fastq  -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9097
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 9293_S2_L001_R1_001.cor.fastq -2 9293_S2_L001_R2_001.cor.fastq  -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9293
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 9326_S5_L001_R1_001.cor.fastq  -2 9326_S5_L001_R2_001.cor.fastq  -o  /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9326
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 9629_S1_L001_R1_001.cor.fastq  -2 9629_S1_L001_R2_001.cor.fastq  -o  /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9629
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 9630_S11_L001_R1_001.cor.fastq  -2 9630_S11_L001_R2_001.cor.fastq  -o  /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9630
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 9643_S13_L001_R1_001.cor.fastq -2 9643_S13_L001_R2_001.cor.fastq  -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9643
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 9644_S15_L001_R1_001.cor.fastq -2 9644_S15_L001_R2_001.cor.fastq -o  /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9644
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 9646_S9_L001_R1_001.cor.fastq -2 9646_S9_L001_R2_001.cor.fastq  -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9646
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 9654_S12_L001_R1_001.cor.fastq -2 9654_S12_L001_R2_001.cor.fastq  -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9654
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 9656_S14_L001_R1_001.cor.fastq -2 9656_S14_L001_R2_001.cor.fastq -o  /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9656
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 9657_S3_L001_R1_001.cor.fastq -2 9657_S3_L001_R2_001.cor.fastq -o  /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9657
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 9659_S6_L001_R1_001.cor.fastq -2 9659_S6_L001_R2_001.cor.fastq -o  /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/9659
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 aquilegia_S3_L001_R1_001.cor.fastq -2 aquilegia_S3_L001_R2_001.cor.fastq  -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/aquilegia
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 leaf_S16_L001_R1_001.cor.fastq -2 leaf_S16_L001_R2_001.cor.fastq -o  /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/leaf
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 sc214_S7_L001_R1_001.cor.fastq -2 sc214_S7_L001_R2_001.cor.fastq  -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/sc214
-
-# Warwick strains 
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 5264_S9_L001_R1_001.cor.fastq -2 5264_S9_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/warwick/5264
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 5270_S6_L001_R1_001.cor.fastq -2 5270_S6_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/warwick/5270
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 5271_S7_L001_R1_001.cor.fastq -2 5271_S7_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/warwick/5271
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 5275_S10_L001_R1_001.cor.fastq -2 5275_S10_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/warwick/5275
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 7928A_S11_L001_R1_001.cor.fastq -2 7928A_S11_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/warwick/7928A
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 7928C_S14_L001_R1_001.cor.fastq -2 7928C_S14_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/warwick/7928C
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 7968A_S8_L001_R1_001.cor.fastq -2 7968A_S8_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/warwick/7968A
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 7969_S13_L001_R1_001.cor.fastq -2 7969_S13_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/warwick/7969
-/home/hulinm/local/src/SPAdes-3.7.0-Linux/bin/spades.py -1 8094A_S12_L001_R1_001.cor.fastq -2 8094A_S12_L001_R2_001.cor.fastq -o /home/hulinm/pseudomonas_data/pseudomonas/assembly/warwick/8094A
 
 
 * Filter contigs <500bp using filter.py
@@ -108,8 +20,6 @@ grep "Overrepresented sequences" summary
 for GENOME in /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/* ; do
 	GENOME_SHORT=$(basename $GENOME)
 	echo $GENOME_SHORT
-#	mkdir -p ./"$GENOME_SHORT"/initial_submission/
-
 	python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/filter.py /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7/"$GENOME_SHORT"/contigs.fasta /home/hulinm/pseudomonas_data/pseudomonas/assembly/spades3.7_filtered/"$GENOME_SHORT".fasta
 
 
