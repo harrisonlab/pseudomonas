@@ -1,9 +1,7 @@
 PIPELINE GENOME ASSEMBLIES
 
 ILLUMINA
-## new fastq-mcf to try and get better error correction of reads for spades assembly ##
-
-
+## fastq-mcf ##
 
 fastq-mcf -o ./original_strains/5244_S1_L001_R1_001.cor.fastq -o ./original_strains/5244_S1_L001_R2_001.cor.fastq  /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa ./5244/F/PSMR1_S1_L001_R1_001.fastq ./5244/R/PSMR1_S1_L001_R2_001.fastq   -C 1000000 -u -k 20 -t 0.01 -q 30 -p 5 #Andys parameters
 
@@ -48,8 +46,6 @@ fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 7928C_S14_L001
 fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 7968A_S8_L001_R1_001.fastq  7968A_S8_L001_R2_001.fastq   -o 7968A_S8_L001_R1_001.cor.fastq  -o 7968A_S8_L001_R2_001.cor.fastq   -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
 fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 7969_S13_L001_R1_001.fastq  7969_S13_L001_R2_001.fastq   -o 7969_S13_L001_R1_001.cor.fastq  -o 7969_S13_L001_R2_001.cor.fastq   -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
 fastq-mcf /home/hulinm/git_repos/tools/seq_tools/ncbi_adapters.fa 8094A_S12_L001_R1_001.fastq  8094A_S12_L001_R2_001.fastq   -o 8094A_S12_L001_R1_001.cor.fastq  -o 8094A_S12_L001_R2_001.cor.fastq   -C 1000000 -q 20 -p 10 -u -x 0.01  -t 0.0001
-
-
 
 
 # Run fastqc to quality check
