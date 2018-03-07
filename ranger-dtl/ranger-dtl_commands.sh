@@ -37,7 +37,7 @@ write.tree(tree, "rooted")
 
 for file in * ; do 
 file_short=$(basename $file) 
-cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/rooted_species_tree $file > /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees2/combined/"$file_short".tre
+cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/rooted_species_tree $file > /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/"$file_short".tre
 done
 
 # Or use OptResolutions.linux on unresolved gene trees to get rooted non-binary tree. Cut off all support values less than 10 (Can't do higher due to complexity of program not allowing multiple outdegrees)
