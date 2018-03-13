@@ -1,0 +1,58 @@
+# Co-ocurrence of effectors visualisation in R
+
+# Generating heatmap of significant interactions
+LRs<-read.table("/Users/hulinm/LRs2.txt", col.names=,1)
+attach(LRs)
+library(ggplot2)
+library(gplots)
+library(reshape2)
+library(plyr)
+summary <- ddply(LRs, c("e1", "e2"), summarise,
+               mean = mean(pvalue))
+# Create matrix, and remove those results that were not significant >0.05
+matrix<-acast(summary, e1~e2)
+mat <- ifelse(matrix>0.05,NA,matrix)
+# Generate heatmap 
+pdf(file = "/Users/hulinm/Documents/cooccurrence.pdf",width=10,height=10)
+heatmap<-heatmap.2(mat, Rowv=NA, Colv=NA,trace="none")
+dev.off()
+
+
+# Generating network in R of significantly interacting genes with antagonistic or synergistic interactions
+
+install.packages("statnet", dependencies = TRUE) 
+library(statnet)
+set.seed(12345)
+LRs<-read.table("/Users/hulinm/list3.txt", col.names=,1)
+attach(LRs)
+library(ggplot2)
+library(gplots)
+library(reshape2)
+library(plyr)
+matrix<-acast(LRs, e1~e2)
+matrix[is.na(matrix)] <- 0
+
+# Need to make matrix into a square
+
+un1 <- unique(sort(c(colnames(matrix), rownames(matrix))))
+m2 <- matrix(NA, length(un1), length(un1), dimnames = list(un1, un1))
+m2[row.names(matrix), colnames(matrix)] <- matrix
+m2[is.na(m2)] <- 0
+diag(m2)<-0
+
+m2 <- network(x = m2, # the network object
+                  directed = TRUE, # specify whether the network is directed
+                  loops = FALSE, # do we allow self ties (should not allow them)
+                  matrix.type = "adjacency", # the type of input
+                  ignore.eval = FALSE, 
+                  names.eval = "weights")
+
+# Plot network 
+
+set.edge.attribute(m2, "color", ifelse(m2 %e% "weights" > 1, "#0571b0", "#ca0020"))
+
+a<-ggnet2(m2, size=10,  label = TRUE, label.size = 4, edge.color = "weights") 
+
+ggsave("network.pdf", plot = a, width = 10, height = 10)
+
+
