@@ -1,0 +1,13 @@
+Realphy for SNP identification and building of phylogenetic tree using PhyML
+
+# Running the program
+# Give the program the output folder and several reference genomes for alignment of reads
+
+java -Xmx6000m -jar ../RealPhy_v112.jar . /home/hulinm/local/src/RealPhy/final/out -ref1 pph1448a -ref2 tomDC3000 -ref3 Pss_B728a -merge
+java -Xmx6000m -jar ../../RealPhy_v112.jar . /home/hulinm/local/src/RealPhy/final/1/out -ref1 pph1448a -ref2 tomDC3000 -ref3 Pss_B728a -merge
+
+# Or submit in batches to cluster 
+
+qsub /home/hulinm/git_repos/pseudomonas/sub_realphy.sh /home/hulinm/local/src/RealPhy/final/1/out pph1448a tomDC3000 Pss_B728a
+qsub /home/hulinm/git_repos/pseudomonas/sub_realphy.sh /home/hulinm/local/src/RealPhy/final/2/out pph1448a tomDC3000 Pss_B728a
+qsub /home/hulinm/git_repos/pseudomonas/sub_realphy.sh /home/hulinm/local/src/RealPhy/final/pruned/pruned2/out pph1448a tomDC3000 Pss_B728a
