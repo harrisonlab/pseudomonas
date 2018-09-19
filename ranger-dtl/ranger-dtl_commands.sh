@@ -37,7 +37,7 @@ write.tree(tree, "rooted")
 
 for file in * ; do 
 file_short=$(basename $file) 
-cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/rooted_species_tree $file > /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees2/combined/"$file_short".tre
+cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/rooted_species_tree $file > /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/"$file_short".tre
 done
 
 # Or use OptResolutions.linux on unresolved gene trees to get rooted non-binary tree. Cut off all support values less than 10 (Can't do higher due to complexity of program not allowing multiple outdegrees)
@@ -203,11 +203,10 @@ number=$(ls /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_t
 echo $number
 
 cat /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/*/*transfer_events2 > /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfer_events
-sort /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfer_events  | uniq -c  |  sed -e 's/^[ \t]*//'  | sed s/"\s""\t"/"\t"/g | sed s/"\s"/"\t"/g > /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfer_counts2
-# or perl -lane'$,=" ";print sort @F' /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfer_events | sort | uniq -c  |  sed -e 's/^[ \t]*//'  | sed s/"\s""\t"/"\t"/g | sed s/"\s"/"\t"/g > /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfer_counts2
-python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_effector_events80.py /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfer_counts2 $number | sed s/"\t""\t"/"\t"/g | cut -f2,3  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfers2
+sort /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfer_events  | uniq -c  |  sed -e 's/^[ \t]*//'  | sed s/"\s""\t"/"\t"/g | sed s/"\s"/"\t"/g > /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfer_counts
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_effector_events80.py /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfer_counts $number | sed s/"\t""\t"/"\t"/g | cut -f2,3  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfers
 
-sed -i '/^$/d' /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfers2
+sed -i '/^$/d' /home/hulinm/pseudomonas_data/pseudomonas/analysis/ranger/effector_trees/combined/1_BS/gene_trees/"$effector_short"/"$effector_short"_transfers
 done
 
 

@@ -1,0 +1,192 @@
+### R script to obtain random samples of Pseudomonas from SG collection for sequencing ###
+
+# Picks 4 of 7 trees for each location/orchard + variety combination. Need to preferentially pick trees with both tissue types then if not 4, pick 4-n other trees for sampling
+# For each random tree then take a random sample from up to 3 samples 
+
+
+library(plyr)
+library(reshape)
+
+# Input data 
+
+SG_trees<-read.table("/Users/hulinm/Documents/R_tables/2018/SG_cherry_trees2.txt", col.names=,1)
+attach(SG_trees)
+
+# Count number of trees that have both tissues, leaf or stem only per combination (L/O/V)
+
+counts<-as.data.frame(table(SG_trees$tissue, SG_trees$combination)) 
+
+
+both_4<-counts[ which(counts$Var1=='both' & counts$Freq >= 4),] # 13 combinations  have >4 trees with both tissues 
+both_less_4<-counts[ which(counts$Var1=='both' & counts$Freq < 4 & counts$Freq > 0  ),] # combinations that have <4 trees with both tissues but do have some 
+both_less_4.1<-counts[ which(counts$Var1=='both' & counts$Freq < 4 & counts$Freq > 0  ),] # combinations that have <4 trees with both tissues but do have some 
+
+LS_only<-counts[ which(counts$Var1=='both' & counts$Freq == 0  ),] # combinations that have 0 trees with both tissues but do have some 
+
+both_4<-both_4$Var2
+both_less_4<-both_less_4$Var2
+LS_only<-LS_only$Var2
+
+
+
+# Subset the dataframe based on presence of both tissues 
+
+subset1<-subset(SG_trees, SG_trees$combination %in% both_4 & tissue=="both") #Filter the subset based on only those that have 4 trees
+subset2<-subset(SG_trees, SG_trees$combination %in% both_less_4) #Filter the subset based on only those that have < 4 trees with both
+
+subset2both<-subset(subset2, tissue=="both") #Filter the subset based on only those that have < 4 trees with both
+subset2notboth<-subset(subset2, tissue!="both") #Filter the subset based on only those that have < 4 trees with both and keep LS samples
+
+subset3<-subset(SG_trees, SG_trees$combination %in% LS_only) #Filter the subset based on only those that have 0 trees 
+
+
+# Generating random tree samples for those combinations that have 4 trees with both tissues
+
+SG.split <- split(subset1,list(subset1$combination), drop=TRUE)
+
+
+SG.list_4_trees <- lapply(SG.split, function(x) {
+         		    y <- x[sample(nrow(x), 4), ]
+         		   return(y)
+     		       } )
+     		       
+# Generate  random samples for those that had no trees with both tissues (randomly choosing 4 trees with either leaf or stem)
+SG.split <- split(subset3,list(subset3$combination), drop=TRUE)
+
+
+SG.list_LSonly <- lapply(SG.split, function(x) {
+           			 	  y <- x[sample(nrow(x), 4), ]
+       				     return(y)
+     				      } )
+
+
+
+# Generating random tree samples for those that have <4 trees with both tissues  
+  
+# Pick all "both" trees first          
+SG.list_less_4_trees_both <- split(subset2both,list(subset2both$combination), drop=TRUE)
+
+           
+# Generating additional random tree samples for those that have <4 trees with both tissues, picking trees with Leaf or stem at random. 
+# Each one will require 4-x (x is the number of trees with both samples) e.g. 1 tree with both, pick 3 other random trees
+
+
+both_less_4.1[,4]<-(4-both_less_4.1[,3]) # To work out number of trees needed to extract from each split (Haven't worked out how to automate this with a loop yet)
+
+SG.split <- split(subset2notboth,list(subset2notboth$combination), drop=TRUE)
+
+
+
+SG.list_less_4_trees1<-lapply(SG.split[1], function(x) {
+           			 	  y <- x[sample(nrow(x), 3), ]
+       				     print(y)
+     				      } )
+
+SG.list_less_4_trees2<-lapply(SG.split[2], function(x) {
+           			 	  y <- x[sample(nrow(x), 1), ]
+       				     print(y)
+     				      } )
+         
+SG.list_less_4_trees3<-lapply(SG.split[3], function(x) {
+           			 	  y <- x[sample(nrow(x), 2), ]
+       				     print(y)
+     				      } )  
+     				      
+SG.list_less_4_trees4<-lapply(SG.split[4], function(x) {
+           			 	  y <- x[sample(nrow(x), 3), ]
+       				     print(y)
+     				      } )  
+SG.list_less_4_trees5<-lapply(SG.split[5], function(x) {
+           			 	  y <- x[sample(nrow(x), 3), ]
+       				     print(y)
+     				      } )      				          				               
+SG.list_less_4_trees6<-lapply(SG.split[6], function(x) {
+           			 	  y <- x[sample(nrow(x), 2), ]
+       				     print(y)
+     				      } )                
+SG.list_less_4_trees7<-lapply(SG.split[7], function(x) {
+           			 	  y <- x[sample(nrow(x), 2), ]
+       				     print(y)
+     				      } )            
+SG.list_less_4_trees8<-lapply(SG.split[8], function(x) {
+           			 	  y <- x[sample(nrow(x), 2), ]
+       				     print(y)
+     				      } )            
+SG.list_less_4_trees9<-lapply(SG.split[9], function(x) {
+           			 	  y <- x[sample(nrow(x), 1), ]
+       				     print(y)
+     				      } )     
+ 
+           
+# Concatenate all randomised subsets together 
+
+melt1<-melt(SG.list_4_trees)
+melt2 <-melt1[!(melt1$variable=="combination"),] 
+melt1.1<-melt(SG.list_less_4_trees_both)
+melt2.1 <-melt1.1[!(melt1.1$variable=="combination"),] 
+melt1.2<-melt(SG.list_LSonly)
+melt2.2 <-melt1.2[!(melt1.2$variable=="combination"),] 
+melt1.3<-melt(SG.list_less_4_trees1)
+melt2.3 <-melt1.3[!(melt1.3$variable=="combination"),] 
+melt1.4<-melt(SG.list_less_4_trees2)
+melt2.4 <-melt1.4[!(melt1.3$variable=="combination"),] 
+melt1.5<-melt(SG.list_less_4_trees3)
+melt2.5 <-melt1.5[!(melt1.3$variable=="combination"),] 
+melt1.6<-melt(SG.list_less_4_trees4)
+melt2.6 <-melt1.6[!(melt1.3$variable=="combination"),] 
+melt1.7<-melt(SG.list_less_4_trees5)
+melt2.7 <-melt1.7[!(melt1.3$variable=="combination"),] 
+melt1.8<-melt(SG.list_less_4_trees6)
+melt2.8 <-melt1.8[!(melt1.3$variable=="combination"),] 
+melt1.9<-melt(SG.list_less_4_trees7)
+melt2.9 <-melt1.9[!(melt1.3$variable=="combination"),] 
+melt1.10<-melt(SG.list_less_4_trees8)
+melt2.10 <-melt1.10[!(melt1.3$variable=="combination"),] 
+melt1.11<-melt(SG.list_less_4_trees9)
+melt2.11 <-melt1.11[!(melt1.3$variable=="combination"),] 
+
+randomised_trees<-rbind(melt2, melt2.1, melt2.2, melt2.3, melt2.4, melt2.5, melt2.6, melt2.7, melt2.8, melt2.9, melt2.10, melt2.11)
+colnames(randomised_trees)[which(names(randomised_trees) == "value")] <- "trees"
+colnames(randomised_trees)[which(names(randomised_trees) == "L1")] <- "combination"
+randomised_trees2<-subset(randomised_trees, variable=="tree")
+
+
+
+
+# Input the whole dataset and filter based on specific tree IDs 
+
+SG_cherry<-read.table("/Users/hulinm/Documents/R_tables/2018/SG_cherry2.txt", col.names=,1)
+attach(SG_cherry)
+
+
+selectedRows <- (SG_cherry$tree_id %in% randomised_trees2$tree_id) 
+
+
+SGReduced <- SG_cherry[selectedRows,]
+
+
+
+# Picking a random sample no (1-3) for each leaf/stem for each tree within each combination
+
+subset<-subset(SGReduced, SGReduced$plate!="NA")
+
+SG.split <- split(subset,list(subset$location, subset$orchard, subset$variety, subset$tree, subset$tissue), drop=TRUE)
+
+
+SG.list_sample <- lapply(SG.split, function(x) {
+           			 	  y <- x[sample(nrow(x), 1), ]
+       				     return(y)
+     				      } )
+     				      
+SG_dataset1<-melt(SG.list_sample)
+SG_dataset<-subset(SG_dataset1, SG_dataset1$variable=="plate")
+
+write.table(SG_dataset, file="SG_dataset", sep="\t")    
+
+
+# Check subset is correct 
+
+SG_subset<-read.table("/Users/hulinm/Documents/R_tables/2018/SG_subset.txt", col.names=,1)
+
+table(SG_trees$tissue, SG_trees$combination)
+			      
