@@ -2,8 +2,8 @@
 #$ -S /bin/bash
 #$ -cwd
 #$ -pe smp 1
-#$ -l virtual_free=1G
-#$ -l h=blacklace06.blacklace
+#$ -l virtual_free=30G
+#$ -l h=blacklace01.blacklace|blacklace06.blacklace
 
 Usage='sub_checkM.sh <input directory> <output directory>'
 
