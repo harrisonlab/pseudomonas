@@ -1,0 +1,36 @@
+# R phylogenetic tree visualisation circular tree with effectors 
+
+library(ape)
+library(ggplot2)
+library(ggtree)
+library(phangorn)
+
+tree <- read.tree("/Users/hulinm/Documents/partition_file.treefile.tre")
+mydata2 <- read.csv("/Users/hulinm/Documents/mydata.csv", stringsAsFactors=FALSE, colClasses='character',  row.names = 1)
+mydata <- read.csv("/Users/hulinm/Documents/traits2.csv", stringsAsFactors=FALSE, colClasses='character')
+
+rownames(mydata) <- mydata$Assembly
+mydata <- mydata[match(tree$tip.label,rownames(mydata)),]
+
+
+# Root by midpoint
+rooted_tree<-midpoint(tree, node.labels = "support")
+q <- ggtree(rooted_tree, layout="circular")
+
+d <- q$data
+d <- d[!d$isTip,]
+d$label <- as.numeric(d$label)
+d <- d[d$label < 100,]
+
+# Plot the tree and save to pdf 
+q2<- q + geom_treescale() + geom_text2(data=d, aes(label=label), size=0.01, position_nudge(x = +0.0015))
+q3 <- q2 %<+% mydata + geom_tiplab(aes(color=cherry,angle=angle), size=0.5, hjust=-0.05) + scale_color_manual(values=c("black", "lightblue", "deepskyblue", "forestgreen"))   
+
+# + geom_tippoint(aes(shape=hopBF1, na.rm=TRUE), alpha=1, color="red", offset=2, size=1)  
+q4<-gheatmap(q3, mydata2, width=2.0, font.size=0.1, color = "black",  offset=0.02) + scale_fill_manual(breaks=c("0","1", "2", "3") , values=c("white","yellow", "lightgreen", "forestgreen"))
+
+pdf(file = "/Users/hulinm/Documents/339_all_tree.pdf",width=7.2,height=10)
+q4+theme(legend.position="bottom", legend.title=element_blank()) + guides(colour=FALSE) 
+dev.off()
+
+
