@@ -9,6 +9,7 @@ Usage='sub_raxml.sh <phylip alignment file>'
 
 i=$1
 o=$2
-raxmlHPC-AVX -s $i -n $o -m GTRGAMMA -f a -x $RANDOM -N 100 -p 12345 
+m=$3
+raxmlHPC-AVX -s $i -n $o -m GTRGAMMA -f a ­­$m -x $RANDOM -N 100 ­I autoMRE -p 12345 
 
 

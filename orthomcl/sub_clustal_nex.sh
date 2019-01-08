@@ -9,5 +9,5 @@ Usage='sub_clustal.sh <no_replicates>'
 
 i=$1
 
-/home/hulinm/local/src/clustalw-2.1-linux-x86_64-libcppstatic/clustalw2 -infile=$i -OUTPUT=FASTA
+/home/hulinm/local/src/clustalw-2.1-linux-x86_64-libcppstatic/clustalw2 -infile=$i -OUTPUT=NEXUS
 
