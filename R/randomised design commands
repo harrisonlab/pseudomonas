@@ -1,0 +1,147 @@
+### Randomised balanced complete design for tree placement in field 2015-16 experiment ###
+
+# install klaR, combinat, spdep, deldir, coda, LearnBayes, sp, AlgDesign 
+
+
+library(agricolae)
+# 24 treatments and 10 blocks
+trt<-c("napoleon scar " , "napoleon wound "  ,"roundel scar " ,"roundel wound " , "mglory scar " , "mglory wound " , "van scar " , "van wound" , "marjories scar " ,"marjories wound " , "victoria scar" , "victoria wound " )
+outdesign <-design.rcbd(trt,10,serie=2,986,"Wichmann-Hill") # seed = 986
+print(outdesign$sketch)
+
+
+### Balanced incomplete design for positioning of strains on two trees using R script designed by X Xu ###
+
+for (i in 1:120) ## Loop through for 120 tree units
+{
+
+### first tree
+
+strain <- 1:8 				# strains 1-8 
+firstt <- sample(strain, 4) # sample 4 of these strains for the first tree
+xc <- sample (1:5,1)		# Position for control on first tree
+finalfirstp <- c(firstt[1:xc-1],9,firstt[xc:4]) #insert control this position randomly into firstt - 9 means control
+
+#### for the second tree
+ 
+secondt <- strain[-firstt]		# Remaining strain numbers for second tree positioned randomly
+xc <- sample (1:5,1)			# Position for control on second tree
+finalsecondp <- c(secondt[1:xc-1],10,secondt[xc:4]) #insert this position into secondt - 10 means control
+
+print(finalfirstp)
+print(finalsecondp)
+}
+
+### Randomised balanced complete design for twig W test Dec 2015 ###
+
+# install klaR, combinat, spdep, deldir, coda, LearnBayes, sp, AlgDesign 
+
+
+library(agricolae)
+# 36 treatments and 8 blocks
+trt<-c("5244-van" ,	"5244-vict" ,	"5300-van" ,	"5300-vict"	, "leaf-van" ,	"leaf-vict"	, "9097-van" ,	"9097-vict"	, "9293-van"	, "9293-vict"	, "5244-hrpA-van"	, "5244-hrpA-vict" ,	"5244-pbbr-van"	, "5244-pbbr-vict"	, "5244-pbbr-hopC-van"	, "5244-pbbr-hopC-vict" ,	"5244-pbbr-hopAW-van"	, "5244-pbbr-hopAW-vict" ,	"5244-pbbr-avrRps4-van"	, "5244-pbbr-avrRps4-vict"	, "leaf-pbbr-van"	, "leaf-pbbr-vict"	, "leaf-pbbr-hopC-van"	, "leaf-pbbr-hopC-vict"	, "leaf-pbbr-hopAW-van"	, "leaf-pbbr-hopAW-vict"	, "leaf-pbbr-avrRps4-van"	, "leaf-pbbr-avrRps4-vict"	, "control-van"	, "control-vict" ,	"pph-van"	, "pph-vict"	, "psaq-van"	, "psaq-vict"	, "psav-van"	, "psav-vict")
+outdesign <-design.rcbd(trt, 8, serie=2,986,"Wichmann-Hill") # seed = 986
+print(outdesign$sketch)
+
+# Randomised balanced complete design for deletion mutants cut shoots march 2017
+
+library(agricolae)
+trt<-c("wt" ,	"AR1" ,	"AZ1" ,	"BB1"	, "ARAZ-1" ,	"ARAZ-2"	, "ARBB" ,	"BBAZ-1"	, "BBAZ-17"	, "BBAZ-36"	, "BBARAZ-9"	, "BBARAZ-11" ,	"BBARAZ-12"	, "hrp", "control")
+outdesign <-design.rcbd(trt, 10, serie=2,986,"Wichmann-Hill") # seed = 986
+print(outdesign$sketch)
+
+# Randomised balanced complete design for pBBR1 transconjugants cut shoots march 2017
+
+library(agricolae)
+trt<-c("5244-pbbr" ,	"5244-AB1" ,	"5244-AB2V" ,	"5244-AB3Q" , "5244-hopC1" , "leaf-pbbr" ,	"leaf-AB1"	, "leaf-AB2V" ,	"leaf-AB3Q"	, "leaf-hopC1"	, "9644-pbbr"	, "9644-AB1"	, "9644-AB2V" ,	"9644—AB3Q"	, "9644-hopC1", "5300", "psav", "psaq" , "control")
+outdesign <-design.rcbd(trt, 10, serie=2,986,"Wichmann-Hill") # seed = 986
+print(outdesign$sketch)
+
+
+# Randomised balanced complete design for pBBR1 transconjugants cut shoots march 2017
+
+library(agricolae)
+trt<-c("van	5244" , "van	leaf" , "van	9097", "van	control" ,"van	5300", "nap	5244","nap	leaf","nap	9097","nap	control","round	5244","round	leaf","round	9097","round	control","round	5300","mgl	5244","mgl	leaf","mgl	9097","mgl	control","mgl	5300","colney	5244","colney	leaf","colney	9097","colney	control","colney	5300","stella	5244","stella	leaf","stella	9097","stella	control","stella	5300","sweet	5244","sweet	leaf","sweet	9097","sweet	control","sweet	5300","c247-1	5244","c247-1	leaf","c247-1	9097","c247-1	control","c247-1	5300","c269-8	5244","c269-8	leaf","c269-8	9097","c269-8	control","c269-8	5300","c318-11	5244","c318-11	leaf","c318-11	9097","c318-11	control","c318-11	5300","kordia	5244","kordia	leaf","kordia	9097","kordia	control","kordia	5300","regina	5244","regina	leaf","regina	9097","regina	control","regina	5300","penny	5244","penny	leaf","penny	9097","penny	control","penny	5300","korvic	5244","korvic	leaf","korvic	9097","korvic	control","korvic	5300","c417-317	5244","c417-317	leaf","c417-317	9097","c417-317	control","c417-317	5300","hertford	5244","hertford	leaf","hertford	9097","hertford	control","hertford	5300","merchant	5244","merchant	leaf","merchant	9097","merchant	control","merchant	5300","karina	5244","karina	leaf","karina	9097","karina	control","karina	5300","G5	5244","G5	leaf","G5	9097","G5	control","G5	5300","F12/1	5244","F12/1	leaf","F12/1	9097","F12/1	control","F12/1	5300","colt	5244","colt	leaf","colt	9097","colt	control","colt	5300","6xcolt	5244","6xcolt	leaf","6xcolt	9097","6xcolt	control","6xcolt	5300")
+outdesign <-design.rcbd(trt, 10, serie=2,986,"Wichmann-Hill") # seed = 986
+print(outdesign$sketch)
+
+# Randomised design for in vitro growth experiments in plate reader Aug 2017 
+
+library(agricolae)
+trt<-c("5244-pbbr" ,	"5244-AB1" ,	"5244-AB2V" ,	"5244-AB3Q"	, "5244-AB3L" ,	"5244-hopC1" ,	"leaf-pbbr" ,	"leaf-AB1" ,	"leaf-AB2V" ,	"leaf-AB3Q"	, "leaf-AB3L" ,	"leaf-hopC1"	, "9644-pbbr" ,	"9644-AB1" ,	"9644-AB2V" ,	"9644-AB3Q"	, "9644-AB3L" ,	"9644-hopC1", "control", "control","control", "control","control", "control")
+outdesign <-design.rcbd(trt, 4, serie=2,987,"Wichmann-Hill") # seed = 986
+print(outdesign$sketch)
+
+library(agricolae)
+trt<-c("5244-wt", "leaf-wt", "5244-hrpA", "leaf-hrpA", "5300-wt", "5300-AB1", "psav-wt", "psav-AB2", "leaf-AB2", "leaf-AR1", "leaf-BB", "leaf-AZ", "leaf-BBARAZ",  "control", "control","control", "control","control", "control",  "control", "control","control", "control","control")
+outdesign <-design.rcbd(trt, 4, serie=2,986,"Wichmann-Hill") # seed = 986
+print(outdesign$sketch)
+
+# Randomised design for in vitro growth experiments in plate reader July 2018 
+library(agricolae)
+trt<-c("R2leaf", "R2leaf-gfp1", "R2leaf-gfp2", "R2leaf-gfp5", "R1-5300", "R1-5300-gfp1", "R1-5300-gfp2", "blank")
+outdesign <-design.rcbd(trt, 12, serie=2,986,"Wichmann-Hill") # seed = 986
+print(outdesign$sketch)
+
+library(agricolae)
+trt<-c("R2leaf", "R2leaf-gfp2", "R2leaf-gfp5", "R1-5300", "R1-5300-gfp1", "R1-5300-gfp2", "blank")
+outdesign <-design.rcbd(trt, 12, serie=2,981,"Wichmann-Hill") # seed = 981
+print(outdesign$sketch)
+
+
+# Randomised balanced complete design for uppergrub cultivars Dec 2017
+
+library(agricolae)
+trt<-c("Charger-5244","Deadmans wood-5244","Dog Kennel wood-5244","F1/3-5244","FD1-57-4/166-5244","FD1-57-4/17-5244","Groton A-5244","Groton B-5244","Hamlet wood A-5244","Howley wood-5244","Mazz 1/227-5244","Merchant-5244","Merton Late-5244","Merton Premier-5244","mglory-5244","Napoleon-5244","New Years wood-5244","Prespect cottage-5244","Primrose wood-5244","P. sub Fukabana-5244","P. sub. Pende. Rosea-5244","Roundel-5244","Studley Royal-5244","Treswell wood-5244","Van-5244","Colney-5244","Lapins-5244","Sweetheart-5244","Stella -5244","Arger Fen A-5244","Arger Fen B-5244","Arger Fen E-5244","Charger-5300","Deadmans wood-5300","Dog Kennel wood-5300","F1/3-5300","FD1-57-4/166-5300","FD1-57-4/17-5300","Groton A-5300","Groton B-5300","Hamlet wood A-5300","Howley wood-5300","Mazz 1/227-5300","Merchant-5300","Merton Late-5300","Merton Premier-5300","mglory-5300","Napoleon-5300","New Years wood-5300","Prespect cottage-5300","Primrose wood-5300","P. sub Fukabana-5300","P. sub. Pende. Rosea-5300","Roundel-5300","Studley Royal-5300","Treswell wood-5300","Van-5300","Colney-5300","Lapins-5300","Sweetheart-5300","Stella -5300","Arger Fen A-5300","Arger Fen B-5300","Arger Fen E-5300","Charger-9097","Deadmans wood-9097","Dog Kennel wood-9097","F1/3-9097","FD1-57-4/166-9097","FD1-57-4/17-9097","Groton A-9097","Groton B-9097","Hamlet wood A-9097","Howley wood-9097","Mazz 1/227-9097","Merchant-9097","Merton Late-9097","Merton Premier-9097","mglory-9097","Napoleon-9097","New Years wood-9097","Prespect cottage-9097","Primrose wood-9097","P. sub Fukabana-9097","P. sub. Pende. Rosea-9097","Roundel-9097","Studley Royal-9097","Treswell wood-9097","Van-9097","Colney-9097","Lapins-9097","Sweetheart-9097","Stella -9097","Arger Fen A-9097","Arger Fen B-9097","Arger Fen E-9097","Charger-R2leaf","Deadmans wood-R2leaf","Dog Kennel wood-R2leaf","F1/3-R2leaf","FD1-57-4/166-R2leaf","FD1-57-4/17-R2leaf","Groton A-R2leaf","Groton B-R2leaf","Hamlet wood A-R2leaf","Howley wood-R2leaf","Mazz 1/227-R2leaf","Merchant-R2leaf","Merton Late-R2leaf","Merton Premier-R2leaf","mglory-R2leaf","Napoleon-R2leaf","New Years wood-R2leaf","Prespect cottage-R2leaf","Primrose wood-R2leaf","P. sub Fukabana-R2leaf","P. sub. Pende. Rosea-R2leaf","Roundel-R2leaf","Studley Royal-R2leaf","Treswell wood-R2leaf","Van-R2leaf","Colney-R2leaf","Lapins-R2leaf","Sweetheart-R2leaf","Stella -R2leaf","Arger Fen A-R2leaf","Arger Fen B-R2leaf","Arger Fen E-R2leaf","Charger-control","Deadmans wood-control","Dog Kennel wood-control","F1/3-control","FD1-57-4/166-control","FD1-57-4/17-control","Groton A-control","Groton B-control","Hamlet wood A-control","Howley wood-control","Mazz 1/227-control","Merchant-control","Merton Late-control","Merton Premier-control","mglory-control","Napoleon-control","New Years wood-control","Prespect cottage-control","Primrose wood-control","P. sub Fukabana-control","P. sub. Pende. Rosea-control","Roundel-control","Studley Royal-control","Treswell wood-control","Van-control","Colney-control","Lapins-control","Sweetheart-control","Stella -control","Arger Fen A-control","Arger Fen B-control","Arger Fen E-control")
+outdesign <-design.rcbd(trt, 5, serie=2,987,"Wichmann-Hill") # seed = 986
+print(outdesign$sketch)
+
+
+# Randomised balanced complete design for Pss host specificity cut shoot experiment Feb 2018
+
+library(agricolae)
+trt<-c("SyrB728A","Syr2676","Syr2675","Syr2682","Syr3023","Syr1212","Syr100","Syr9644","Syr9097","Syr9293","Syr9630","Syr9656","Syr9654","Syr9659")
+outdesign <-design.rcbd(trt, 10, serie=2,986,"Wichmann-Hill") # seed = 986
+print(outdesign$sketch)
+
+
+# Randomised balanced complete design for reference cultivars with different cherry canker strains Feb 2018
+
+library(agricolae)
+trt<-c("Colney-R1-5244","Stella-R1-5244","Lapins-R1-5244","Sweetheart-R1-5244","Merton Glory-R1-5244","Napoleon-R1-5244","Roundel-R1-5244","Van-R1-5244","Colney-R1-5300","Stella-R1-5300","Lapins-R1-5300","Sweetheart-R1-5300","Merton Glory-R1-5300","Napoleon-R1-5300","Roundel-R1-5300","Van-R1-5300","Colney-R2-leaf","Stella-R2-leaf","Lapins-R2-leaf","Sweetheart-R2-leaf","Merton Glory-R2-leaf","Napoleon-R2-leaf","Roundel-R2-leaf","Van-R2-leaf","Colney-Pss9097","Stella-Pss9097","Lapins-Pss9097","Sweetheart-Pss9097","Merton Glory-Pss9097","Napoleon-Pss9097","Roundel-Pss9097","Van-Pss9097","Colney-Control","Stella-Control","Lapins-Control","Sweetheart-Control","Merton Glory-Control","Napoleon-Control","Roundel-Control","Van-Control")
+outdesign <-design.rcbd(trt, 10, serie=2,986,"Wichmann-Hill") # seed = 986
+print(outdesign$sketch)
+
+# Randomised balanced complete design for pBBR transconjugants 
+
+library(agricolae)
+trt<-c("5244-pbbr" ,	"5244-AB1" ,	"5244-AB2V" ,	"5244-AB3Q" , "5244-AB3L" , "5244-hopC1" , "leaf", "5300", "psav", "psaq" , "control")
+outdesign <-design.rcbd(trt, 10, serie=2,986,"Wichmann-Hill") # seed = 986
+print(outdesign$sketch)
+
+
+# Randomised balanced complete design for Brogdale cutshoots
+ library(agricolae)
+trt<-c("Flamentiner-5244","Mermat-5244","Hollander-5244","Celeste-5244","Governor Wood-5244","Merpet-5244","Merton Marvel-5244","Bedford Prolific-5244","Windsor-5244","Pat-5244","Merton Favourite-5244","Weston's Unknown A-5244","Merton Bigarreau-5244","Turkish Black-5244","Summer Sun-5244","Donnisens Gelbe-5244","Santina-5244","Bradbourne Black-5244","Merton Reward-5244","Belle Agathe-5244","Sasha-5244","Merton Late-5244","Strawberry Heart-5244","Emperor Francis-5244","Vic-5244","Hedelfingen-5244","Allman Gulrod-5244","Knight's Early Black (A)-5244","Reverchon-5244","Sandra Rose-5244","Sir Tom-5244","Smokey Dun-5244","Vera-5244","Elton-5244","Merton Premier-5244","Colney-5244","Sweetheart-5244","Stella-5244","Kordia-5244","Early Rivers-5244","Roundel-5244","Merton Glory-5244","Napoleon-5244","Van-5244","Lapins-5244","Hertford-5244","Inge-5244","Sunburst-5244","Lambert-5244","Summit-5244","Merchant-5244","C371-4-5244","C247-1-5244","C308-68-5244","C269-8-5244","C318-11-5244","C417-317-5244","C367-9-5244","Penny-5244","Korvic-5244","Karina-5244","Flamentiner-9097","Mermat-9097","Hollander-9097","Celeste-9097","Governor Wood-9097","Merpet-9097","Merton Marvel-9097","Bedford Prolific-9097","Windsor-9097","Pat-9097","Merton Favourite-9097","Weston's Unknown A-9097","Merton Bigarreau-9097","Turkish Black-9097","Summer Sun-9097","Donnisens Gelbe-9097","Santina-9097","Bradbourne Black-9097","Merton Reward-9097","Belle Agathe-9097","Sasha-9097","Merton Late-9097","Strawberry Heart-9097","Emperor Francis-9097","Vic-9097","Hedelfingen-9097","Allman Gulrod-9097","Knight's Early Black (A)-9097","Reverchon-9097","Sandra Rose-9097","Sir Tom-9097","Smokey Dun-9097","Vera-9097","Elton-9097","Merton Premier-9097","Colney-9097","Sweetheart-9097","Stella-9097","Kordia-9097","Early Rivers-9097","Roundel-9097","Merton Glory-9097","Napoleon-9097","Van-9097","Lapins-9097","Hertford-9097","Inge-9097","Sunburst-9097","Lambert-9097","Summit-9097","Merchant-9097","C371-4  -9097","C247-1-9097","C308-68-9097","C269-8-9097","C318-11-9097","C417-317-9097","C367-9-9097","Penny-9097","Korvic-9097","Karina-9097","Flamentiner-R2-leaf","Mermat-R2-leaf","Hollander-R2-leaf","Celeste-R2-leaf","Governor Wood-R2-leaf","Merpet-R2-leaf","Merton Marvel-R2-leaf","Bedford Prolific-R2-leaf","Windsor-R2-leaf","Pat-R2-leaf","Merton Favourite-R2-leaf","Weston's Unknown A-R2-leaf","Merton Bigarreau-R2-leaf","Turkish Black-R2-leaf","Summer Sun-R2-leaf","Donnisens Gelbe-R2-leaf","Santina-R2-leaf","Bradbourne Black-R2-leaf","Merton Reward-R2-leaf","Belle Agathe-R2-leaf","Sasha-R2-leaf","Merton Late-R2-leaf","Strawberry Heart-R2-leaf","Emperor Francis-R2-leaf","Vic-R2-leaf","Hedelfingen-R2-leaf","Allman Gulrod-R2-leaf","Knight's Early Black (A)-R2-leaf","Reverchon-R2-leaf","Sandra Rose-R2-leaf","Sir Tom-R2-leaf","Smokey Dun-R2-leaf","Vera-R2-leaf","Elton-R2-leaf","Merton Premier-R2-leaf","Colney-R2-leaf","Sweetheart-R2-leaf","Stella-R2-leaf","Kordia-R2-leaf","Early Rivers-R2-leaf","Roundel-R2-leaf","Merton Glory-R2-leaf","Napoleon-R2-leaf","Van-R2-leaf","Lapins-R2-leaf","Hertford-R2-leaf","Inge-R2-leaf","Sunburst-R2-leaf","Lambert-R2-leaf","Summit-R2-leaf","Merchant-R2-leaf","C371-4  -R2-leaf","C247-1-R2-leaf","C308-68-R2-leaf","C269-8-R2-leaf","C318-11-R2-leaf","C417-317-R2-leaf","C367-9-R2-leaf","Penny-R2-leaf","Korvic-R2-leaf","Karina-R2-leaf","Flamentiner-5300","Mermat-5300","Hollander-5300","Celeste-5300","Governor Wood-5300","Merpet-5300","Merton Marvel-5300","Bedford Prolific-5300","Windsor-5300","Pat-5300","Merton Favourite-5300","Weston's Unknown A-5300","Merton Bigarreau-5300","Turkish Black-5300","Summer Sun-5300","Donnisens Gelbe-5300","Santina-5300","Bradbourne Black-5300","Merton Reward-5300","Belle Agathe-5300","Sasha-5300","Merton Late-5300","Strawberry Heart-5300","Emperor Francis-5300","Vic-5300","Hedelfingen-5300","Allman Gulrod-5300","Knight's Early Black (A)-5300","Reverchon-5300","Sandra Rose-5300","Sir Tom-5300","Smokey Dun-5300","Vera-5300","Elton-5300","Merton Premier-5300","Colney-5300","Sweetheart-5300","Stella-5300","Kordia-5300","Early Rivers-5300","Roundel-5300","Merton Glory-5300","Napoleon-5300","Van-5300","Lapins-5300","Hertford-5300","Inge-5300","Sunburst-5300","Lambert-5300","Summit-5300","Merchant-5300","C371-4  -5300","C247-1-5300","C308-68-5300","C269-8-5300","C318-11-5300","C417-317-5300","C367-9-5300","Penny-5300","Korvic-5300","Karina-5300","Flamentiner-control","Mermat-control","Hollander-control","Celeste-control","Governor Wood-control","Merpet-control","Merton Marvel-control","Bedford Prolific-control","Windsor-control","Pat-control","Merton Favourite-control","Weston's Unknown A-control","Merton Bigarreau-control","Turkish Black-control","Summer Sun-control","Donnisens Gelbe-control","Santina-control","Bradbourne Black-control","Merton Reward-control","Belle Agathe-control","Sasha-control","Merton Late-control","Strawberry Heart-control","Emperor Francis-control","Vic-control","Hedelfingen-control","Allman Gulrod-control","Knight's Early Black (A)-control","Reverchon-control","Sandra Rose-control","Sir Tom-control","Smokey Dun-control","Vera-control","Elton-control","Merton Premier-control","Colney-control","Sweetheart-control","Stella-control","Kordia-control","Early Rivers-control","Roundel-control","Merton Glory-control","Napoleon-control","Van-control","Lapins-control","Hertford-control","Inge-control","Sunburst-control","Lambert-control","Summit-control","Merchant-control","C371-4  -control","C247-1-control","C308-68-control","C269-8-control","C318-11-control","C417-317-control","C367-9-control","Penny-control","Korvic-control","Karina-control")
+outdesign <-design.rcbd(trt, 5, serie=2,986,"Wichmann-Hill") # seed = 986
+print(outdesign$sketch)
+
+
+# Randomised balanced complete design for deletion mutant cutshoots
+ library(agricolae)
+trt<-c("ΔhopH1","ΔhopE1","ΔhopBF1","ΔhopAZ1","ΔhopBB1","ΔhopBD1","ΔhopAR1","ΔhopAT1","ΔhopAY1","ΔhopF2","ΔhopF4","ΔBB1ΔAR1","ΔAR1ΔAY1","ΔF2ΔF4","ΔBB1ΔF2","ΔBB1ΔF4", "ΔBB1ΔF2ΔF4","Wildtype", "Control")
+outdesign <-design.rcbd(trt, 7, serie=2,986,"Wichmann-Hill") # seed = 986
+print(outdesign$sketch)
+
+# Randomised balanced complete design for parental material cutshoots 
+ library(agricolae)
+trt<-c("regina-R1-5244","regina-R1-5300","regina-R2-leaf","regina-Pss-9097","regina-Control","skeena-R1-5244","skeena-R1-5300","skeena-R2-leaf","skeena-Pss-9097","skeena-Control","C367-9-R1-5244","C367-9-R1-5300","C367-9-R2-leaf","C367-9-Pss-9097","C367-9-Control","C417-317-R1-5244","C417-317-R1-5300","C417-317-R2-leaf","C417-317-Pss-9097","C417-317-Control")
+outdesign <-design.rcbd(trt, 5, serie=2,986,"Wichmann-Hill") # seed = 986
+print(outdesign$sketch)
+
+
+# Randomised balanced complete design for controls and pathogen on trees November 2018 (Psm R2 population count on Colney, SH and van)
+ library(agricolae)
+trt<-c("R2-1","R2-2","R2-3","R2-4","R2-5","R2-6","R2-7","R2-8","R2-9","R2-10","C1","C2","C3","C4","C5","C6","C7","C8","C9","C10")
+outdesign <-design.rcbd(trt, 15, serie=2,986,"Wichmann-Hill") # seed = 986
+print(outdesign$sketch)
