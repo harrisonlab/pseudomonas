@@ -145,3 +145,216 @@ print(outdesign$sketch)
 trt<-c("R2-1","R2-2","R2-3","R2-4","R2-5","R2-6","R2-7","R2-8","R2-9","R2-10","C1","C2","C3","C4","C5","C6","C7","C8","C9","C10")
 outdesign <-design.rcbd(trt, 15, serie=2,986,"Wichmann-Hill") # seed = 986
 print(outdesign$sketch)
+
+# Randomised balanced complete design for whole tree assay with multiple strains on 13 cultivars December 2018
+
+# Colney
+library(agricolae)
+trt<-c("R1-5244", "R1-5300","R1-9646","R1-5270","R2-5255","R2-LEAF","R2-SC214","Pss9644", "Pss9656","Pss7928A","avii5271","control")
+outdesign <-design.rcbd(trt, 4, serie=2,1,"Wichmann-Hill") # seed = 1
+print(outdesign$sketch)
+
+# Van
+library(agricolae)
+trt<-c("R1-5244","R1-5300","R1-9646","R1-5270","R2-5255","R2-LEAF","R2-SC214","Pss9644", "Pss9656","Pss7928A","avii5271","control")
+outdesign <-design.rcbd(trt, 4, serie=2,2,"Wichmann-Hill") # seed = 2
+print(outdesign$sketch)
+
+# Stella
+library(agricolae)
+trt<-c("R1-5244","R1-5300","R1-9646","R1-5270","R2-5255","R2-LEAF","R2-SC214","Pss9644", "Pss9656","Pss7928A","avii5271","control")
+outdesign <-design.rcbd(trt, 4, serie=2,3,"Wichmann-Hill") # seed = 3
+print(outdesign$sketch)
+
+# Merchant
+library(agricolae)
+trt<-c("R1-5244","R1-5300","R1-9646","R1-5270","R2-5255","R2-LEAF","R2-SC214","Pss9644", "Pss9656","Pss7928A","avii5271","control")
+outdesign <-design.rcbd(trt, 4, serie=2,4,"Wichmann-Hill") # seed = 4
+print(outdesign$sketch)
+
+# Regina
+library(agricolae)
+trt<-c("R1-5244","R1-5300","R1-9646","R1-5270","R2-5255","R2-LEAF","R2-SC214","Pss9644", "Pss9656","Pss7928A","avii5271","control")
+outdesign <-design.rcbd(trt, 4, serie=2,5,"Wichmann-Hill") # seed = 5
+print(outdesign$sketch)
+
+# Kordia
+library(agricolae)
+trt<-c("R1-5244","R1-5300","R1-9646","R1-5270","R2-5255","R2-LEAF","R2-SC214","Pss9644", "Pss9656","Pss7928A","avii5271","control")
+outdesign <-design.rcbd(trt, 4, serie=2,6,"Wichmann-Hill") # seed = 6
+print(outdesign$sketch)
+
+#Lapins
+library(agricolae)
+trt<-c("R1-5244","R1-5300","R1-9646","R1-5270","R2-5255","R2-LEAF","R2-SC214","Pss9644", "Pss9656","Pss7928A","avii5271","control")
+outdesign <-design.rcbd(trt, 3, serie=2,7,"Wichmann-Hill") # seed = 7
+print(outdesign$sketch)
+
+# Sweetheart
+library(agricolae)
+trt<-c("R1-5244","R1-5300","R1-9646","R1-5270","R2-5255","R2-LEAF","R2-SC214","Pss9644", "Pss9656","Pss7928A","avii5271","control")
+outdesign <-design.rcbd(trt, 4, serie=2,8,"Wichmann-Hill") # seed = 8
+print(outdesign$sketch)
+
+# Penny
+library(agricolae)
+trt<-c("R1-5244","R1-5300","R1-9646","R1-5270","R2-5255","R2-LEAF","R2-SC214","Pss9644", "Pss9656","Pss7928A","avii5271","control")
+outdesign <-design.rcbd(trt, 4, serie=2,9,"Wichmann-Hill") # seed = 9
+print(outdesign$sketch)
+
+# Merton Glory
+library(agricolae)
+trt<-c("R1-5244","R1-5300","R1-9646","R1-5270","R2-5255","R2-LEAF","R2-SC214","Pss9644", "Pss9656","Pss7928A","avii5271","control")
+outdesign <-design.rcbd(trt, 4, serie=2,10,"Wichmann-Hill") # seed = 10
+print(outdesign$sketch)
+
+# Roundel
+library(agricolae)
+trt<-c("R1-5244","R1-5300","R1-9646","R1-5270","R2-5255","R2-LEAF","R2-SC214","Pss9644", "Pss9656","Pss7928A","avii5271","control")
+outdesign <-design.rcbd(trt, 4, serie=2,11,"Wichmann-Hill") # seed = 11
+print(outdesign$sketch)
+
+# Napoleon
+library(agricolae)
+trt<-c("R1-5244","R1-5300","R1-9646","R1-5270","R2-5255","R2-LEAF","R2-SC214","Pss9644", "Pss9656","Pss7928A","avii5271","control")
+outdesign <-design.rcbd(trt, 5, serie=2,12,"Wichmann-Hill") # seed = 12
+print(outdesign$sketch)
+
+# Summer Sun
+library(agricolae)
+trt<-c("R1-5244","R1-5300","R1-9646","R1-5270","R2-5255","R2-LEAF","R2-SC214","Pss9644", "Pss9656","Pss7928A","avii5271","control")
+outdesign <-design.rcbd(trt, 4, serie=2,13,"Wichmann-Hill") # seed = 13
+print(outdesign$sketch)
+
+# Inge
+library(agricolae)
+trt<-c("R1-5244","R1-5300","R1-9646","R1-5270","R2-5255","R2-LEAF","R2-SC214","Pss9644", "Pss9656","Pss7928A","avii5271","control")
+outdesign <-design.rcbd(trt, 2, serie=2,14,"Wichmann-Hill") # seed = 14
+print(outdesign$sketch)
+
+# C57-47, P. incisa and C59-21
+library(agricolae)
+trt<-c("R1-5244","R1-5300","R1-9646","R1-5270","R2-5255","R2-LEAF","R2-SC214","Pss9644", "Pss9656","Pss7928A","avii5271","control")
+outdesign <-design.rcbd(trt, 3, serie=2,15,"Wichmann-Hill") # seed = 15
+print(outdesign$sketch)
+
+
+# Randomised design for layout of the trees within the glasshouse different cultivars canker inoculation
+
+
+library(agricolae)
+trt<-c("LAPINS","COLNEY","KORDIA","MERCHANT","INGE","STELLA","REGINA","SUMMERSUN","VAN","PENNY","SWEETHEART","MERTON GLORY","NAPOLEON","ROUNDEL","C57-47","P.incisa F283","C59-21")
+outdesign <-design.rcbd(trt, 4, serie=2,986,"Wichmann-Hill") # seed = 13
+print(outdesign$sketch)
+
+
+
+# Randomised balanced complete design for whole tree assay with multiple strains on 13 cultivars December 2018
+
+# Colney
+library(agricolae)
+trt<-c("R1-5244", "R1-5300","R2-LEAF","Pss9644","control")
+outdesign <-design.rcbd(trt, 4, serie=2,1,"Wichmann-Hill") # seed = 1
+print(outdesign$sketch)
+
+# Van
+library(agricolae)
+trt<-c("R1-5244", "R1-5300","R2-LEAF","Pss9644","control")
+outdesign <-design.rcbd(trt, 4, serie=2,2,"Wichmann-Hill") # seed = 2
+print(outdesign$sketch)
+
+# Stella
+library(agricolae)
+trt<-c("R1-5244", "R1-5300","R2-LEAF","Pss9644","control")
+outdesign <-design.rcbd(trt, 4, serie=2,3,"Wichmann-Hill") # seed = 3
+print(outdesign$sketch)
+
+# Merchant
+library(agricolae)
+trt<-c("R1-5244", "R1-5300","R2-LEAF","Pss9644","control")
+outdesign <-design.rcbd(trt, 4, serie=2,4,"Wichmann-Hill") # seed = 4
+print(outdesign$sketch)
+
+# Regina
+library(agricolae)
+trt<-c("R1-5244", "R1-5300","R2-LEAF","Pss9644","control")
+outdesign <-design.rcbd(trt, 4, serie=2,5,"Wichmann-Hill") # seed = 5
+print(outdesign$sketch)
+
+# Kordia
+library(agricolae)
+trt<-c("R1-5244", "R1-5300","R2-LEAF","Pss9644","control")
+outdesign <-design.rcbd(trt, 4, serie=2,6,"Wichmann-Hill") # seed = 6
+print(outdesign$sketch)
+
+#Lapins
+library(agricolae)
+trt<-c("R1-5244", "R1-5300","R2-LEAF","Pss9644","control")
+outdesign <-design.rcbd(trt, 3, serie=2,7,"Wichmann-Hill") # seed = 7
+print(outdesign$sketch)
+
+# Sweetheart
+library(agricolae)
+trt<-c("R1-5244", "R1-5300","R2-LEAF","Pss9644","control")
+outdesign <-design.rcbd(trt, 4, serie=2,8,"Wichmann-Hill") # seed = 8
+print(outdesign$sketch)
+
+# Penny
+library(agricolae)
+trt<-c("R1-5244", "R1-5300","R2-LEAF","Pss9644","control")
+outdesign <-design.rcbd(trt, 4, serie=2,9,"Wichmann-Hill") # seed = 9
+print(outdesign$sketch)
+
+# Merton Glory
+library(agricolae)
+trt<-c("R1-5244", "R1-5300","R2-LEAF","Pss9644","control")
+outdesign <-design.rcbd(trt, 4, serie=2,10,"Wichmann-Hill") # seed = 10
+print(outdesign$sketch)
+
+# Roundel
+library(agricolae)
+trt<-c("R1-5244", "R1-5300","R2-LEAF","Pss9644","control")
+outdesign <-design.rcbd(trt, 4, serie=2,11,"Wichmann-Hill") # seed = 11
+print(outdesign$sketch)
+
+# Napoleon
+library(agricolae)
+trt<-c("R1-5244", "R1-5300","R2-LEAF","Pss9644","control")
+outdesign <-design.rcbd(trt, 5, serie=2,12,"Wichmann-Hill") # seed = 12
+print(outdesign$sketch)
+
+# Summer Sun
+library(agricolae)
+trt<-c("R1-5244", "R1-5300","R2-LEAF","Pss9644","control")
+outdesign <-design.rcbd(trt, 4, serie=2,13,"Wichmann-Hill") # seed = 13
+print(outdesign$sketch)
+
+# Inge
+library(agricolae)
+trt<-c("R1-5244", "R1-5300","R2-LEAF","Pss9644","control")
+outdesign <-design.rcbd(trt, 2, serie=2,14,"Wichmann-Hill") # seed = 14
+print(outdesign$sketch)
+
+# C57-47, P. incisa and C59-21
+library(agricolae)
+trt<-c("R1-5244", "R1-5300","R2-LEAF","Pss9644","control")
+outdesign <-design.rcbd(trt, 3, serie=2,15,"Wichmann-Hill") # seed = 15
+print(outdesign$sketch)
+
+
+
+
+# Randomised balanced complete design for Parental cultivars of GS Dec 2018 inoculations
+ library(agricolae)
+trt<-c("COLNEY-R1-5244","COLNEY-R1-5300","COLNEY-R2-leaf","COLNEY-Pss-9644","COLNEY-Control","KORDIA-R1-5244","KORDIA-R1-5300","KORDIA-R2-leaf","KORDIA-Pss-9644","KORDIA-Control","LAPINS-R1-5244","LAPINS-R1-5300","LAPINS-R2-leaf","LAPINS-Pss-9644","LAPINS-Control","MERCHANT-R1-5244","MERCHANT-R1-5300","MERCHANT-R2-leaf","MERCHANT-Pss-9644","MERCHANT-Control","MERTON GLORY-R1-5244","MERTON GLORY-R1-5300","MERTON GLORY-R2-leaf","MERTON GLORY-Pss-9644","MERTON GLORY-Control","NAPOLEON-R1-5244","NAPOLEON-R1-5300","NAPOLEON-R2-leaf","NAPOLEON-Pss-9644","NAPOLEON-Control","PENNY-R1-5244","PENNY-R1-5300","PENNY-R2-leaf","PENNY-Pss-9644","PENNY-Control","REGINA-R1-5244","REGINA-R1-5300","REGINA-R2-leaf","REGINA-Pss-9644","REGINA-Control","ROUNDEL-R1-5244","ROUNDEL-R1-5300","ROUNDEL-R2-leaf","ROUNDEL-Pss-9644","ROUNDEL-Control","STELLA-R1-5244","STELLA-R1-5300","STELLA-R2-leaf","STELLA-Pss-9644","STELLA-Control","SWEETHEART-R1-5244","SWEETHEART-R1-5300","SWEETHEART-R2-leaf","SWEETHEART-Pss-9644","SWEETHEART-Control","VAN-R1-5244","VAN-R1-5300","VAN-R2-leaf","VAN-Pss-9644","VAN-Control")
+outdesign <-design.rcbd(trt, 10, serie=2,986,"Wichmann-Hill") # seed = 986
+print(outdesign$sketch)
+
+
+
+# Randomised balanced complete design for Parental cultivars of GS, Prunus hybrids and IFTA Jan 2019 inoculations
+ library(agricolae)
+trt<-c("Bigarreau-Jaboulay-Control","Emperor-Francis-Control","Ferbolus-Control","Hedelfingen-Control","Lambert-Control","Newstar-Control","Noble-Control","Summersun-Control","Van-Control","Vic-Control","C367-9-Control","C417-317-Control","Colney-Control","Inge-Control","Kordia-Control","Korvic-Control","Lapins-Control","Merchant-Control","Merton-Glory-Control","Napoleon-Control","Penny-Control","Regina-Control","Roundel-Control","Stella-Control","Summit-Control","Sunburst-Control","Sweetheart-Control","Montmorency-Control","Merton Favourite-Control","Merton Late-Control","Merton Marvel-Control","Merton Premier-Control","Merton Reward-Control","GovernerWood-Control","Merton Bigarreau-Control","Mermat-Control","Merpet-Control","Santina-Control","Bradbourne Black-Control","Hertford-Control","Sascha-Control","BelleAgathe-Control","Donnisons Gelbe-Control","Morello-Control","Gisela-Control","Colt-Control","Prunus hybrid 1-Control","Prunus hybrid 8-Control","Prunus hybrid 9-Control","Prunus hybrid 4-Control","Prunus hybrid 5-Control","P. incisa E621-Control","P. incisa F283-Control","Bigarreau-Jaboulay-R15244","Emperor-Francis-R15244","Ferbolus-R15244","Hedelfingen-R15244","Lambert-R15244","Newstar-R15244","Noble-R15244","Summersun-R15244","Van-R15244","Vic-R15244","C367-9-R15244","C417-317-R15244","Colney-R15244","Inge-R15244","Kordia-R15244","Korvic-R15244","Lapins-R15244","Merchant-R15244","Merton-Glory-R15244","Napoleon-R15244","Penny-R15244","Regina-R15244","Roundel-R15244","Stella-R15244","Summit-R15244","Sunburst-R15244","Sweetheart-R15244","Montmorency-R15244","Merton Favourite-R15244","Merton Late-R15244","Merton Marvel-R15244","Merton Premier-R15244","Merton Reward-R15244","GovernerWood-R15244","Merton Bigarreau-R15244","Mermat-R15244","Merpet-R15244","Santina-R15244","Bradbourne Black-R15244","Hertford-R15244","Sascha-R15244","BelleAgathe-R15244","Donnisons Gelbe-R15244","Morello-R15244","Gisela-R15244","Colt-R15244","Prunus hybrid 1-R15244","Prunus hybrid 8-R15244","Prunus hybrid 9-R15244","Prunus hybrid 4-R15244","Prunus hybrid 5-R15244","P. incisa E621-R15244","P. incisa F283-R15244","Bigarreau-Jaboulay-R15300","Emperor-Francis-R15300","Ferbolus-R15300","Hedelfingen-R15300","Lambert-R15300","Newstar-R15300","Noble-R15300","Summersun-R15300","Van-R15300","Vic-R15300","C367-9-R15300","C417-317-R15300","Colney-R15300","Inge-R15300","Kordia-R15300","Korvic-R15300","Lapins-R15300","Merchant-R15300","Merton-Glory-R15300","Napoleon-R15300","Penny-R15300","Regina-R15300","Roundel-R15300","Stella-R15300","Summit-R15300","Sunburst-R15300","Sweetheart-R15300","Montmorency-R15300","Merton Favourite-R15300","Merton Late-R15300","Merton Marvel-R15300","Merton Premier-R15300","Merton Reward-R15300","GovernerWood-R15300","Merton Bigarreau-R15300","Mermat-R15300","Merpet-R15300","Santina-R15300","Bradbourne Black-R15300","Hertford-R15300","Sascha-R15300","BelleAgathe-R15300","Donnisons Gelbe-R15300","Morello-R15300","Gisela-R15300","Colt-R15300","Prunus hybrid 1-R15300","Prunus hybrid 8-R15300","Prunus hybrid 9-R15300","Prunus hybrid 4-R15300","Prunus hybrid 5-R15300","P. incisa E621-R15300","P. incisa F283-R15300","Bigarreau-Jaboulay-R2leaf","Emperor-Francis-R2leaf","Ferbolus-R2leaf","Hedelfingen-R2leaf","Lambert-R2leaf","Newstar-R2leaf","Noble-R2leaf","Summersun-R2leaf","Van-R2leaf","Vic-R2leaf","C367-9-R2leaf","C417-317-R2leaf","Colney-R2leaf","Inge-R2leaf","Kordia-R2leaf","Korvic-R2leaf","Lapins-R2leaf","Merchant-R2leaf","Merton-Glory-R2leaf","Napoleon-R2leaf","Penny-R2leaf","Regina-R2leaf","Roundel-R2leaf","Stella-R2leaf","Summit-R2leaf","Sunburst-R2leaf","Sweetheart-R2leaf","Montmorency-R2leaf","Merton Favourite-R2leaf","Merton Late-R2leaf","Merton Marvel-R2leaf","Merton Premier-R2leaf","Merton Reward-R2leaf","GovernerWood-R2leaf","Merton Bigarreau-R2leaf","Mermat-R2leaf","Merpet-R2leaf","Santina-R2leaf","Bradbourne Black-R2leaf","Hertford-R2leaf","Sascha-R2leaf","BelleAgathe-R2leaf","Donnisons Gelbe-R2leaf","Morello-R2leaf","Gisela-R2leaf","Colt-R2leaf","Prunus hybrid 1-R2leaf","Prunus hybrid 8-R2leaf","Prunus hybrid 9-R2leaf","Prunus hybrid 4-R2leaf","Prunus hybrid 5-R2leaf","P. incisa E621-R2leaf","P. incisa F283-R2leaf","Bigarreau-Jaboulay-Pss9644","Emperor-Francis-Pss9644","Ferbolus-Pss9644","Hedelfingen-Pss9644","Lambert-Pss9644","Newstar-Pss9644","Noble-Pss9644","Summersun-Pss9644","Van-Pss9644","Vic-Pss9644","C367-9-Pss9644","C417-317-Pss9644","Colney-Pss9644","Inge-Pss9644","Kordia-Pss9644","Korvic-Pss9644","Lapins-Pss9644","Merchant-Pss9644","Merton-Glory-Pss9644","Napoleon-Pss9644","Penny-Pss9644","Regina-Pss9644","Roundel-Pss9644","Stella-Pss9644","Summit-Pss9644","Sunburst-Pss9644","Sweetheart-Pss9644","Montmorency-Pss9644","Merton Favourite-Pss9644","Merton Late-Pss9644","Merton Marvel-Pss9644","Merton Premier-Pss9644","Merton Reward-Pss9644","GovernerWood-Pss9644","Merton Bigarreau-Pss9644","Mermat-Pss9644","Merpet-Pss9644","Santina-Pss9644","Bradbourne Black-Pss9644","Hertford-Pss9644","Sascha-Pss9644","BelleAgathe-Pss9644","Donnisons Gelbe-Pss9644","Morello-Pss9644","Gisela-Pss9644","Colt-Pss9644","Prunus hybrid 1-Pss9644","Prunus hybrid 8-Pss9644","Prunus hybrid 9-Pss9644","Prunus hybrid 4-Pss9644","Prunus hybrid 5-Pss9644","P. incisa E621-Pss9644","P. incisa F283-Pss9644")
+outdesign <-design.rcbd(trt, 10, serie=2,986,"Wichmann-Hill") # seed = 986
+print(outdesign$sketch)
+
