@@ -1,0 +1,226 @@
+#################################################################
+
+# T3SS gene cluster identification 
+
+#################################################################
+
+# Proteins used for this analysis were taken from the Pto DC3000 genome 
+
+prot_AAO54900.1_9
+prot_AAO54901.1_10
+prot_AAO54902.1_11
+prot_AAO54903.1_12
+prot_AAO54904.1_13
+prot_AAO54905.1_14
+prot_AAO54906.1_15
+prot_AAO54907.1_16
+prot_AAO54908.1_17
+prot_AAO54909.1_18
+prot_AAO54910.1_19
+prot_AAO54911.2_20
+prot_AAO54912.1_21
+prot_AAO54913.1_22
+prot_AAO54926.1_23
+prot_AAO54927.1_24
+
+# Within /projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/virulence_genes/t3ss
+
+
+for GENOME in /projects/cherry_canker/pseudomonas_data/pseudomonas/assembly/epiphytes/*.fa ; do
+     GENOME_FILE=$(basename $GENOME)
+     GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fa//g)
+     echo $GENOME_SHORT
+
+
+
+sbatch /projects/oldhome/hulinm/git_repos/pseudomonas/sub_tblastn_slurm.sh  $GENOME /projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/virulence_genes/t3ss/DC3000_t3ss  /projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/virulence_genes/t3ss
+
+done
+
+# Filter based on 50% QL and 50% ID
+# Do for each genome 
+for file in * ; do 
+file_name=$(basename $file)
+echo $file_name
+
+python /projects/oldhome/hulinm/git_repos/tools/analysis/python_effector_scripts/filter_blast_hrp.py $file "$file_name"_out
+
+
+# Then give an overall score based on gene scores in cluster. 0 or 1 present (0) if all genes present and above thresholds (2)
+for file in *out ; do 
+file_name=$(basename $file | sed s/"_out"//g)
+echo $file_name
+cut -f2  $file  | sort | uniq | head -1 | sed s/"1"/"0"/g | sed s/"2"/"1"/g > "$file_name"_out2
+done 
+ 
+
+
+# Add file name
+
+for filename in *_out2 ; do
+echo $filename
+	sed "1s/^/${filename} \n/" ${filename} > $filename.new 
+	echo Done ${filename} 
+done
+
+paste *.new > matrix 
+
+paste protein_list matrix > matrix2
+
+
+#################################################################
+
+# Toxin gene cluster identification 
+
+#################################################################
+
+# Within /projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/virulence_genes/toxins
+
+
+# Genes used 
+
+# Coronatine
+gi|28871810|ref|NP_794429.1|    
+gi|28871811|ref|NP_794430.1|    
+gi|28871812|ref|NP_794431.1|   
+gi|28871813|ref|NP_794432.1|    
+gi|28871814|ref|NP_794433.1|    
+gi|28871815|ref|NP_794434.1|    
+gi|28871816|ref|NP_794435.1|    
+gi|28871817|ref|NP_794436.1|    
+gi|28871819|ref|NP_794438.1|    
+
+# mangotoxin 
+
+gi|429843824|gb|AGA16727.1|    
+gi|429843825|gb|AGA16728.1|     
+gi|429843826|gb|AGA16729.1|     
+gi|429843827|gb|AGA16730.1|     
+gi|429843828|gb|AGA16731.1|     
+gi|429843829|gb|AGA16732.1|     
+gi|429843831|gb|AGA16733.1|     
+gi|108733347|gb|ABG00044.1|     
+gi|108733348|gb|ABG00045.1|     
+gi|108733350|gb|ABG00047.1|     
+
+# phaseolotoxin
+
+gi|74132195|gb|AAZ99796.1|      
+gi|74132220|gb|AAZ99821.1|      
+gi|74132196|gb|AAZ99797.1|      
+gi|74132197|gb|AAZ99798.1|      
+gi|74132198|gb|AAZ99799.1|      
+gi|74132199|gb|AAZ99800.1|      
+gi|74132200|gb|AAZ99801.1|      
+gi|74132201|gb|AAZ99802.1|      
+gi|74132202|gb|AAZ99803.1|      
+gi|74132203|gb|AAZ99804.1|      
+gi|74132204|gb|AAZ99805.1|      
+gi|74132205|gb|AAZ99806.1|      
+gi|74132217|gb|AAZ99818.1|      
+gi|74132218|gb|AAZ99819.1|      
+gi|74132206|gb|AAZ99807.1|      
+gi|74132207|gb|AAZ99808.1|      
+gi|74132208|gb|AAZ99809.1|      
+gi|74132209|gb|AAZ99810.1|      
+gi|74132210|gb|AAZ99811.1|     
+gi|74132211|gb|AAZ99812.1|      
+gi|74132212|gb|AAZ99813.1|      
+gi|74132213|gb|AAZ99814.1|      
+gi|74132214|gb|AAZ99815.1|      
+gi|74132215|gb|AAZ99816.1|      
+gi|74132216|gb|AAZ99817.1|      
+gi|74132219|gb|AAZ99820.1|   
+
+# syringolin A
+
+gi|443283856|gb|ELS42861.1|     
+gi|443284786|gb|ELS43791.1|     
+gi|443284787|gb|ELS43792.1|     
+gi|443284788|gb|ELS43793.1|    
+gi|443284789|gb|ELS43794.1|     
+gi|443284790|gb|ELS43795.1|     
+
+# syringomycin 
+
+gi|514086078|gb|EPF66813.1|     
+gi|514086077|gb|EPF66812.1|     
+gi|514086076|gb|EPF66811.1|     
+gi|514086069|gb|EPF66804.1|     
+gi|514085364|gb|EPF66099.1|     
+gi|514086067|gb|EPF66802.1|     
+gi|514086066|gb|EPF66801.1|     
+gi|514086065|gb|EPF66800.1|     
+gi|3510629|gb|AAC80285.1|       
+gi|514086064|gb|EPF66799.1|     
+gi|514086063|gb|EPF66798.1|     
+gi|514086061|gb|EPF66796.1|    
+gi|514086060|gb|EPF66795.1|     
+gi|514086059|gb|EPF66794.1|     
+
+# syringopeptin 
+
+gi|514086070|gb|EPF66805.1|     
+gi|514086071|gb|EPF66806.1|     
+gi|514086072|gb|EPF66807.1|     
+
+
+
+for GENOME in /projects/cherry_canker/pseudomonas_data/pseudomonas/assembly/epiphytes/*.fa ; do
+     GENOME_FILE=$(basename $GENOME)
+     GENOME_SHORT=$(echo $GENOME_FILE | sed s/.fa//g)
+     echo $GENOME_SHORT
+
+# All toxins queries in /projects/oldhome/hulinm/git_repos/tools/analysis/toxin_queries/protein/
+# Phaseolotoxin example below 
+
+sbatch /projects/oldhome/hulinm/git_repos/pseudomonas/sub_tblastn_slurm.sh  $GENOME /projects/oldhome/hulinm/git_repos/tools/analysis/toxin_queries/protein/phaseolotoxin_queries.fasta  /projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/virulence_genes/toxins
+
+done
+
+
+# Filter based on 50% QL and 50% ID
+
+# Do for each toxin e.g.
+for file in *phas ; do 
+file_name=$(basename $file)
+echo $file_name
+
+python /projects/oldhome/hulinm/git_repos/tools/analysis/python_effector_scripts/filter_blast_hrp.py $file ./output/"$file_name"_out
+
+
+# Then give an overall score based on gene scores in cluster. 0 or 1 present (0) if all genes present and above thresholds (2)
+# Then filter this down further to give overall score of 1 if all genes are present 
+
+for file in *out ; do 
+file_name=$(basename $file | sed s/"_out"//g)
+echo $file_name
+cut -f2  $file  | sort | uniq | head -1 | sed s/"1"/"0"/g | sed s/"2"/"1"/g > "$file_name"_out2
+done 
+ 
+ 
+# Concatenate for each genome 
+for file in *out2 ; do 
+file_name=$(basename $file | sed s/"_out2"//g | sed s/"_sym"//g | sed s/"_syl"//g | sed s/"_syp"//g | sed s/"_cor"//g | sed s/"_tab"//g  | sed s/"_mg"//g )
+echo $file_name >> genomes
+
+
+uniq genomes > genome
+
+for file in $(cat genome) ; do 
+echo $file
+cat "$file"*_out2 > "$file"_all
+done 
+ 
+ 
+# Add file name
+
+for filename in *_all ; do
+echo $filename
+	sed "1s/^/${filename} \n/" ${filename} > $filename.new 
+	echo Done ${filename} 
+done
+
+paste *all.new > matrix 
+
+# This matrix was then manually added onto the end of the effector presence-absence file in excel 

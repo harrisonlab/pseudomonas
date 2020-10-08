@@ -1,0 +1,134 @@
+
+# Use move_contigs to order genomes based on reference for each phylogroup (Use ssh -Y cluster to ensure trusted X11 connection)
+
+for GENOME in /projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/mauve/epiphytes/2/*.fa  ; do
+GENOME_SHORT=$(basename $GENOME | sed s/".fa"//g )
+echo $GENOME_SHORT
+#mkdir "$GENOME_SHORT"_dir
+REFERENCE=/projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/mauve/epiphytes/done/GCA_000007805.fa 
+echo $REFERENCE
+
+java -Xmx500m -cp Mauve.jar org.gel.mauve.contigs.ContigOrderer -output /projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/mauve/epiphytes/2/"$GENOME_SHORT"_dir -ref $REFERENCE -draft $GENOME
+done
+
+
+##copy all fasta to align directory
+# Copy over last alignment folder fasta file
+WorkDir=/projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/mauve/epiphytes/done
+for GENOME in $WorkDir/*dir ; do
+GENOME_SHORT=$(basename $GENOME | sed s/"_dir"//g )
+echo $GENOME_SHORT
+for f in $WorkDir/"$GENOME_SHORT"_dir/*[0-9] ; do 
+cp "$f"/*.fas $WorkDir/fas
+done
+
+# All fasta now in /projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/mauve/epiphytes/done/fas/SG_all
+# A few genomes had to be done using Geneious MCM as they did not work on the cluster: 
+
+#5-7C.fa.fas
+#4-2D.fa.fas
+#4-12E.fa.fas
+#GCA_002318895.fa.fas
+#GCA_001400695.fa.fas
+#GCA_001400345.fa.fas
+
+
+# Generate alignment of genome sequences using progressive mauve - remember to use linux-64
+WorkDir=/projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/mauve/epiphytes/done/fas
+/projects/oldhome/hulinm/local/src/mauve_snapshot_2015-02-13/linux-x64/progressiveMauve --output=$WorkDir/epiphytes.xmfa 1-10F.fa.fas 1-11B.fa.fas 1-11C.fa.fas 1-11E.fa.fas 1-11G.fa.fas 1-12B.fa.fas 1-12H.fa.fas 1-1C.fa.fas 1-1E.fa.fas 1-1G.fa.fas 1-3G.fa.fas 1-4C.fa.fas 1-4G.fa.fas 1-4H.fa.fas 2-10C.fa.fas 2-10E.fa.fas 2-11B.fa.fas 2-11D.fa.fas 2-2G.fa.fas 2-3C.fa.fas 2-4G.fa.fas 2-4H.fa.fas 2-5A.fa.fas 2-5E.fa.fas 2-6C.fa.fas 2-6D.fa.fas 2-7C.fa.fas 2-7E.fa.fas 2-7G.fa.fas 2-8C.fa.fas 2-9E.fa.fas 2-9G.fa.fas 3-10B.fa.fas 3-10H.fa.fas 3-11B.fa.fas 3-1G.fa.fas 3-2D.fa.fas 3-2F.fa.fas 3-3C.fa.fas 3-3G.fa.fas 3-4D.fa.fas 3-4E.fa.fas 3-5G.fa.fas 3-7A.fa.fas 3-7D.fa.fas 3-7F.fa.fas 3-8H.fa.fas 3-9A.fa.fas 3-9F.fa.fas 4-10A.fa.fas 4-10C.fa.fas 4-10F.fa.fas 4-11A.fa.fas 4-12E.fa.fas 4-12H.fa.fas 4-2D.fa.fas 4-2F.fa.fas 4-2H.fa.fas 4-3D.fa.fas 4-3H.fa.fas 4-4B.fa.fas 4-4G.fa.fas 4-5C.fa.fas 4-6C.fa.fas 4-7B.fa.fas 4-7C.fa.fas 4-8B.fa.fas 4-8H.fa.fas 4-9B.fa.fas 5-10A.fa.fas 5-10D.fa.fas 5-10F.fa.fas 5-1G.fa.fas 5-2A.fa.fas 5-2C.fa.fas 5-2F.fa.fas 5-2G.fa.fas 5-3A.fa.fas 5-3C.fa.fas 5-3F.fa.fas 5-3G.fa.fas 5-6A.fa.fas 5-6C.fa.fas 5-7A.fa.fas 5-7C.fa.fas 5-7F.fa.fas 5-7H.fa.fas 5-8G.fa.fas 5-9D.fa.fas 6-2G.fa.fas 6-3A.fa.fas 6-6H.fa.fas 7-1C.fa.fas GCA_000007805.fa.fas GCA_000012205.fa.fas GCA_000012245.fa.fas GCA_000145685.fa.fas GCA_000163275.fa.fas GCA_000164015.fa.fas GCA_000177475.fa.fas GCA_000177495.fa.fas GCA_000177515.fa.fas GCA_000187045.fa.fas GCA_000187065.fa.fas GCA_000275945.fa.fas GCA_000282735.fa.fas GCA_000302795.fa.fas GCA_000302815.fa.fas GCA_000302915.fa.fas GCA_000331385.fa.fas GCA_000333995.fa.fas GCA_000334055.fa.fas GCA_000344355.fa.fas GCA_000344535.fa.fas GCA_000412165.fa.fas GCA_000416235.fa.fas GCA_000416465.fa.fas GCA_000416545.fa.fas GCA_000416805.fa.fas GCA_000416885.fa.fas GCA_000452445.fa.fas GCA_000452465.fa.fas GCA_000452485.fa.fas GCA_000452505.fa.fas GCA_000452525.fa.fas GCA_000452585.fa.fas GCA_000452605.fa.fas GCA_000452625.fa.fas GCA_000452645.fa.fas GCA_000452705.fa.fas GCA_000452745.fa.fas GCA_000452765.fa.fas GCA_000452785.fa.fas GCA_000452805.fa.fas GCA_000452825.fa.fas GCA_000507185.fa.fas GCA_000517305.fa.fas GCA_000658965.fa.fas GCA_000732035.fa.fas GCA_000737225.fa.fas GCA_000737235.fa.fas GCA_000737245.fa.fas GCA_000738515.fa.fas GCA_000765305.fa.fas GCA_000834695.fa.fas GCA_000934645.fa.fas GCA_000935695.fa.fas GCA_000935725.fa.fas GCA_000935765.fa.fas GCA_000935775.fa.fas GCA_000972155.fa.fas GCA_000972175.fa.fas GCA_000972195.fa.fas GCA_000988395.fa.fas GCA_000988485.fa.fas GCA_001006445.fa.fas GCA_001006455.fa.fas GCA_001238485.fa.fas GCA_001270465.fa.fas GCA_001275725.fa.fas GCA_001275735.fa.fas GCA_001281365.fa.fas GCA_001293575.fa.fas GCA_001293665.fa.fas GCA_001293725.fa.fas GCA_001293775.fa.fas GCA_001293835.fa.fas GCA_001293935.fa.fas GCA_001293985.fa.fas GCA_001294025.fa.fas GCA_001294035.fa.fas GCA_001294065.fa.fas GCA_001294105.fa.fas GCA_001294115.fa.fas GCA_001294185.fa.fas GCA_001294195.fa.fas GCA_001294265.fa.fas GCA_001294275.fa.fas GCA_001294305.fa.fas GCA_001400345.fa.fas GCA_001400395.fa.fas GCA_001400595.fa.fas GCA_001400605.fa.fas GCA_001400695.fa.fas GCA_001400735.fa.fas GCA_001400835.fa.fas GCA_001400875.fa.fas GCA_001401005.fa.fas GCA_001401095.fa.fas GCA_001401155.fa.fas GCA_001401165.fa.fas GCA_001401235.fa.fas GCA_001401265.fa.fas GCA_001401315.fa.fas GCA_001401335.fa.fas GCA_001401385.fa.fas GCA_001401405.fa.fas GCA_001466845.fa.fas GCA_001466875.fa.fas GCA_001466905.fa.fas GCA_001466945.fa.fas GCA_001466965.fa.fas GCA_001466975.fa.fas GCA_001467105.fa.fas GCA_001467115.fa.fas GCA_001467225.fa.fas GCA_001467285.fa.fas GCA_001467325.fa.fas GCA_001467335.fa.fas GCA_001467365.fa.fas GCA_001482725.fa.fas GCA_001497495.fa.fas GCA_001497595.fa.fas GCA_001535725.fa.fas GCA_001535735.fa.fas GCA_001535805.fa.fas GCA_001535815.fa.fas GCA_001535835.fa.fas GCA_001535855.fa.fas GCA_001535905.fa.fas GCA_001535915.fa.fas GCA_001535945.fa.fas GCA_001538055.fa.fas GCA_001538085.fa.fas GCA_001538145.fa.fas GCA_001538155.fa.fas GCA_001538205.fa.fas GCA_001538245.fa.fas GCA_001538255.fa.fas GCA_001623415.fa.fas GCA_001642795.fa.fas GCA_001675375.fa.fas GCA_001675415.fa.fas GCA_001698815.fa.fas GCA_001716855.fa.fas GCA_002003545.fa.fas GCA_002024285.fa.fas GCA_002068135.fa.fas GCA_002087235.fa.fas GCA_002093745.fa.fas GCA_002111835.fa.fas GCA_002115545.fa.fas GCA_002158995.fa.fas GCA_002174875.fa.fas GCA_002174905.fa.fas GCA_002174995.fa.fas GCA_002175005.fa.fas GCA_002261495.fa.fas GCA_002269785.fa.fas GCA_002269885.fa.fas GCA_002270015.fa.fas GCA_002318645.fa.fas GCA_002318665.fa.fas GCA_002318725.fa.fas GCA_002318735.fa.fas GCA_002318745.fa.fas GCA_002318805.fa.fas GCA_002318815.fa.fas GCA_002318825.fa.fas GCA_002318875.fa.fas GCA_002318885.fa.fas GCA_002318895.fa.fas GCA_002323035.fa.fas GCA_002406485.fa.fas GCA_002699825.fa.fas GCA_002699845.fa.fas GCA_002699885.fa.fas GCA_002699965.fa.fas GCA_002699985.fa.fas GCA_002700065.fa.fas GCA_002723575.fa.fas GCA_002736925.fa.fas GCA_002762615.fa.fas GCA_002763655.fa.fas GCA_002890475.fa.fas GCA_002890485.fa.fas GCA_002905685.fa.fas GCA_002905755.fa.fas GCA_002905795.fa.fas GCA_002905815.fa.fas GCA_002905835.fa.fas GCA_002905875.fa.fas GCA_002905935.fa.fas GCA_002905975.fa.fas GCA_002906015.fa.fas GCA_002906035.fa.fas GCA_002906055.fa.fas GCA_002906135.fa.fas GCA_002916225.fa.fas GCA_002916255.fa.fas GCA_002916275.fa.fas GCA_002916335.fa.fas GCA_002916375.fa.fas GCA_002917155.fa.fas GCA_002917175.fa.fas GCA_002917195.fa.fas GCA_002939285.fa.fas GCA_002966555.fa.fas GCA_003047185.fa.fas GCA_003201385.fa.fas GCA_003205935.fa.fas GCA_003205965.fa.fas GCA_003253455.fa.fas GCA_900074915.fa.fas GCA_900099665.fa.fas GCA_900100365.fa.fas GCA_900103225.fa.fas GCA_900105295.fa.fas GCA_900107345.fa.fas GCA_900113535.fa.fas GCA_900113625.fa.fas GCA_900114665.fa.fas GCA_900115275.fa.fas GCA_900119195.fa.fas GCA_900143095.fa.fas GCA_900184295.fa.fas GCA_900187465.fa.fas GCA_900187575.fa.fas GCA_900235815.fa.fas GCA_900235825.fa.fas GCA_900235835.fa.fas GCA_900235855.fa.fas GCA_900235865.fa.fas GCA_900235905.fa.fas GCA_900289095.fa.fas GCA_900289125.fa.fas GCA_900289135.fa.fas
+
+
+
+# Strip alignment of non-core parts to create core genome alignment. Minimum length of LCB is user defined as 1000
+/home/hulinm/local/src/mauve_2.3.1/stripSubsetLCBs /home/hulinm/pseudomonas_data/pseudomonas/analysis/mauve/race1/new/align/race1.xmfa /home/hulinm/pseudomonas_data/pseudomonas/analysis/mauve/race1/new/align/race1.xmfa.bbcols /home/hulinm/pseudomonas_data/pseudomonas/analysis/mauve/race1/new/align/race1_core.xmfa 1000
+
+
+
+
+# Replace file path with nothing so identifier for each strain is short version
+
+
+sed -e 's/\/home\/hulinm\/pseudomonas_data\/pseudomonas\/analysis\/mauve\/race1\/new\/align\///g' /home/hulinm/pseudomonas_data/pseudomonas/analysis/mauve/race1/new/align/race1_core.xmfa  > /home/hulinm/pseudomonas_data/pseudomonas/analysis/mauve/race1/new/align/race1_core_align.xmfa
+sed s/".fasta"//g /home/hulinm/pseudomonas_data/pseudomonas/analysis/mauve/race1/new/align/race1_core_align.xmfa   > /home/hulinm/pseudomonas_data/pseudomonas/analysis/mauve/race1/new/align/race1_core.xmfa
+
+
+
+# Convert xmfa to concatenated fasta (all LCBs concatenated)
+perl /home/hulinm/git_repos/tools/analysis/python_effector_scripts/alignment_convert.pl -i race1_core.xmfa -o race1.fasta -f fasta -c
+
+# Use Gblocks to strip alignment of ambiguous seq
+
+# Convert fasta to phylip format
+perl /home/hulinm/git_repos/tools/analysis/python_effector_scripts/alignment_convert.pl -i race1.fasta -o race1.phy  -f phylip -g fasta
+perl /home/hulinm/git_repos/tools/analysis/python_effector_scripts/alignment_convert.pl -i hopAB1.fasta -o hopAB1.phy  -f phylip -g fasta
+
+qsub /home/hulinm/git_repos/pseudomonas/orthomcl/sub_raxml.sh hopAB1.phy
+
+
+
+
+### CLONALFRAME
+
+#Remove additional information in headers to make compatible with ClonalFrameML. Then remove blank lines
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/edit_xmfa.py race1_core.xmfa > race1_core
+sed -i '/^$/d' race1_core
+
+
+#### make sure names are OK - same in xmfa and tree ####
+
+ sed 's/Ps_myricae/Ps_myricaeAZ8448/g' RAxML_bestTree.out | sed 's/9657\/1-486/9657/g' | sed 's/9629\/1-486/9629/g' | sed 's/5300\/1-486/5300/g' | sed 's/Ps_rhaphio/Ps_rhaphiolepidis/g'  | sed 's/9646\/1-486/9646/g' | sed 's/5269\/1-486/5269/g' | sed 's/5244\/1-486/5244/g' | sed 's/2341\/1-486/2341/g' > tree
+
+
+
+
+# ClonalFrameML. Importation status gives you likely regions of recombinant origin
+
+/home/hulinm/local/src/ClonalFrameML/src/ClonalFrameML  tree race1_core R1 -xmfa_file true -ignore_incomplete_sites true -emsim 100
+
+
+qsub /home/hulinm/git_repos/pseudomonas/orthomcl/sub_clonalframeML.sh tree2 race1_core R1
+
+
+perl /home/hulinm/git_repos/tools/analysis/python_effector_scripts/alignment_convert.pl -i core_genome_trimmed.phy -o core_genome_trimmed2.fasta -f fasta -c
+
+/home/hulinm/local/src/ClonalFrameML/src/ClonalFrameML  RAxML_bipartitionsBranchLabels.out 104.fasta cf  -ignore_incomplete_sites true -emsim 100  -prior_mean "0.1 0.001 0.1 0.004079712"
+
+/home/hulinm/local/src/ClonalFrameML/src/ClonalFrameML  RAxML_bestTree.out core_genome_trimmed.fasta cf  -ignore_incomplete_sites true -emsim 100 -prior_mean "0.1 0.001 0.1 0.005738032"
+
+/home/hulinm/local/src/ClonalFrameML/src/ClonalFrameML  RAxML_bestTree.out core_genome_trimmed.fasta cf  -ignore_incomplete_sites true -emsim 100 -prior_mean "0.1 0.001 0.1 0.005738032"
+
+/home/hulinm/local/src/ClonalFrameML/src/ClonalFrameML  RAxML_bestTree.out out_stripped.fasta2  cf  -ignore_incomplete_sites true -emsim 100 -prior_mean "0.1 0.001 0.1 0.005738032"
+
+/home/hulinm/local/src/ClonalFrameML/src/ClonalFrameML  RAxML_rooted.tre polymorphisms_move.fa  cf  -ignore_incomplete_sites true -emsim 100
+
+/home/hulinm/local/src/ClonalFrameML/src/ClonalFrameML  RAxML_bestTree.out polymorphisms_move.fas  cf  -ignore_incomplete_sites true -emsim 100
+
+/home/hulinm/local/src/ClonalFrameML/src/ClonalFrameML  RAxML_bestTree.out polymorphisms_move.fas  cf  -ignore_incomplete_sites true -emsim 100
+
+/home/hulinm/local/src/ClonalFrameML/src/ClonalFrameML  rooted_tree core_genome_trimmed2.fasta  cf  -ignore_incomplete_sites true -emsim 100
+
+#Realphy tree
+/home/hulinm/local/src/ClonalFrameML/src/ClonalFrameML  RAxML_rooted.out  polymorphisms_move.fas cf  -ignore_incomplete_sites true -emsim 100
+
+#Clonalframe on rooted wo trimmed tree with xmfa for core genome based on core orthogroups 
+/home/hulinm/local/src/ClonalFrameML/src/ClonalFrameML  RAxML_bestTree.out xmfa2 clonalframe -xmfa_file  true -ignore_incomplete_sites true -emsim 100 -prior_mean "0.1 0.001 0.1 0.005659743"
+
+/home/hulinm/local/src/ClonalFrameML/src/ClonalFrameML  rooted_tree3 t clonalframe -xmfa_file  true -ignore_incomplete_sites true -emsim 100 -prior_mean "0.1 0.001 0.1 0.005659743"
+
+
+
+/home/hulinm/local/src/ClonalFrameML/src/ClonalFrameML  rooted_tree3  xmfa2  perbranch  -embranch true -embranch_dispersion 0.1 -xmfa_file  true -ignore_incomplete_sites true -emsim 100 -prior_mean "0.1 0.001 0.1 0.005659743"
+
+
+/home/hulinm/local/src/ClonalFrameML/src/ClonalFrameML  ../rooted_tree3 xmfa2 clonalframe -xmfa_file  true -ignore_incomplete_sites true -emsim 100 -prior_mean "0.1 0.001 0.1 0.005659743" -prior_sd "0.1 0.001 0.1 0.01449577"
+
+
+
+
+
+Rscript /home/hulinm/local/src/ClonalFrameML/src/cfml_results.R R1
+
+Rscript /home/hulinm/local/src/ClonalFrameML/src/cfml_results2.R clonalframe
+Rscript /home/hulinm/local/src/ClonalFrameML/src/cfml_results2.R perbranch
+
+
