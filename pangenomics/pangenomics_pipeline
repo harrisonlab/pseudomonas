@@ -1,0 +1,607 @@
+#################################################################
+
+# Pseudomonas pangenomics
+
+# Pipeline (adapted Levy 2018) > get all genomes with <1000 contigs (428) > N50 > 40,000 (348) > checkM completeness score >95% complete, <5% contamination 
+# All 428 genomes belonging to Ps. species complex Gomila et al. 2017 from the ftp website Sept 2018
+# Generated spreadsheet from ftp website 
+# Downloaded all onto cluster using wget. Only for those genomes with <1000 contigs 
+
+#################################################################
+
+## Filtering of genomes based on GWAS paper (Levy et al. 2018)
+
+# Only keep those with N50 >=40000bp (348 genomes) 50000 as in paper was only 260 genomes. Will need to compare results see if taking down to 40000 is detrimental 
+# First run quast.py on all genomes to get report
+
+
+python /projects/oldhome/hulinm/git_repos/tools/analysis/python_effector_scripts/extract_N50filtered_genomes.py transposed_report.tsv > report2.txt 
+
+for genome in *.fasta ; do
+strain=$(basename $genome | sed s/".fasta"//g)
+echo $strain
+python /projects/oldhome/hulinm/git_repos/tools/analysis/python_effector_scripts/rename.py -i $genome -o "$strain".fa
+gzip $genome
+
+for file in $(cat /projects/cherry_canker/pseudomonas_data/pseudomonas/assembly/pangenomics/genomes/gbff/fna/quast_results/results_2018_11_05_14_16_39/report2.txt) ; do 
+cp "$file".fa ./filtered/
+done
+
+
+# CheckM to check for contamination and completeness of genomes  
+# Note this was done before cluster move over and qsub will not work. Can run manually with srun into high mem node. See alternative in reference mapping pipeline mojgan code
+
+
+
+for file in ./*.fna ; do
+    file_short=$(basename $file | sed s/".fna"//g)
+    echo $file_short
+   # mkdir -p ./checkm/"$file_short"
+   # cp $file ./checkm/"$file_short"
+    Jobs=$(qstat | grep 'checkm' | wc -l)
+    while [ $Jobs -gt 7 ]
+    do
+        sleep 7
+        printf "."
+        Jobs=$(qstat | grep 'checkm' | wc -l)
+    done
+    qsub /projects/oldhome/hulinm/git_repos/pseudomonas/sub_checkm.sh ./checkm/"$file_short" ./"$file_short"/checkm
+done
+
+
+# Run report 
+
+for file in ./*fasta ; do 
+    file_short=$(basename $file | sed s/".fasta"//g)
+    
+ checkm qa ./"$file_short"/"$file_short"/lineage.ms ./"$file_short"/"$file_short" > ./"$file_short"/"$file_short"/report
+
+done
+
+
+# Remove contaminated genomes 
+
+rm 	GCA_002318025.1_ASM231802v1_genomic.fa
+rm 	GCA_000156995.1_ASM15699v1_genomic.fa
+rm 	GCA_900103765.1_IMG-taxon_2687453696_annotated_assembly_genomic.fa
+rm 	GCA_900103395.1_IMG-taxon_2687453721_annotated_assembly_genomic.fa
+rm 	GCA_002318655.1_ASM231865v1_genomic.fa
+rm 	GCA_002318015.1_ASM231801v1_genomic.fa
+rm 	GCA_001293825.1_Pla107_genomic.fa
+rm 	GCA_002318715.1_ASM231871v1_genomic.fa
+
+
+# Annotation
+
+# NCBI strains 
+/projects/cherry_canker/pseudomonas_data/pseudomonas/assembly/pangenomics/genomes/gbff/fna/filtered/
+
+# Epiphytes
+/projects/cherry_canker/pseudomonas_data/pseudomonas/annotation/2019/epiphytes/
+
+# Run annotation and gzip file 
+for file in *.fasta ; do 
+file_short=$(basename $file | sed s/".fasta"//g) 
+prokka  --usegenus --genus ps $file --outdir $file_short
+gzip $file 
+done 
+
+
+#################################################################
+
+# Filtering strains for using in comparative genomics
+# Started with 394 strains classified as Pseudomonas syringae 
+# Used pyani to filter based on a distance of 0.0005 to remove identical strains from analysis 
+# Removed additional duplicate/erroneous genomes 
+# Starting strains are those that have been checked with checkm and filtered based on N50. Can be found in 
+/home/hulinm/pseudomonas_data/pseudomonas/assembly/pangenomics/genomes/gbff/fna/filtered/fa 
+
+#################################################################
+
+# pyani command to go ANI for each pairwise comparison of strains
+
+
+python3 /projects/oldhome/hulinm/local/src/pyani/bin/average_nucleotide_identity.py  -i /projects/cherry_canker/pseudomonas_data/pseudomonas/assembly/pangenomics/genomes/gbff/fna/filtered/fa -o /projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/pyani/output -m ANIm -g
+
+# Removal of erroneous 2254 genome  GCA_000980905.1_ASM98090v1_genomic.fa 
+# Removal of duplicate B301D genome GCA_000585725.1_B301D-Rv1.0_genomic.fa
+# Removal of duplicate GCA_000145945.1 
+# Removal of duplicate  GCA_003205905.1_ASM320590v1_genomic.fa 
+# Removal of duplicate GCA_000935795.1 
+# Removal of duplicate GCA_000935735.1 
+
+
+# Filtering based on pyani results to remove identical genomes 
+
+# Make file with contig no. 
+ls *.fa > strain_list
+for file in *.fa ; do  contigs=$(grep ">" $file | wc -l) ; echo $contigs >> contigs; done
+paste strain_list contigs > strain.info
+
+
+# Manually edit in excel to convert ANI matrix into a distance matrix (complement of 1)  
+
+# Cluster strains in R on local machine based on nucleotide identity distance 
+matrix<-read.table("/Users/hulinm/Documents/ani_matrix3.txt", col.names=,1, row.names=1)
+ma<-as.matrix(matrix)
+di<-dist(ma)
+d<-hclust(di, method = "average")
+distances<-cophenetic(d)
+dend <- as.dendrogram(d)
+d2<-as.matrix(distances)
+d3<-melt(d2)
+write.table(d3, file="distances")
+groups<-cutree(d, h=0.05)
+write.table(groups, file="g0.5")
+groups<-cutree(d, h=0.04)
+write.table(groups, file="g0.4")
+groups<-cutree(d, h=0.03)
+write.table(groups, file="g0.3")
+groups<-cutree(d, h=0.02)
+write.table(groups, file="g0.2")
+groups<-cutree(d, h=0.01)
+write.table(groups, file="g0.1")
+groups<-cutree(d, h=0.005)
+write.table(groups, file="g0.005")
+groups<-cutree(d, h=0.001)
+write.table(groups, file="g0.001")
+groups<-cutree(d, h=0.0005)
+write.table(groups, file="g0.0005")
+groups<-cutree(d, h=0.0001)
+write.table(groups, file="g0.0001")
+
+# Dendrogram plot 
+pdf(file = "/Users/hulinm/Documents/ani_dendrogram2.pdf",width=15,height=7)
+par(cex=0.2)
+plot(dend)
+abline(h=0.01, col="red")
+abline(h=0.02, col="blue")
+abline(h=0.03, col="green")
+abline(h=0.04, col="orange")
+abline(h=0.05, col="purple")
+abline(h=0.005, col="darkgreen")
+abline(h=0.001, col="lightblue")
+abline(h=0.0005, col="pink")
+abline(h=0.0001, col="lightgreen")
+
+dev.off()
+
+
+# Take strains0.0005 data from R and make 246 directories in pyani_filtering directory to copy each genome into its own group. 
+# Will then copy only the one with the least contigs into a new folder 
+# Analysis in /projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/pyani/phylogroups/filtering
+
+
+while read line; do
+strain=$(echo $line | cut -f1 -d " " ) 
+group=$(echo $line |cut -f2 -d " " )
+echo $strain
+echo $group
+cp "$strain".fa ./pyani_filtering/"$group"
+done < strains0.0005 
+
+# paste together results from strain.info and strains0.0005 into file called strain.information. 
+ 
+ 
+awk '{print >> $3; close($3)}' strain.information2  
+ 
+# Remove resulting files to group folder 
+mv 1* groups/
+mv 2* groups/
+mv 3* groups/
+mv 4* groups/
+mv 5* groups/
+mv 6* groups/
+mv 7* groups/
+mv 8* groups/
+mv 9* groups/
+
+for file in * ; do
+file_name=$(basename $file)
+sort -nk2 $file | head -n1 > "$file_name"_ref
+done
+
+cat *ref > reference_strains 
+
+# Manually added in R2leaf as this is our representative strain which we want to keep in analysis
+# Ended with 234 genomes in final analysis 
+# Copy to orthofinder folder for orthology analysis 
+
+# Analysis done in /projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/pyani/phylogroups/filtering/groups
+
+for file in $(cat strains_to_keep) ; do  cp /projects/oldhome/hulinm/pseudomonas_data/pseudomonas/assembly/pangenomics/genomes/gbff/fna/filtered/"$file"/"$file".faa /projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/phylogenetics/new; done
+#for file in $(cat strains_to_keep) ; do  cp /projects/oldhome/hulinm/pseudomonas_data/pseudomonas/assembly/pangenomics/additional_genomes/"$file"/"$file".faa /projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/phylogenetics/new; done
+
+
+#################################################################
+
+
+# Phylogroup clustering 
+
+#################################################################
+
+
+# Phylogroups taken from the g0.5 (95% identity, 0.5  distance) file generated using R (L135)
+# This file contains the cluster group for each genome which was used in subsequent tree drawing in R and also for individual phylogroup phylogenies as well as effector linkage analysis 
+
+
+/projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/pyani/phylogroups/info
+
+
+#################################################################
+
+# OrthoFinder 
+
+#################################################################
+
+
+
+# Modify all fasta files to remove description and get into correct format for orthofinder
+# Each fasta item must be in format of strain|peg.number
+# In /projects/oldhome/hulinm/pseudomonas_data/pseudomonas/assembly/pangenomics/genomes/gbff/fna/filtered/
+
+for file in *.faa ; do  
+echo $file
+file_short=$(basename $file | sed s/".faa"//g | cut -f1 -d ".") 
+echo $file_short
+sed -e 's/^\(>[^[:space:]]*\).*/\1/' $file | sed s/"_"/"|peg."/g  > "$file_short".fa
+done
+
+for file in *.fa ; do  
+id=$(less $file | grep ">" | cut -f1 -d "|" | sed s/">"//g | uniq) 
+file_short=$(basename $file | sed s/".fa"//g) 
+genome=$(pwd | rev | cut -f1 -d "/" | rev)
+echo $id 
+echo $file_short
+sed s/"$id"/"$file_short"/g $file > $file_short.fasta
+sed s/"$file_short"/"$genome"/g $file_short.fasta > "$genome".faa
+done
+
+for file in *.fasta ; do  
+file_short=$(basename $file | sed s/".fasta"//g) 
+mv "$file_short".fasta "$file_short".faa
+rm "$file_short".fa
+rm *genomic.faa
+
+# Run orthofinder 
+
+WorkDir=/projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/phylogenetics/new
+
+srun -p himem --mem 30G --pty bash 
+
+/projects/oldhome/hulinm/local/src/OrthoFinder-2.2.7_source/orthofinder/orthofinder.py  -f . -t 32 -S diamond 
+
+
+
+# Found that sometimes this would break halfway through run. If this happens you can start from an alternative point but first have to unzip the files in Working Directory
+for file in Blast*.gz  ; do 
+    Jobs=$(squeue | grep 'sub_gunz' | wc -l)
+    while [ $Jobs -gt 60 ]
+    do
+        srun sleep 10
+        printf "."
+        Jobs=$(squeue | grep 'sub_gunz' | wc -l)
+    done
+sbatch /projects/oldhome/hulinm/git_repos/pseudomonas/sub_gunzip_slurm.sh $file 
+done 
+/projects/oldhome/hulinm/local/src/OrthoFinder-2.2.7_source/orthofinder/orthofinder.py  -b 
+
+
+#################################################################
+
+# Pangenome phylogeny 
+
+#################################################################
+
+# Creating matrix of presence and absence of all orthogroups
+
+WorkDir=/projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/phylogenetics/new/Results_Mar04
+perl /projects/oldhome/hulinm/local/src/Phylogenomic/OrthoFinder-NumberOfGenesPerOrthogroupsPerSpecies.pl $WorkDir/Orthogroups.csv > $WorkDir/out_matrix
+
+# Manually add character to first line at the start to make transpose work properly. Then delete after process: 
+
+awk '                      
+{ 
+    for (i=1; i<=NF; i++)  {
+        a[NR,i] = $i
+    }
+}
+NF>p { p = NF }
+END {    
+    for(j=1; j<=p; j++) {
+        str=a[1,j]
+        for(i=2; i<=NR; i++){
+            str=str" "a[i,j];
+        }
+        print str
+    }
+}' $WorkDir/Orthogroups.GeneCount.csv > $WorkDir/Orthogroups.GeneCount.transposed.txt
+
+
+
+# Convert all numbers >1 to a 1 in the out matrix 
+head -n 1 Orthogroups.GeneCount.transposed.txt > out_matrix_header
+awk '{$1=""}1' Orthogroups.GeneCount.transposed.txt | tail -n +2 | nawk '{for(i=1; i<=NF; i++)  $i=($i>=1) ? 1 : $i}1'  > t
+printf '%s\n' '0r !head -n 1 out_matrix_header' x | ex t
+cut -f1 -d " " Orthogroups.GeneCount.transposed.txt > out_matrix_strains
+ # Then manually remove first word (first genome) from t file
+ # Manually add strains to first line of out_matrix_strains
+paste out_matrix_strains t > out_matrix_pa
+
+# Create a fasta file of this matrix 
+
+
+sed s/"\t"/" "/g out_matrix_pa > out_matrix_pa2
+
+python /projects/oldhome/hulinm/git_repos/tools/analysis/python_effector_scripts/convert_tabfasta.py out_matrix_pa2 > t #Edit python file to no. of genomes
+sed s/"', '"//g t | sed s/"\['"//g | sed s/"'\]"//g | sed s/"\""//g > matrix.fasta
+
+perl /projects/oldhome/hulinm/git_repos/tools/analysis/python_effector_scripts/alignment_convert.pl -i matrix.fa -o matrix.phy -f phylip -g fasta
+
+sbatch /projects/oldhome/hulinm/git_repos/pseudomonas/orthomcl/sub_iqtree_boots_pa_slurm.sh matrix.phy  GTR2 001238485 
+sbatch /projects/oldhome/hulinm/git_repos/pseudomonas/orthomcl/sub_iqtree_boots_pa_slurm.sh matrixI.phy  GTR2+I 001238485 
+
+
+# Try with removal of invariant sites and also removal of orphan sites (present in only 1 genome)
+awk '{for(i=1;i<=NF;i++)$i=(a[i]+=$i)}END{print}' out_matrix_pa2 > 2
+cat out_matrix_pa2 2 > 3
+
+awk '                      
+{ 
+    for (i=1; i<=NF; i++)  {
+        a[NR,i] = $i
+    }
+}
+NF>p { p = NF }
+END {    
+    for(j=1; j<=p; j++) {
+        str=a[1,j]
+        for(i=2; i<=NR; i++){
+            str=str" "a[i,j];
+        }
+        print str
+    }
+}' 3 > 3.txt
+
+# Find number of columns
+head -n1 3.txt |  sed 's/\s/\n/g' | wc -l
+# 236 columns 
+
+head -1  3.txt > header
+awk '{if ($329 < 327) print }' 3.txt > 4.txt
+awk '{if ($329 > 1) print }' 4.txt > 5.txt
+cat header 5.txt > 5
+awk '                      
+{ 
+    for (i=1; i<=NF; i++)  {
+        a[NR,i] = $i
+    }
+}
+NF>p { p = NF }
+END {    
+    for(j=1; j<=p; j++) {
+        str=a[1,j]
+        for(i=2; i<=NR; i++){
+            str=str" "a[i,j];
+        }
+        print str
+    }
+}' 5 > 6.txt
+
+rev 6.txt | cut -d " " -f 2- | rev > 7.txt
+
+awk '{ $1="";print}' 7.txt > 7.txt2
+sed '$d' 7.txt2 > 7.txt3
+python /projects/oldhome/hulinm/git_repos/tools/analysis/python_effector_scripts/convert_tabfasta.py 7.txt3 > 7  #Edit python file to no. of genomes
+sed s/"', '"//g 7 | sed s/"\['"//g | sed s/"'\]"//g | sed s/"\""//g > red_matrix.fasta
+sed -i s/"GCA_"//g red_matrix.fasta
+perl /projects/oldhome/hulinm/git_repos/tools/analysis/python_effector_scripts/alignment_convert.pl -i red_matrix.fasta -o red_matrix.phy -f phylip -g fasta
+
+sbatch /projects/oldhome/hulinm/git_repos/pseudomonas/orthomcl/sub_iqtree_boots_pa_slurm.sh  red_matrix.phy GTR2+FO+ASC+R5 001238485 
+
+
+
+#################################################################
+
+# Core genome phylogeny 
+
+#################################################################
+
+# Build a phylogeny using raxml from concatenated single copy protein sequences 
+
+# Extract fasta sequences for each orthogroup
+# 571 single copy orthogroups
+WorkDir=/projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/phylogenetics/new/Results_Mar04
+sed s/"OG"/"orthogroup"/g Orthogroups.txt > Orthogroups.txt2
+sed s/"OG"/"orthogroup"/g SingleCopyOrthogroups.txt > SingleCopyOrthogroups.txt2
+
+python /projects/oldhome/hulinm/git_repos/tools/pathogen/orthology/orthoMCL/orthoMCLgroups2fasta.py --orthogroups Orthogroups.txt2  --fasta /projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/phylogenetics/new/proteins.fa  --out_dir ./fasta/
+
+
+# Extract single copy orthogroups 
+
+WorkDir=/projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/phylogenetics/new/Results_Mar04
+for file in $(cat $WorkDir/SingleCopyOrthogroups.txt2) ; do 
+echo $file
+cp "$file".fa ./single_copy
+
+# Alignment of proteins sequences of each OG 
+WorkDir=/projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/phylogenetics/new/Results_Mar04
+
+for fasta in *.fa  ; do
+    file_short=$(basename $fasta | sed s/".fa"//g)
+    Jobs=$(squeue | grep 'sub_clus' | wc -l)
+    while [ $Jobs -gt 100 ]
+    do
+        srun sleep 10
+        printf "."
+        Jobs=$(squeue | grep 'sub_clus' | wc -l)
+    done
+sbatch /projects/oldhome/hulinm/git_repos/pseudomonas/orthomcl/sub_clustal_slurm.sh $fasta
+done
+
+
+# GBLOCKS to correct alignments 
+
+rm *dnd
+rm *fa
+rm slurm*
+
+
+for file in *.fasta ; do
+Gblocks $file -t=p -d=y #Change -t to p or d for protein/dna
+echo $file
+done
+
+# rename sequences to make them shorter and compatible with phylogenetic programs 
+for fasta in *fasta-gb  ; do
+name=$(basename $fasta | sed s/".fasta-gb"//g)
+sed 's/peg\.[0-9]*//g' $fasta | sed s/GCA_//g   > ./align/"$name"
+done
+
+# Convert to nexus format from fasta
+for file in $(cat /projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/phylogenetics/new/Results_Mar04/SingleCopyOrthogroups.txt2) ; do 
+echo $file
+perl /projects/oldhome/hulinm/git_repos/tools/analysis/python_effector_scripts/alignment_convert.pl -i "$file" -o "$file".nxs -f nexus -g fasta
+
+for file in $(cat /projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/phylogenetics/new/Results_Mar04/SingleCopyOrthogroups.txt2) ; do 
+echo $file
+perl /projects/oldhome/hulinm/git_repos/tools/analysis/python_effector_scripts/alignment_convert.pl -i "$file" -o "$file".phy -f phylip -g fasta
+
+
+# Concatenate single copy orthogroup alignments  
+# Modify the python script every time to append the path 
+python /projects/oldhome/hulinm/git_repos/tools/analysis/python_effector_scripts/concatenate2.py
+
+perl /projects/oldhome/hulinm/git_repos/tools/analysis/python_effector_scripts/alignment_convert.pl -i combined.nex -o combined.phy -f phylip -g nexus
+
+sed -i s/"|"//g  combined.phy 
+sed -i s/"'"//g  combined.phy 
+sbatch /projects/oldhome/hulinm/git_repos/pseudomonas/orthomcl/sub_iqtree_boots_new2_slurm.sh combined.phy  001238485
+sbatch /projects/oldhome/hulinm/git_repos/pseudomonas/orthomcl/sub_iqtree_boots_new2_slurm.sh combined.phy.uniqueseq.phy  001238485
+
+
+#################################################################
+
+
+# Individual phylogroup phylogenies 
+
+#################################################################
+
+
+# Splitting genomes into phylogroups and re-doing orthology and phylogenetics 
+# Analysis performed in  /projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/pyani/phylogroups
+# This is currently unfinished 
+
+
+for file in $(cat info); do 
+echo $file
+
+genome=$(echo $file | cut -d "+" -f1) 
+phylogroup=$(echo $file | cut -d "+" -f2)
+echo $genome
+echo $phylogroup
+cp "$genome"* ./phylogroups/"$phylogroup"/
+echo $file
+done
+
+# Copy over protein aa files to each phylogroup orthofinder directory
+
+for i in `seq 1 27` ; do 
+
+for fasta in ./"$i"/*.fa ; do 
+fasta_short=$(basename $fasta | sed s/".fa"//g | cut -f1 -d ".")
+echo $fasta_short
+cp /projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/phylogenetics/new/"$fasta_short"* ./"$i"/orthofinder
+done 
+
+# Run Orthofinder on major phylogroups (1,3,6,11,15) 
+
+# Cluster 1 (P1) with outgroup GCA_900114665 (cluster 3) 31422.pts-0.bio72
+/projects/oldhome/hulinm/local/src/OrthoFinder-2.2.7_source/orthofinder/orthofinder.py  -f orthofinder -t 16 -S diamond 
+
+# Cluster 2 (P3) with outgroup GCA_001400735 (cluster 19) 31444.pts-0.bio72
+/projects/oldhome/hulinm/local/src/OrthoFinder-2.2.7_source/orthofinder/orthofinder.py  -f orthofinder -t 16 -S diamond 
+
+# Cluster 6 (P2) with outgroup GCA_900105295 (Cluster 11) 31485.pts-0.bio72
+/projects/oldhome/hulinm/local/src/OrthoFinder-2.2.7_source/orthofinder/orthofinder.py  -f orthofinder -t 16 -S diamond 
+
+# Cluster 11 (P.cerasi phylogroup) with outgroup GCA_000012245 (Cluster 6) 31506.pts-0.bio72
+/projects/oldhome/hulinm/local/src/OrthoFinder-2.2.7_source/orthofinder/orthofinder.py  -f orthofinder -t 16 -S diamond 
+
+# Cluster 15 (Por phylogroup) with outgroup GCA_900235835 (Cluster 1) 31776.pts-0.bio72
+/projects/oldhome/hulinm/local/src/OrthoFinder-2.2.7_source/orthofinder/orthofinder.py  -f orthofinder -t 16 -S diamond 
+
+
+# Generate phylogeny for each cluster
+# Analysis in Results folder of each 
+#/projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/pyani/phylogroups/phylogroups/$i/orthofinder/Results*
+
+mkdir -p fasta/single_copy/align/model
+mkdir -p fasta/single_copy/align/iqtree
+
+
+
+# Build a phylogeny using raxml from concatenated single copy protein sequences 
+
+# Extract fasta sequences for each orthogroup
+WorkDir=/projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/pyani/phylogroups/phylogroups/1/orthofinder/Results_Apr08
+
+sed s/"OG"/"orthogroup"/g Orthogroups.txt > Orthogroups.txt2
+sed s/"OG"/"orthogroup"/g SingleCopyOrthogroups.txt > SingleCopyOrthogroups.txt2
+python /projects/oldhome/hulinm/git_repos/tools/pathogen/orthology/orthoMCL/orthoMCLgroups2fasta.py --orthogroups Orthogroups.txt2  --fasta /projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/pyani/phylogroups/phylogroups/1/orthofinder/proteins.fa  --out_dir ./fasta/
+
+
+for file in $(cat $WorkDir/SingleCopyOrthogroups.txt2) ; do 
+echo $file
+cp "$file".fa ./single_copy
+done
+
+# Alignment of proteins sequences of each OG 
+WorkDir=/projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/pyani/phylogroups/phylogroups/1/orthofinder/Results_Apr08
+for fasta in *.fa  ; do
+    file_short=$(basename $fasta | sed s/".fa"//g)
+    Jobs=$(squeue | grep 'sub_clus' | wc -l)
+    while [ $Jobs -gt 100 ]
+    do
+        srun sleep 10
+        printf "."
+        Jobs=$(squeue | grep 'sub_clus' | wc -l)
+    done
+sbatch /projects/oldhome/hulinm/git_repos/pseudomonas/orthomcl/sub_clustal_slurm.sh $fasta
+done
+
+
+# GBLOCKS to correct alignments 
+
+rm *dnd
+rm *fa
+rm sub*
+
+
+for file in *.fasta ; do
+Gblocks $file -t=p -d=y #Change -t to p or d for protein/dna
+echo $file
+done
+
+# rename sequences to make them shorter and compatible with phylogenetic programs 
+for fasta in *fasta-gb  ; do
+name=$(basename $fasta | sed s/".fasta-gb"//g)
+sed 's/peg\.[0-9]*//g' $fasta | sed s/GCA_//g   > ./align/"$name"
+done
+
+# Convert to nexus format from fasta
+for file in $(cat /projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/pyani/phylogroups/phylogroups/1/orthofinder/Results_Apr08/SingleCopyOrthogroups.txt2) ; do 
+echo $file
+perl /home/hulinm/git_repos/tools/analysis/python_effector_scripts/alignment_convert.pl -i "$file" -o "$file".nxs -f nexus -g fasta
+done
+
+for file in $(cat /projects/cherry_canker/pseudomonas_data/pseudomonas/analysis/pyani/phylogroups/phylogroups/1/orthofinder/Results_Apr08/SingleCopyOrthogroups.txt2) ; do 
+echo $file
+perl /home/hulinm/git_repos/tools/analysis/python_effector_scripts/alignment_convert.pl -i "$file" -o "$file".phy -f phylip -g fasta
+
+
+# Concatenate single copy orthogroup alignments 
+# Modify this to append path 
+python /home/hulinm/git_repos/tools/analysis/python_effector_scripts/concatenate.py
+
