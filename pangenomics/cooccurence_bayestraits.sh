@@ -394,3 +394,47 @@ paste list global_rates > global_rates2
 sed s/"R S"/"m"/g global_rates2 > global_rates3
 sed -i s/"_rates"//g global_rates3
 python /projects/oldhome/hulinm/git_repos/tools/analysis/python_effector_scripts/filter_bayes_corr.py    global_rates3 LRs_median_corr_sig.tmp > global_rates_corr
+
+
+
+# Generating network in R of linked genes from bayestraits analysis (done on local machine)
+
+install.packages("statnet", dependencies = TRUE) 
+library(statnet)
+set.seed(12345)
+LRs<-read.table("/Users/hulinm/Desktop/global_rates_corr.txt", col.names=,1)
+#LRs<-read.table("/Users/hulinm/Desktop/global_rates_corr_yopT.txt", col.names=,1)
+#LRs<-read.table("/Users/hulinm/Desktop/global_rates_corr_pto.txt", col.names=,1)
+#LRs<-read.table("/Users/hulinm/Desktop/global_rates_corr_hopF.txt", col.names=,1)
+
+attach(LRs)
+library(ggplot2)
+library(gplots)
+library(reshape2)
+library(plyr)
+library(network)
+matrix<-acast(LRs, e1~e2)
+matrix[is.na(matrix)] <- 0
+
+# Need to make matrix into a square
+
+un1 <- unique(sort(c(colnames(matrix), rownames(matrix))))
+m2 <- matrix(NA, length(un1), length(un1), dimnames = list(un1, un1))
+m2[row.names(matrix), colnames(matrix)] <- matrix
+m2[is.na(m2)] <- 0
+diag(m2)<-0
+
+m2 <- network(x = m2, # the network object
+                  directed = FALSE, # specify whether the network is directed
+                  loops = FALSE, # do we allow self ties (should not allow them)
+                  matrix.type = "adjacency", # the type of input
+                  ignore.eval = FALSE, 
+                  names.eval = "weights")
+
+# Plot network 
+library(GGally)
+set.edge.attribute(m2, "color", ifelse(m2 %e% "weights" >0.98, "firebrick", "grey"))
+
+a<-ggnet2(m2, size= "degree", edge.size = "weights",  edge.col="color", label = TRUE, label.size = 2)
+ggsave("network_bayes.pdf", plot = a, width = 20, height = 20)
+dev.off()
