@@ -1,0 +1,166 @@
+
+library(ape)
+library(ggplot2)
+library(ggtree)
+library(phangorn)
+
+tree <- read.nexus("/Users/hulinm/SG_mlst_gen.tre")
+tree <- read.nexus("/Users/hulinm/SG_core.nex")
+mydata5 <- read.csv("/Users/hulinm/Documents/SG_traits_reduced.csv", stringsAsFactors=FALSE, colClasses='character', row.names = 1)
+mydata4 <- read.csv("/Users/hulinm/SG_traits_1.csv", stringsAsFactors=FALSE, colClasses='character', row.names = 1)
+mydata7 <- read.csv("/Users/hulinm/SG_traits_full.csv", stringsAsFactors=FALSE, colClasses='character', row.names = 1)
+mydata_full <- read.csv("/Users/hulinm/Documents/SG_traits_full2.csv", stringsAsFactors=FALSE, colClasses='character', row.names = 1)
+mydata_full2 <- read.csv("/Users/hulinm/Documents/SG_traits_full_v2.csv", stringsAsFactors=FALSE, colClasses='character', row.names = 1)
+mydata_full3 <- read.csv("/Users/hulinm/Documents/SG_traits_full3.csv", stringsAsFactors=FALSE, colClasses='character', row.names = 1)
+mydata_no<- read.csv("/Users/hulinm/Documents/SG_reduced_no.csv", stringsAsFactors=FALSE, colClasses='character', row.names = 1)
+
+mydata6 <- read.csv("/Users/hulinm/Documents/pseudomonas_effectors_SG.csv", stringsAsFactors=FALSE, colClasses='character',  row.names = 1)
+mydata9 <- read.csv("/Users/hulinm/Documents/pseudomonas_effectors_SG_full.csv", stringsAsFactors=FALSE, colClasses='character',  row.names = 1)
+mydata_red <- read.csv("/Users/hulinm/Documents/pseudomonas_traits4_2.csv", stringsAsFactors=FALSE, colClasses='character', row.names = 1)
+mydata_no<- read.csv("/Users/hulinm/Documents/SG_reduced_no.csv", stringsAsFactors=FALSE, colClasses='character', row.names = 1)
+mydata_phage <- read.csv("/Users/hulinm/Documents/SG_data_full_phage3.csv", stringsAsFactors=FALSE, colClasses='character',  row.names = 1)
+mydata_yopT <- read.csv("/Users/hulinm/Documents/pseudomonas_effectors_SG_yopT.csv", stringsAsFactors=FALSE, colClasses='character',  row.names = 1)
+
+effectortable <- read.csv("/Users/hulinm/Documents/effectors_table_300920.csv", stringsAsFactors=FALSE, colClasses='character',  row.names = 1)
+
+p1<-c("000007805","000177475","000177495","000302915","000344355","000344535","000416465","000416545","000416805","000416885","000452625","000658965","000765305","000935725","000935765","001293835","001294305","001400595","001401385","001401405","001467225","001467365","001497495","001497595","002003545","002024285","002111835","002174875","002174905","002174995","002175005","002261495","002699825","002699885","002762615","002763655","002890475","002890485","002905795","002906035","002906055","002906135","002966555","900107345","900235835","900235855","900235905","900289095")
+p2<-c("000012205","000145685","000163275","000164015","000187045","000187065","000275945","000732035","000934645","000935695","001006445","001006455","001293725","001293985","001294025","001294035","001294065","001294105","001294115","001294185","001294195","001294265","001294275","001400395","001400605","001400875","001401095","001401165","001401265","001466905","001467105","001467115","001535735","001535805","001535815","001535835","001535915","001538055","001538085","001538145","001538155","001538205","001538245","001538255","002068135","002115545","002269785","002269885","002270015","002700065","002736925","002905685","002905755","002905875","900235815","900289125","900289135")
+p3<-c("001293575","001293775","900100365","900114665")
+p4<-c("000452485","000452505","000834695","001467325","001642795","001716855","002406485","900184295")
+p5<-c("000737245")
+p6<-c("000012245","000282735","000302795","000302815","000331385","000334055","000412165","000452445","000452465","000452525","000452585","000452605","000452805","000507185","000738515","000935775","000972155","000972175","000972195","000988395","000988485","001270465","001401335","001466875","001466945","001467285","001482725","001535725","001535855","001535945","001623415","001675375","001675415","002318665","002318725","002318815","002318825","002318875","002699845","002905815","002905835","002905935","002905975","002906015","002916225","002916255","002916275","002916335","002916375","002917155","002917195","002939285","003047185","003201385","003205935","003205965","003253455","900113535","900113625","900115275","900235825","900235865")
+p7<-c("900187575")
+p8<-c("000177515","000737225","002318645","002318745","002318885","002323035","900103225")
+p9<-c("002093745")
+p10<-c("000416235","000737235")
+p11<-c("000333995","001281365","001293665","001401005","001466845","001467335","001535905","002318735","002318805","002318895","002699965","002917175","900074915","900099665","900105295","900119195")
+p12<-c("000517305","900187465")
+p13<-c("001238485")
+p15<-c("000452645","000452765","001275725","001275735","001293935","001400345","001400695","001401155","001401235")
+p16<-c("002699985")
+p17<-c("001466965","001466975")
+p18<-c("900143095")
+p19<-c("001400735","001400835","001401315")
+p21<-c("000452705","000452785")
+p22<-c("002723575")
+p23<-c("001698815")
+p24<-c("000452745","000452825")
+p25<-c("002087235")
+p27<-c("002158995")
+
+getMRCA(tree,p1)
+getMRCA(tree,p2)
+getMRCA(tree,p3)
+getMRCA(tree,p4)
+getMRCA(tree,p6)
+getMRCA(tree,p8)
+getMRCA(tree,p10)
+getMRCA(tree,p11)
+getMRCA(tree,p12)
+getMRCA(tree,p15)
+getMRCA(tree,p17)
+getMRCA(tree,p19)
+getMRCA(tree,p21)
+getMRCA(tree,p24)
+
+# Adding in phylogroups
+tree4 <- groupClade(tree, .node=c(406, 590, 363,336,459,581,649,566,646,350,367,588,404,346))
+# Add bootstraps less than 100
+
+q<-ggtree(tree4, aes(color=group), layout="circular")
+d <- q$data
+d <- d[!d$isTip,]
+d$label <- as.numeric(d$label)
+d <- d[d$label < 100,]
+
+
+path<-mydata7[c(1,2,3,4,5,6,7,8,9,10)]
+path1<-mydata7[c(1,2,3,4,5,6)]
+path2<-mydata_full[c(1,2,3,4,5,6)]
+path3<-mydata_full[c(1,2)]
+path4<-mydata_full2[c(1,2)]
+path5<-mydata_phage[c(1,2,13,11,12)]
+path6<-mydata_full3[c(1,2,11)]
+no<-mydata_no[c(1,2,3,4,5,6,7)]
+
+
+
+avrPto<-mydata9[c(1,2,3,11,12,13,14,15,21,22,23,24)]
+vir_effectors<-mydata9[c(1,2,3,9,18,30,39,43,46,50,53,56,59,70,86,92)]
+bt_effectors<-mydata9[c(1,2,42,52,58,76)]
+
+reduced<-mydata5[c(1,2,3)]
+reduced2<-mydata_red[c(1,2,3)]
+no<-mydata_no[c(1,2,3,4,5,6,7)]
+no1<-mydata_no[c(7)]
+
+
+
+
+
+q2<- q +  geom_text2(data=d, aes(label=label), size=1, hjust=-.4)
+q3 <- q2 %<+% mydata5 + geom_tiplab(aes(angle=angle), align=TRUE, size=0.8, color="black", hjust=-0.05) + scale_color_manual(values=c("black", "orange", "deepskyblue", "pink", "salmon", "darkred", "grey", "lightblue", "seagreen","blue", "purple", "forestgreen", "green", "brown", "red"))
+q4 <- gheatmap(q3, path2, width=0.5, font.size=0.5 , color = "black",  offset=0.045) + scale_fill_manual(values=c("white","plum1","green","deepskyblue","darkblue","forestgreen","blue","darkorange","mediumpurple","black","grey","mistyrose","purple","mediumseagreen","lightsalmon4","seagreen","red","seagreen","lightgreen","lightblue","gold","yellow","red"))
+pdf(file = "/Users/hulinm/Documents/SG_core.pdf",width=7.2,height=10)
+q4+theme(legend.position="bottom", legend.title=element_blank()) + guides(colour=FALSE)
+dev.off()
+
+
+q2<- q +  geom_text2(data=d, aes(label=label), size=1, hjust=-.4)
+q3 <- q2 %<+% mydata5 + geom_tiplab(aes(angle=angle), align=TRUE, size=0.8, color="black", hjust=-0.05) + scale_color_manual(values=c("black", "orange", "deepskyblue", "pink", "salmon", "darkred", "grey", "lightblue", "seagreen","blue", "purple", "forestgreen", "green", "brown", "red"))
+q4 <- gheatmap(q3, path4, width=0.15, font.size=0.5 , color = "black",  offset=0.025) + scale_fill_manual(values=c("white","plum1","purple","seagreen","red"))
+pdf(file = "/Users/hulinm/Documents/SG_core3.pdf",width=7.2,height=10)
+q4+theme(legend.position="bottom", legend.title=element_blank()) + geom_treescale(offset=2) + guides(colour=FALSE)
+dev.off()
+
+q2<- q +  geom_text2(data=d, aes(label=label), size=1, hjust=-.4)
+q3 <- q2 %<+% mydata5 + geom_tiplab(aes(angle=angle), align=TRUE, size=0.8, color="black", hjust=-0.05) + scale_color_manual(values=c("black", "orange", "deepskyblue", "pink", "salmon", "darkred", "grey", "lightblue", "seagreen","blue", "purple", "forestgreen", "green", "brown", "red"))
+q4 <- gheatmap(q3, path6, width=0.05, font.size=0.5 , color = "black",  offset=0.045) + scale_fill_manual(values=c("white","plum1","purple","seagreen","red", "blue"))
+pdf(file = "/Users/hulinm/Documents/SG_core4.pdf",width=7.2,height=10)
+q4+theme(legend.position="bottom", legend.title=element_blank()) + geom_treescale(offset=2) + guides(colour=FALSE)
+dev.off()
+
+q2<- q +  geom_text2(data=d, aes(label=label), size=1, hjust=-.4)
+q3 <- q2 %<+% mydata5 + geom_tiplab(aes(angle=angle), align=TRUE, size=0.8, color="black", hjust=-0.05) + scale_color_manual(values=c("black", "orange", "deepskyblue", "pink", "salmon", "darkred", "grey", "lightblue", "seagreen","blue", "purple", "forestgreen", "green", "brown", "red"))
+q4 <- gheatmap(q3, path5, width=0.2, font.size=0.5 , color = "black",  offset=0.025) + scale_fill_manual(values=c("white","plum1","purple","seagreen","red","blue", "black","darkgrey", "grey89", "aquamarine1", "purple", "moccasin", "lightyellow1"))
+pdf(file = "/Users/hulinm/Documents/SG_core_phage2.pdf",width=7.2,height=10)
+q4+theme(legend.position="bottom", legend.title=element_blank()) + geom_treescale(offset=2) + guides(colour=FALSE)
+dev.off()
+
+q2<- q +  geom_text2(data=d, aes(label=label), size=1, hjust=-.4)
+q3 <- q2 %<+% mydata5 + geom_tiplab(aes(angle=angle), align=TRUE, size=0.8, color="black", hjust=-0.05) + scale_color_manual(values=c("black", "orange", "deepskyblue", "pink", "salmon", "darkred", "grey", "lightblue", "seagreen","blue", "purple", "forestgreen", "green", "brown", "red"))
+q4 <- gheatmap(q3, bt_effectors, width=0.2, font.size=0.5 , color = "black",  offset=0.025) + scale_fill_manual(values=c("white","paleturquoise1", "deepskyblue", "blue","plum1","purple","red","seagreen"))
+pdf(file = "/Users/hulinm/Documents/SG_core_bt.pdf",width=7.2,height=10)
+q4+theme(legend.position="bottom", legend.title=element_blank()) + geom_treescale(offset=2) + guides(colour=FALSE)
+dev.off()
+
+
+
+q2<- q +  geom_text2(data=d, aes(label=label), size=1, hjust=-.4)
+q3 <- q2 %<+% mydata5 + geom_tiplab(aes(angle=angle), align=TRUE, size=0.8, color="black", hjust=-0.05) + scale_color_manual(values=c("black", "orange", "deepskyblue", "pink", "salmon", "darkred", "grey", "lightblue", "seagreen","blue", "purple", "forestgreen", "green", "brown", "red"))
+q4 <- gheatmap(q3, effectortable, width=1, font.size=0.5 , color = "black",  offset=0.025) + scale_fill_manual(values=c("white","paleturquoise1", "deepskyblue", "blue","plum1","purple","red","seagreen"))
+pdf(file = "/Users/hulinm/Documents/SG_core_alleffectors.pdf",width=7.2,height=10)
+q4+theme(legend.position="bottom", legend.title=element_blank()) + geom_treescale(offset=2) + guides(colour=FALSE)
+dev.off()
+
+
+
+q2<- q +  geom_text2(data=d, aes(label=label), size=1, hjust=-.4)
+q3 <- q2 %<+% mydata5 + geom_tiplab(aes(angle=angle), align=TRUE, size=0.8, color="black", hjust=-0.05) + scale_color_manual(values=c("black", "orange", "deepskyblue", "pink", "salmon", "darkred", "grey", "lightblue", "seagreen","blue", "purple", "forestgreen", "green", "brown", "red"))
+q4 <- gheatmap(q3, mydata_yopT, width=0.2, font.size=0.5 , color = "black",  offset=0.025) + scale_fill_manual(values=c("white","deepskyblue","yellow","grey","grey","grey","black", "deepskyblue", "deepskyblue","plum1","purple","red","seagreen","yellow","yellow"))
+pdf(file = "/Users/hulinm/Documents/SG_core_yopT.pdf",width=7.2,height=10)
+q4+theme(legend.position="bottom", legend.title=element_blank()) + geom_treescale(offset=2) + guides(colour=FALSE)
+dev.off()
+
+
+# effector no
+my_palette <- colorRampPalette(c("white", "lightblue", "darkblue"))(n = 39)
+q2<- q +  geom_text2(data=d, aes(label=label), size=1, hjust=-.4)
+q3 <- q2 %<+% mydata5 + geom_tiplab(aes(angle=angle), align=TRUE, size=0.8, color="black", hjust=-0.05) + scale_color_manual(values=c("black", "orange", "deepskyblue", "pink", "salmon", "darkred", "grey", "lightblue", "seagreen","blue", "purple", "forestgreen", "green", "brown", "red"))
+q4 <- gheatmap(q3, no, width=0.2, font.size=0.5 , color = "black",  offset=0.03) + scale_fill_manual(values=c(my_palette,"plum1","purple","red","seagreen","grey","orange"))
+pdf(file = "/Users/hulinm/Documents/SG_phylogeny_no.pdf",width=7.2,height=10)
+q4+theme(legend.position="bottom", legend.title=element_blank()) + guides(colour=FALSE) + geom_treescale(offset=2)
+dev.off()
+
+
+
